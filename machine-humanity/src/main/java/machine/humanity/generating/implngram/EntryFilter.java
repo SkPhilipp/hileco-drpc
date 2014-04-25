@@ -1,4 +1,4 @@
-package machine.humanity.generating.ngram;
+package machine.humanity.generating.implngram;
 
 public interface EntryFilter {
 

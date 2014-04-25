@@ -1,4 +1,4 @@
-package machine.humanity.generating.ngram;
+package machine.humanity.generating.implngram;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -51,7 +51,10 @@ public class NGram {
         List<String> result = Lists.newArrayList(END);
 
         for (String item : splitted) {
-            result.add(ENDS.matcher(item).replaceAll(""));
+            String entry = ENDS.matcher(item).replaceAll("");
+            if(entry.length() > 0){
+                result.add(entry);
+            }
             if (ENDS.matcher(item).find() && !END.equals(result.get(result.size() - 1))) {
                 result.add(END);
             }
