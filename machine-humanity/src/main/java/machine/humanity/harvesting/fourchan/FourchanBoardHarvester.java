@@ -2,6 +2,8 @@ package machine.humanity.harvesting.fourchan;
 
 import machine.humanity.generating.Trainable;
 import org.codehaus.jackson.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -10,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class FourchanBoardHarvester {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FourchanBoardHarvester.class);
 
     private final ExecutorService executorService;
     private final FourchanHttpClient fourchanHttpClient;
@@ -49,8 +53,7 @@ public class FourchanBoardHarvester {
                 }
             }
         } catch (IOException e) {
-            // TODO: logger.error('Unable to load board, board=' + board, error);
-            e.printStackTrace();
+            LOG.error("unable to load board: {}.", board, e);
         }
     }
 
@@ -64,16 +67,10 @@ public class FourchanBoardHarvester {
     }
 
     /**
-     * Delegates to {@link java.util.concurrent.ExecutorService#isShutdown()}
-     */
-    public boolean isShutdown() {
-        return executorService.isShutdown();
-    }
-
-    /**
      * Delegates to {@link java.util.concurrent.ExecutorService#awaitTermination(long, java.util.concurrent.TimeUnit)}
      */
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         return executorService.awaitTermination(timeout, unit);
     }
+
 }

@@ -2,7 +2,10 @@ package machine.humanity.harvesting.fourchan;
 
 import machine.humanity.generating.Trainable;
 import org.codehaus.jackson.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
@@ -10,6 +13,8 @@ import java.util.regex.Pattern;
  * Loads a thread into a trainable, implpements Runnable so it can be ran in a thread.
  */
 public class FourchanThreadHarvester implements Runnable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FourchanThreadHarvester.class);
 
     private static final Pattern REMOVE_IMPLYIN = Pattern.compile("&gt;&gt;\\d+");
     private static final Pattern REMOVE_SPECIAL = Pattern.compile("&#?[\\w\\d]+;");
@@ -50,9 +55,8 @@ public class FourchanThreadHarvester implements Runnable {
                     trainable.train(comment);
                 }
             }
-        } catch (Exception e) {
-            // TODO: logger.error('Unable to load thread, board=' + board + ', thead=', no, error);
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOG.warn("Unable to load thread for board {}, thread number {}.", board, threadNo, e);
         }
     }
 
