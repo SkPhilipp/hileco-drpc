@@ -1,4 +1,4 @@
-package machine.humanity.generating.lngram;
+package machine.humanity.generating.ngram;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

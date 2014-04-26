@@ -1,4 +1,4 @@
-package machine.humanity.generating.lngram;
+package machine.humanity.generating.ngram;
 
 import java.util.HashMap;
 import java.util.Map;
