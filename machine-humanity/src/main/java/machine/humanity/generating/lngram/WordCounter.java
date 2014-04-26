@@ -1,4 +1,4 @@
-package machine.humanity.generating.implngram;
+package machine.humanity.generating.lngram;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +29,7 @@ public class WordCounter {
         }
         Integer current = this.map.get(key);
         this.map.put(key, current + 1);
+        this.total++;
     }
 
     public Integer get(String key) {
@@ -47,6 +48,14 @@ public class WordCounter {
             }
         }
         return null;
+    }
+
+    /**
+     * @return the internal map structure.
+     */
+    @Override
+    public String toString() {
+        return map.toString();
     }
 
 }

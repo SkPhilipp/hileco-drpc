@@ -1,4 +1,4 @@
-package machine.humanity.generating.implngram;
+package machine.humanity.generating.lngram;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -72,7 +72,7 @@ public class NGram {
      *
      * @param raw the raw text to first be cleaned and then used for training
      */
-    public void train(String raw) {
+    synchronized public void train(String raw) {
         List<String> words = clean(raw);
         for (int i = 0; i < (words.size() - this.nKey) - (this.nValue - 1); i++) {
             String key = this.key(words.subList(i, i + this.nKey));
@@ -145,13 +145,22 @@ public class NGram {
             value = this.randomArray(key);
             result.addAll(value);
             if (keywords.size() == this.nKey) {
-                keywords = Lists.newArrayList(keywords.subList(0, this.nKey - 1));
+                keywords = Lists.newArrayList(keywords.subList(1, this.nKey));
             }
             keywords.addAll(value);
             key = this.key(keywords);
         }
         while (!END.equals(value.get(value.size() - 1)));
         return result;
+    }
+
+    /**
+     *
+     * @return the internal map structure
+     */
+    @Override
+    public String toString() {
+        return this.internal.toString();
     }
 
 }

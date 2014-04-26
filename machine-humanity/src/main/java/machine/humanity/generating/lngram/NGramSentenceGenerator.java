@@ -1,4 +1,4 @@
-package machine.humanity.generating.implngram;
+package machine.humanity.generating.lngram;
 
 import com.google.common.base.Joiner;
 import machine.humanity.generating.TrainableGenerator;
@@ -55,6 +55,13 @@ public class NGramSentenceGenerator implements TrainableGenerator {
 
     /**
      * @param n amount of consecutive word combinations to map
+     */
+    public NGramSentenceGenerator(Integer n){
+        this(n, 2, 5);
+    }
+
+    /**
+     * @param n amount of consecutive word combinations to map
      * @param attemptMaximumIterations maximum tries to generate a random sentence of given min length
      * @param attemptMinimumLength minimum sentence length in words
      */
@@ -65,7 +72,7 @@ public class NGramSentenceGenerator implements TrainableGenerator {
         this.attemptMinimumLength = attemptMinimumLength;
     }
 
-    public void train(String input){
+   synchronized public void train(String input){
         this.starts.train(input);
         this.follows.train(input);
     }
