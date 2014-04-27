@@ -7,6 +7,11 @@ import machine.humanity.harvesting.fourchan.FourchanBoardHarvester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,21 +21,27 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of {@link GeneratorService} using 4chan as its sources.
  */
+@Path("/generators")
 public class GeneratorServiceImpl implements GeneratorService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeneratorServiceImpl.class);
+    private static final Map<String, TrainableGenerator> trainableGeneratorMap = new HashMap<>();
+    private static final Map<String, HarvesterStatus> generatorStatusMap = new HashMap<>();
 
-    private final Map<String, TrainableGenerator> trainableGeneratorMap = new HashMap<>();
-    private final Map<String, HarvesterStatus> generatorStatusMap = new HashMap<>();
-
+    @GET
+    @Path("/status")
+    @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public HarvesterStatus status(String source) {
+    public HarvesterStatus status(@QueryParam("source") String source) {
         HarvesterStatus harvesterStatus = generatorStatusMap.get(source);
         return harvesterStatus == null ? HarvesterStatus.NONE : harvesterStatus;
     }
 
+    @GET
+    @Path("/harvest")
+    @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public HarvesterStatus harvest(final String source) {
+    public HarvesterStatus harvest(@QueryParam("source") final String source) {
         HarvesterStatus harvesterStatus = this.status(source);
         if (harvesterStatus == HarvesterStatus.NONE) {
             this.generatorStatusMap.put(source, HarvesterStatus.HARVESTING);
@@ -42,6 +53,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 @Override
                 public void run() {
                     try {
+                        LOG.info("Harvesting:" + source);
                         FourchanBoardHarvester boardHarvester = new FourchanBoardHarvester(10);
                         boardHarvester.harvestBoard(gramSentenceGenerator, source);
                         boardHarvester.shutdown();
@@ -57,18 +69,20 @@ public class GeneratorServiceImpl implements GeneratorService {
         return this.status(source);
     }
 
+    @GET
+    @Path("/generate")
+    @Produces(MediaType.APPLICATION_JSON)
     @Override
-    public List<String> generate(String source, Integer amount) {
-        if(this.status(source) == HarvesterStatus.HARVESTED){
+    public List<String> generate(@QueryParam("source") String source, @QueryParam("amount")Integer amount) {
+        if (this.status(source) == HarvesterStatus.HARVESTED) {
             List<String> stringList = new ArrayList<>();
             TrainableGenerator trainableGenerator = this.trainableGeneratorMap.get(source);
-            for(int i = 0; i < Math.min(amount, 100); i++){
+            for (int i = 0; i < Math.min(amount, 100); i++) {
                 String generated = trainableGenerator.generate();
                 stringList.add(generated);
             }
             return stringList;
-        }
-        else {
+        } else {
             throw new IllegalStateException("Status for source must equal HARVESTED");
         }
     }
