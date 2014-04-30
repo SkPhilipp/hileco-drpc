@@ -54,12 +54,12 @@
             <artifactId>resteasy-jaxrs</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hectorclient</groupId>
-            <artifactId>hector-core</artifactId>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hectorclient</groupId>
-            <artifactId>hector-object-mapper</artifactId>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>
