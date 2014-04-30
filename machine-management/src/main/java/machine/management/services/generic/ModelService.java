@@ -33,7 +33,7 @@ public interface ModelService<T extends Model> {
      */
     @GET
     @Path("/{id}")
-    public T read(@PathParam("id") UUID id) throws NotFoundException;
+    public T read(@PathParam("id") UUID id);
 
     /**
      * Updates an entity by id.
@@ -43,7 +43,7 @@ public interface ModelService<T extends Model> {
      */
     @PUT
     @Path("/{id}")
-    public void update(@PathParam("id") UUID id, T instance) throws NotFoundException;
+    public void update(@PathParam("id") UUID id, T instance);
 
     /**
      * Deletes an entity by id.
@@ -52,7 +52,7 @@ public interface ModelService<T extends Model> {
      */
     @DELETE
     @Path("/{id}")
-    public void delete(@PathParam("id") UUID id) throws NotFoundException;
+    public void delete(@PathParam("id") UUID id);
 
     /**
      * Performs a query by {@link org.hibernate.criterion.Example} on {@link T}.
