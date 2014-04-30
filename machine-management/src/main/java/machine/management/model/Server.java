@@ -1,23 +1,22 @@
 package machine.management.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
 @Table(name = "Server")
 public class Server implements Model {
 
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private UUID id;
     @Column(name = "hostname")
     private String hostname;
     @Column(name = "ipAddress")
     private String ipAddress;
     @Column(name = "port")
     private Integer port;
-    @Id
-    private UUID id;
 
     public UUID getId() {
         return id;

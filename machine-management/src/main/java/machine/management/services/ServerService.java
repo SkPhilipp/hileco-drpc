@@ -1,16 +1,8 @@
 package machine.management.services;
 
 import machine.management.model.Server;
-
-import java.util.List;
+import machine.management.services.generic.ModelService;
 
 public interface ServerService extends ModelService<Server> {
-
-    /**
-     * Lists the full set of servers.
-     *
-     * @return all servers
-     */
-    public List<Server> findAll();
 
 }

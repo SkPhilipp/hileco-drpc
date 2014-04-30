@@ -1,23 +1,22 @@
 package machine.management.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
 @Table(name = "Definition")
 public class Definition implements Model {
 
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private UUID id;
     @Column(name = "bottable")
     private String bottable;
     @Column(name = "type")
     private String type;
     @Column(name = "schema")
     private String schema;
-    @Id
-    private UUID id;
 
     public UUID getId() {
         return id;
