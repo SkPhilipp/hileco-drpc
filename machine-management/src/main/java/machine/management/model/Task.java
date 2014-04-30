@@ -4,11 +4,10 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Task")
+@Table(name = "task")
 public class Task implements Model {
 
     @Id
-    @GeneratedValue
     @Column(name = "id")
     private UUID id;
     @Column(name = "bottable")

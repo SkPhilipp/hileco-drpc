@@ -4,11 +4,10 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Definition")
+@Table(name = "definition")
 public class Definition implements Model {
 
     @Id
-    @GeneratedValue
     @Column(name = "id")
     private UUID id;
     @Column(name = "bottable")

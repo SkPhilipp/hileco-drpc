@@ -8,8 +8,10 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Example;
 import org.hibernate.service.ServiceRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
+import javax.ws.rs.PathParam;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ import java.util.UUID;
  */
 public abstract class AbstractModelService<T extends Model> implements ModelService<T> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractModelService.class);
     private static final SessionFactory sessionFactory;
 
     static {
@@ -37,7 +40,8 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
 
     @SuppressWarnings("unchecked")
     public AbstractModelService() {
-        this.type = (Class<T>) TypeToken.of(getClass()).getRawType();
+        TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
+        this.type = (Class<? super T>) typeToken.getRawType();
     }
 
     public Session openSession() {
@@ -69,7 +73,7 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
     public void update(@PathParam("id") UUID id, T instance) {
         instance.setId(id);
         Session session = sessionFactory.openSession();
-        session.save(instance);
+        session.update(instance);
         session.close();
     }
 

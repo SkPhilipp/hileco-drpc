@@ -4,16 +4,15 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Server")
+@Table(name = "server")
 public class Server implements Model {
 
     @Id
-    @GeneratedValue
     @Column(name = "id")
     private UUID id;
     @Column(name = "hostname")
     private String hostname;
-    @Column(name = "ipAddress")
+    @Column(name = "ipaddress")
     private String ipAddress;
     @Column(name = "port")
     private Integer port;

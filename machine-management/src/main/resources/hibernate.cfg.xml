@@ -11,6 +11,7 @@
         <property name="hibernate.connection.pool_size">10</property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.current_session_context_class">thread</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
         <mapping class="machine.management.model.Definition"/>
         <mapping class="machine.management.model.Server"/>
         <mapping class="machine.management.model.Task"/>
