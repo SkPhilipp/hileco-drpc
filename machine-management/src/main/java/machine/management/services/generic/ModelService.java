@@ -63,6 +63,6 @@ public interface ModelService<T extends Model> {
     @POST
     @Path("/query/")
     @SuppressWarnings("unchecked")
-    public List<T> find(T example);
+    public List<T> query(T example);
 
 }

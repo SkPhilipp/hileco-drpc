@@ -93,7 +93,7 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<T> find(T example) {
+    public List<T> query(T example) {
         Session session = this.openSession();
         try {
             return session.createCriteria(type).add(Example.create(example)).list();
