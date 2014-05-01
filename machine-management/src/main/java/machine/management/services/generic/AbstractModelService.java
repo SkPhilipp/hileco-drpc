@@ -1,24 +1,22 @@
 package machine.management.services.generic;
 
 import com.google.common.reflect.TypeToken;
-import machine.management.model.Model;
+import machine.management.model.Identifyable;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Example;
 import org.hibernate.service.ServiceRegistry;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
  * Complete implementation of {@link ModelService}
  *
- * @param <T> any persistable entity model with operations matching the methods available on this class.
+ * @param <T> any persistable and identifyable entity model.
  */
-public abstract class AbstractModelService<T extends Model> implements ModelService<T> {
+public abstract class AbstractModelService<T extends Identifyable> implements ModelService<T> {
 
     private static final SessionFactory sessionFactory;
 
@@ -42,6 +40,10 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
 
     public Session openSession() {
         return sessionFactory.openSession();
+    }
+
+    public Class<? super T> getType() {
+        return type;
     }
 
     @Override
@@ -89,17 +91,6 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
             session.close();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Unable to instantiate an instance to assign an id to.");
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<T> query(T example) {
-        Session session = this.openSession();
-        try {
-            return session.createCriteria(type).add(Example.create(example)).list();
-        } finally {
-            session.close();
         }
     }
 

@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "subscriber")
-public class Subscriber implements Model {
+public class Subscriber implements Identifyable {
 
     @Id
     @Type(type = "uuid-char")

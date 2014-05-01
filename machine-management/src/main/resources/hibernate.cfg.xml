@@ -15,5 +15,7 @@
         <mapping class="machine.management.model.Definition"/>
         <mapping class="machine.management.model.Server"/>
         <mapping class="machine.management.model.Task"/>
+        <mapping class="machine.management.model.Subscriber"/>
+        <mapping class="machine.management.model.Event"/>
     </session-factory>
 </hibernate-configuration>

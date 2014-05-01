@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "definition")
-public class Definition implements Model {
+public class Definition implements Identifyable {
 
     @Id
     @Type(type="uuid-char")

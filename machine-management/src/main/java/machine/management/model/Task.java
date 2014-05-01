@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "task")
-public class Task implements Model {
+public class Task implements Identifyable {
 
     @Id
     @Type(type="uuid-char")

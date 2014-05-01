@@ -1,25 +1,26 @@
 package machine.management.services.generic;
 
-import machine.management.model.Model;
+import machine.management.model.Identifyable;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 import java.util.UUID;
 
 /**
+ * Provides create / read / update / delete methods, where for all operations on an existing {@link Identifyable} the
+ * {@link Identifyable}'s Id must be known.
  *
  * @param <T> any persistable entity model with operations matching the methods available on this class.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface ModelService<T extends Model> {
+public interface ModelService<T extends Identifyable> {
 
     /**
      * Creates an entity, assigns an ID to it.
      *
      * @param instance {@link T} instance whose properties to use for instantiating the entity
-     * @return the {@link UUID} assigned to the new entity
+     * @return the {@link java.util.UUID} assigned to the new entity
      */
     @POST
     @Path("/")
@@ -52,16 +53,5 @@ public interface ModelService<T extends Model> {
     @DELETE
     @Path("/{id}")
     public void delete(@PathParam("id") UUID id);
-
-    /**
-     * Performs a query by {@link org.hibernate.criterion.Example} on {@link T}.
-     *
-     * @param example an example instance
-     * @return matching entities
-     */
-    @POST
-    @Path("/query/")
-    @SuppressWarnings("unchecked")
-    public List<T> query(T example);
 
 }

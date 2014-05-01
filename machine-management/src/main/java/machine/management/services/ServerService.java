@@ -1,11 +1,11 @@
 package machine.management.services;
 
 import machine.management.model.Server;
-import machine.management.services.generic.ModelService;
+import machine.management.services.generic.QueryableModelService;
 
 import javax.ws.rs.Path;
 
 @Path("/servers")
-public interface ServerService extends ModelService<Server> {
+public interface ServerService extends QueryableModelService<Server> {
 
 }

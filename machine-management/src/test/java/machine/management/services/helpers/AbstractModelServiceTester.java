@@ -1,14 +1,12 @@
-package machine.management.services;
+package machine.management.services.helpers;
 
 import com.google.common.reflect.TypeToken;
-import machine.management.model.Model;
+import machine.management.model.Identifyable;
 import machine.management.services.generic.AbstractModelService;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.List;
-
-abstract public class AbstractModelServiceTester<T extends Model> {
+abstract public class AbstractModelServiceTester<T extends Identifyable> {
 
     /**
      * Asserts that all properties on the given expected object equal that of the actual object.
@@ -53,22 +51,6 @@ abstract public class AbstractModelServiceTester<T extends Model> {
         abstractModelService.delete(original.getId());
         T readDeleted = abstractModelService.read(original.getId());
         Assert.assertNull(readDeleted);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testCreateAndQueryByExample() throws Exception {
-        AbstractModelService<T> abstractModelService = this.getModelServiceImpl();
-        // create a task
-        TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
-        Class<? super T> type = typeToken.getRawType();
-        T original = (T) type.newInstance();
-        this.randomize(original);
-        abstractModelService.create(original);
-        List<T> results = abstractModelService.query(original);
-        Assert.assertEquals(results.size(), 1);
-        T read = results.get(0);
-        this.assertEquals(original, read);
     }
 
 }

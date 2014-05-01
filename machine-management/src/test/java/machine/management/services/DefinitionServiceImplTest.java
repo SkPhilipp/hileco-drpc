@@ -1,12 +1,13 @@
 package machine.management.services;
 
 import machine.management.model.Definition;
-import machine.management.services.generic.AbstractModelService;
+import machine.management.services.generic.AbstractQueryableModelService;
+import machine.management.services.helpers.AbstractQueryableModelServiceTester;
 import org.junit.Assert;
 
 import java.util.UUID;
 
-public class DefinitionServiceImplTest extends AbstractModelServiceTester<Definition> {
+public class DefinitionServiceImplTest extends AbstractQueryableModelServiceTester<Definition> {
 
     private DefinitionServiceImpl definitionService = new DefinitionServiceImpl();
 
@@ -26,7 +27,7 @@ public class DefinitionServiceImplTest extends AbstractModelServiceTester<Defini
     }
 
     @Override
-    public AbstractModelService<Definition> getModelServiceImpl() {
+    public AbstractQueryableModelService<Definition> getQueryableModelServiceImpl() {
         return definitionService;
     }
 

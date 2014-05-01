@@ -2,11 +2,11 @@ package machine.management.services;
 
 import com.google.common.base.Preconditions;
 import machine.management.model.Server;
-import machine.management.services.generic.AbstractModelService;
+import machine.management.services.generic.AbstractQueryableModelService;
 
 import java.util.UUID;
 
-public class ServerServiceImpl extends AbstractModelService<Server> implements ServerService {
+public class ServerServiceImpl extends AbstractQueryableModelService<Server> implements ServerService {
 
     public static final int DEFAULT_PORT = 80;
 

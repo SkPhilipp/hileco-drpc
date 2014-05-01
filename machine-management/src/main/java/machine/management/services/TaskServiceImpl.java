@@ -1,8 +1,8 @@
 package machine.management.services;
 
 import machine.management.model.Task;
-import machine.management.services.generic.AbstractModelService;
+import machine.management.services.generic.AbstractQueryableModelService;
 
-public class TaskServiceImpl extends AbstractModelService<Task> implements TaskService {
+public class TaskServiceImpl extends AbstractQueryableModelService<Task> implements TaskService {
 
 }

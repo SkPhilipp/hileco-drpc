@@ -2,11 +2,7 @@ package machine.management.model;
 
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.Date;
+import javax.persistence.*;
 import java.util.UUID;
 
 /**
@@ -14,7 +10,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "event")
-public class Event implements Model {
+public class Event implements Identifyable {
 
     @Id
     @Type(type = "uuid-char")
@@ -24,8 +20,8 @@ public class Event implements Model {
     private String topic;
     @Column(name = "content")
     private byte[] content;
-    @Column(name = "created")
-    private Date date;
+    @Column(name = "timestamp")
+    private Long timestamp;
 
     public UUID getId() {
         return id;
@@ -51,12 +47,11 @@ public class Event implements Model {
         this.content = content;
     }
 
-    public Date getDate() {
-        return date;
+    public Long getTimestamp() {
+        return timestamp;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
-
 }

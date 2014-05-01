@@ -1,12 +1,13 @@
 package machine.management.services;
 
 import machine.management.model.Server;
-import machine.management.services.generic.AbstractModelService;
+import machine.management.services.generic.AbstractQueryableModelService;
+import machine.management.services.helpers.AbstractQueryableModelServiceTester;
 import org.junit.Assert;
 
 import java.util.UUID;
 
-public class ServerServiceImplTest extends AbstractModelServiceTester<Server> {
+public class ServerServiceImplTest extends AbstractQueryableModelServiceTester<Server> {
 
     private ServerServiceImpl serverService = new ServerServiceImpl();
 
@@ -24,7 +25,7 @@ public class ServerServiceImplTest extends AbstractModelServiceTester<Server> {
     }
 
     @Override
-    public AbstractModelService<Server> getModelServiceImpl() {
+    public AbstractQueryableModelService<Server> getQueryableModelServiceImpl() {
         return serverService;
     }
 

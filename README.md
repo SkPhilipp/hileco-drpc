@@ -7,19 +7,16 @@ The general idea of Machine is that task processing is split up into:
 - a "Master" instance which distributes and preprocesses tasks, polling Machine Management for tasks.
 - Consumer" instances which listens for tasks distributed to it.
 
-## Machine Events
+## Machine Management
 
-Machine Events is a message broker where instances can subscribe to topics and publish
-events on those topics. Machine Events will route event messages to all subscribers.
+Machine Management provides webservice and webapplication interfaces to manage servers and tasks and is also a message
+broker, where instances can subscribe to topics and publish events on those topics. Events are routed to all subscribers
+to a given event's topic.
 
 ## Machine Humanity
 
 Machine Humanity makes making robots seem human as easy as possible. Machine Humanity provides APIs for
 generating random sentences.
-
-## Machine Management
-
-Machine Management provides webservice and webapplication interfaces to manage servers and tasks.
 
 ## Machine Backbone
 
