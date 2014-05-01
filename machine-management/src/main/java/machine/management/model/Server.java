@@ -1,5 +1,7 @@
 package machine.management.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -8,6 +10,7 @@ import java.util.UUID;
 public class Server implements Model {
 
     @Id
+    @Type(type="uuid-char")
     @Column(name = "id")
     private UUID id;
     @Column(name = "hostname")

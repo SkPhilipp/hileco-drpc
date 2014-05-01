@@ -1,5 +1,7 @@
 package machine.management.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -8,14 +10,15 @@ import java.util.UUID;
 public class Definition implements Model {
 
     @Id
+    @Type(type="uuid-char")
     @Column(name = "id")
     private UUID id;
     @Column(name = "bottable")
     private String bottable;
     @Column(name = "type")
     private String type;
-    @Column(name = "schema")
-    private String schema;
+    @Column(name = "format")
+    private String format;
 
     public UUID getId() {
         return id;
@@ -41,12 +44,12 @@ public class Definition implements Model {
         this.type = type;
     }
 
-    public String getSchema() {
-        return schema;
+    public String getFormat() {
+        return format;
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
+    public void setFormat(String format) {
+        this.format = format;
     }
 
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface ModelService<T extends Model> {
 
     /**
-     * Creates an entity.
+     * Creates an entity, assigns an ID to it.
      *
      * @param instance {@link T} instance whose properties to use for instantiating the entity
      * @return the {@link UUID} assigned to the new entity
@@ -38,12 +38,11 @@ public interface ModelService<T extends Model> {
     /**
      * Updates an entity by id.
      *
-     * @param id id of the entity to be updated
      * @param instance {@link T} instance whose properties to assign to the entity with the given id
      */
     @PUT
-    @Path("/{id}")
-    public void update(@PathParam("id") UUID id, T instance);
+    @Path("/")
+    public void update(T instance);
 
     /**
      * Deletes an entity by id.

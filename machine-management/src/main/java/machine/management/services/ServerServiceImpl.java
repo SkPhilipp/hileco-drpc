@@ -22,7 +22,8 @@ public class ServerServiceImpl extends AbstractModelService<Server> implements S
         if (instance.getPort() == null) {
             instance.setPort(DEFAULT_PORT);
         }
-        String address = null; // TODO: resolve client ip-address, trust proxies
+        // TODO: resolve client ip-address, trust proxies
+        String address = null;
         instance.setIpAddress(address);
         return super.create(instance);
     }

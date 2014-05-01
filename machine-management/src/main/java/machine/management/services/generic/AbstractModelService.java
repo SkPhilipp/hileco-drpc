@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import machine.management.model.Model;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Example;
@@ -48,7 +49,9 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
         UUID id = UUID.randomUUID();
         instance.setId(id);
         Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
         session.save(instance);
+        transaction.commit();
         session.close();
         return id;
     }
@@ -65,10 +68,11 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
     }
 
     @Override
-    public void update(UUID id, T instance) {
-        instance.setId(id);
+    public void update(T instance) {
         Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
         session.update(instance);
+        transaction.commit();
         session.close();
     }
 
@@ -79,7 +83,9 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
             T instance = (T) type.newInstance();
             instance.setId(id);
             Session session = sessionFactory.openSession();
+            Transaction transaction = session.beginTransaction();
             session.delete(instance);
+            transaction.commit();
             session.close();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Unable to instantiate an instance to assign an id to.");
