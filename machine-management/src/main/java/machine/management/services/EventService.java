@@ -1,4 +1,4 @@
-package machine.events.services;
+package machine.management.services;
 
 import machine.events.model.Subscriber;
 
