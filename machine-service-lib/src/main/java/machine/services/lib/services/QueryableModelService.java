@@ -1,6 +1,6 @@
-package machine.management.services.generic;
+package machine.services.lib.services;
 
-import machine.management.model.Identifyable;
+import machine.services.lib.model.Model;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @param <T> any persistable entity model with operations matching the methods available on this class.
  */
-public interface QueryableModelService<T extends Identifyable> extends ModelService<T> {
+public interface QueryableModelService<T extends Model> extends ModelService<T> {
 
     /**
      * Performs a query by {@link org.hibernate.criterion.Example} on {@link T}.
@@ -20,7 +20,7 @@ public interface QueryableModelService<T extends Identifyable> extends ModelServ
      * @return matching entities
      */
     @POST
-    @Path("/query/")
+    @Path("/query")
     @SuppressWarnings("unchecked")
     public List<T> query(T example);
 

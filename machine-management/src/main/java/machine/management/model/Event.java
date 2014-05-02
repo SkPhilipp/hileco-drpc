@@ -1,8 +1,12 @@
 package machine.management.model;
 
+import machine.services.lib.model.Model;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.UUID;
 
 /**
@@ -10,7 +14,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "event")
-public class Event implements Identifyable {
+public class Event implements Model {
 
     @Id
     @Type(type = "uuid-char")

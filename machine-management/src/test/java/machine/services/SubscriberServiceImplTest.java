@@ -1,8 +1,8 @@
-package machine.management.services;
+package machine.services;
 
 import machine.management.model.Subscriber;
-import machine.management.services.generic.AbstractModelService;
-import machine.management.services.helpers.AbstractModelServiceTester;
+import machine.services.helpers.AbstractModelServiceTester;
+import machine.services.lib.services.AbstractModelService;
 import org.junit.Assert;
 
 import java.util.UUID;
@@ -19,7 +19,7 @@ public class SubscriberServiceImplTest extends AbstractModelServiceTester<Subscr
     }
 
     @Override
-    public void randomize(Subscriber original) {
+    public void randomizeModel(Subscriber original) {
         original.setTarget(UUID.randomUUID().toString());
         original.setTopic(UUID.randomUUID().toString());
     }

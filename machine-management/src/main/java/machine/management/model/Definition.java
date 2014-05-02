@@ -1,16 +1,20 @@
 package machine.management.model;
 
+import machine.services.lib.model.Model;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
 @Table(name = "definition")
-public class Definition implements Identifyable {
+public class Definition implements Model {
 
     @Id
-    @Type(type="uuid-char")
+    @Type(type = "uuid-char")
     @Column(name = "id")
     private UUID id;
     @Column(name = "bottable")

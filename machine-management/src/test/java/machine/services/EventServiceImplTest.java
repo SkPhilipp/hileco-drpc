@@ -1,8 +1,8 @@
-package machine.management.services;
+package machine.services;
 
 import machine.management.model.Event;
-import machine.management.services.generic.AbstractQueryableModelService;
-import machine.management.services.helpers.AbstractQueryableModelServiceTester;
+import machine.services.helpers.AbstractQueryableModelServiceTester;
+import machine.services.lib.services.AbstractQueryableModelService;
 import org.junit.Assert;
 
 import java.util.Calendar;
@@ -22,7 +22,7 @@ public class EventServiceImplTest extends AbstractQueryableModelServiceTester<Ev
     }
 
     @Override
-    public void randomize(Event original) {
+    public void randomizeModel(Event original) {
         // TODO: Test helpers *must* be split up before any new tests, as we are now missing coverage because of the inheritance structure
         // original.setContent(UUID.randomUUID().toString().getBytes(Charsets.UTF_8));
         original.setTopic(UUID.randomUUID().toString());

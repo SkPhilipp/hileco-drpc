@@ -1,5 +1,6 @@
 package machine.management.model;
 
+import machine.services.lib.model.Model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -10,10 +11,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "task")
-public class Task implements Identifyable {
+public class Task implements Model {
 
     @Id
-    @Type(type="uuid-char")
+    @Type(type = "uuid-char")
     @Column(name = "id")
     private UUID id;
     @Column(name = "bottable")
@@ -30,6 +31,7 @@ public class Task implements Identifyable {
     public void setId(UUID id) {
         this.id = id;
     }
+
     public String getBottable() {
         return bottable;
     }

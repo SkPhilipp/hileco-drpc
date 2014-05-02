@@ -1,18 +1,18 @@
-package machine.management.services.helpers;
+package machine.services.helpers;
 
 import com.google.common.reflect.TypeToken;
-import machine.management.model.Identifyable;
-import machine.management.services.generic.AbstractModelService;
+import machine.services.lib.model.Model;
+import machine.services.lib.services.AbstractModelService;
 import org.junit.Assert;
 import org.junit.Test;
 
-abstract public class AbstractModelServiceTester<T extends Identifyable> {
+abstract public class AbstractModelServiceTester<T extends Model> {
 
     /**
      * Asserts that all properties on the given expected object equal that of the actual object.
      *
      * @param expected the leading and original object
-     * @param actual the object to match the expected object
+     * @param actual   the object to match the expected object
      */
     abstract public void assertEquals(T expected, T actual);
 
@@ -21,10 +21,9 @@ abstract public class AbstractModelServiceTester<T extends Identifyable> {
      *
      * @param original an object to be randomized
      */
-    abstract public void randomize(T original);
+    abstract public void randomizeModel(T original);
 
     /**
-     *
      * @return the {@link AbstractModelService} implementation for {@link T}
      */
     abstract public AbstractModelService<T> getModelServiceImpl();
@@ -34,16 +33,17 @@ abstract public class AbstractModelServiceTester<T extends Identifyable> {
     public void testCreateReadUpdateDelete() throws Exception {
         AbstractModelService<T> abstractModelService = this.getModelServiceImpl();
         // create and save a random T
-        TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
+        TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
+        };
         Class<? super T> type = typeToken.getRawType();
         T original = (T) type.newInstance();
-        this.randomize(original);
+        this.randomizeModel(original);
         abstractModelService.create(original);
         // read it out by id and assert equality
         T read = abstractModelService.read(original.getId());
         this.assertEquals(original, read);
         // update it by id, read and expect equality
-        this.randomize(original);
+        this.randomizeModel(original);
         abstractModelService.update(original);
         T readUpdated = abstractModelService.read(original.getId());
         this.assertEquals(original, readUpdated);

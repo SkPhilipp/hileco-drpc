@@ -1,5 +1,6 @@
 package machine.management.model;
 
+import machine.services.lib.model.Model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -13,7 +14,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "subscriber")
-public class Subscriber implements Identifyable {
+public class Subscriber implements Model {
 
     @Id
     @Type(type = "uuid-char")

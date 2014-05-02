@@ -1,14 +1,31 @@
-package machine.management.services;
+package machine.services;
 
 import com.google.common.base.Preconditions;
 import machine.management.model.Server;
-import machine.management.services.generic.AbstractQueryableModelService;
+import machine.services.lib.services.AbstractQueryableModelService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import java.util.UUID;
 
-public class ServerServiceImpl extends AbstractQueryableModelService<Server> implements ServerService {
+@Path("/servers")
+public class ServerServiceImpl extends AbstractQueryableModelService<Server> {
 
     public static final int DEFAULT_PORT = 80;
+
+    private HttpServletRequest request;
+
+    public ServerServiceImpl(@Context HttpServletRequest request) {
+        this.request = request;
+    }
+
+    /**
+     * @return the client's IP address as a string
+     */
+    public String getContextualRequestAddress() {
+        return request.getRemoteAddr();
+    }
 
     /**
      * Instantiates a server, ensures the IP address is not provided by the client.
@@ -22,9 +39,8 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
         if (instance.getPort() == null) {
             instance.setPort(DEFAULT_PORT);
         }
-        // TODO: resolve client ip-address, trust proxies
-        String address = null;
-        instance.setIpAddress(address);
+        String clientIpAddress = this.getContextualRequestAddress();
+        instance.setIpAddress(clientIpAddress);
         return super.create(instance);
     }
 

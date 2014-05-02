@@ -1,6 +1,6 @@
-package machine.management.services.generic;
+package machine.services.lib.services;
 
-import machine.management.model.Identifyable;
+import machine.services.lib.model.Model;
 import org.hibernate.Session;
 import org.hibernate.criterion.Example;
 
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @param <T> any persistable and identifyable entity model.
  */
-public abstract class AbstractQueryableModelService<T extends Identifyable> extends AbstractModelService<T> implements QueryableModelService<T> {
+public abstract class AbstractQueryableModelService<T extends Model> extends AbstractModelService<T> implements QueryableModelService<T> {
 
     @SuppressWarnings("unchecked")
     @Override

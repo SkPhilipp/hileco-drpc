@@ -1,7 +1,7 @@
-package machine.management.services.generic;
+package machine.services.lib.services;
 
 import com.google.common.reflect.TypeToken;
-import machine.management.model.Identifyable;
+import machine.services.lib.model.Model;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,7 +16,7 @@ import java.util.UUID;
  *
  * @param <T> any persistable and identifyable entity model.
  */
-public abstract class AbstractModelService<T extends Identifyable> implements ModelService<T> {
+public abstract class AbstractModelService<T extends Model> implements ModelService<T> {
 
     private static final SessionFactory sessionFactory;
 
@@ -34,7 +34,8 @@ public abstract class AbstractModelService<T extends Identifyable> implements Mo
     private final Class<? super T> type;
 
     public AbstractModelService() {
-        TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
+        TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
+        };
         this.type = typeToken.getRawType();
     }
 
@@ -80,7 +81,7 @@ public abstract class AbstractModelService<T extends Identifyable> implements Mo
 
     @SuppressWarnings("unchecked")
     @Override
-    public void delete( UUID id) {
+    public void delete(UUID id) {
         try {
             T instance = (T) type.newInstance();
             instance.setId(id);

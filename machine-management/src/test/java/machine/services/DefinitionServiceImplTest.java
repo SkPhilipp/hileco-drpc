@@ -1,8 +1,8 @@
-package machine.management.services;
+package machine.services;
 
 import machine.management.model.Definition;
-import machine.management.services.generic.AbstractQueryableModelService;
-import machine.management.services.helpers.AbstractQueryableModelServiceTester;
+import machine.services.helpers.AbstractQueryableModelServiceTester;
+import machine.services.lib.services.AbstractQueryableModelService;
 import org.junit.Assert;
 
 import java.util.UUID;
@@ -20,7 +20,7 @@ public class DefinitionServiceImplTest extends AbstractQueryableModelServiceTest
     }
 
     @Override
-    public void randomize(Definition original) {
+    public void randomizeModel(Definition original) {
         original.setBottable(UUID.randomUUID().toString());
         original.setType(UUID.randomUUID().toString());
         original.setFormat(UUID.randomUUID().toString());
