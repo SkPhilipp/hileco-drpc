@@ -1,6 +1,6 @@
 package machine.management.services;
 
-import machine.management.model.Definition;
+import machine.management.domain.Definition;
 import machine.management.services.helpers.AbstractQueryableModelServiceTester;
 import machine.management.services.lib.services.AbstractQueryableModelService;
 import org.junit.Assert;

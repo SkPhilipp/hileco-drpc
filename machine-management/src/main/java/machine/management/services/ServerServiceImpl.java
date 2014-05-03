@@ -1,7 +1,8 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.management.model.Server;
+import machine.management.domain.Server;
+import machine.management.services.lib.dao.GenericModelDAO;
 import machine.management.services.lib.services.AbstractQueryableModelService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,11 +13,14 @@ import java.util.UUID;
 @Path("/servers")
 public class ServerServiceImpl extends AbstractQueryableModelService<Server> {
 
+    private static final GenericModelDAO<Server> DAO = new GenericModelDAO<Server>(Server.class);
+
     public static final int DEFAULT_PORT = 80;
 
     private HttpServletRequest request;
 
     public ServerServiceImpl(@Context HttpServletRequest request) {
+        super(DAO);
         this.request = request;
     }
 

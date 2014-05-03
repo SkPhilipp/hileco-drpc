@@ -1,4 +1,4 @@
-package machine.management.services.lib.model;
+package machine.management.services.lib.dao;
 
 import java.io.Serializable;
 import java.util.UUID;

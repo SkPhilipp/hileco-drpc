@@ -1,7 +1,8 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.management.model.Event;
+import machine.management.domain.Event;
+import machine.management.services.lib.dao.GenericModelDAO;
 import machine.management.services.lib.services.AbstractQueryableModelService;
 
 import javax.ws.rs.Path;
@@ -10,6 +11,12 @@ import java.util.UUID;
 
 @Path("/events")
 public class EventServiceImpl extends AbstractQueryableModelService<Event> {
+
+    private static final GenericModelDAO<Event> DAO = new GenericModelDAO<Event>(Event.class);
+
+    public EventServiceImpl() {
+        super(DAO);
+    }
 
     /**
      * Creates an entity, assigns an ID to it.

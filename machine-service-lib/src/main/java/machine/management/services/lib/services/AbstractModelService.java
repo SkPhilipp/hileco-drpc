@@ -1,98 +1,46 @@
 package machine.management.services.lib.services;
 
-import com.google.common.reflect.TypeToken;
-import machine.management.services.lib.model.Model;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
+import machine.management.services.lib.dao.GenericModelDAO;
+import machine.management.services.lib.dao.Model;
 
 import java.util.UUID;
 
 /**
- * Complete implementation of {@link ModelService}
+ * Complete implementation of {@link ModelService} using {@link machine.management.services.lib.dao.GenericModelDAO}
  *
  * @param <T> any persistable and identifyable entity model.
  */
 public abstract class AbstractModelService<T extends Model> implements ModelService<T> {
 
-    private static final SessionFactory sessionFactory;
+    public final GenericModelDAO<T> modelDAO;
 
-    static {
-        try {
-            Configuration configuration = new Configuration();
-            configuration.configure();
-            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
-            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
+    public AbstractModelService(GenericModelDAO<T> modelDAO) {
+        this.modelDAO = modelDAO;
     }
 
-    private final Class<? super T> type;
-
-    public AbstractModelService() {
-        TypeToken<T> typeToken = new TypeToken<T>(getClass()) {
-        };
-        this.type = typeToken.getRawType();
-    }
-
-    public Session openSession() {
-        return sessionFactory.openSession();
-    }
-
-    public Class<? super T> getType() {
-        return type;
+    public GenericModelDAO<T> getModelDAO() {
+        return modelDAO;
     }
 
     @Override
     public UUID create(T instance) {
-        UUID id = UUID.randomUUID();
-        instance.setId(id);
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        session.save(instance);
-        transaction.commit();
-        session.close();
-        return id;
+        return modelDAO.create(instance);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T read(UUID id) {
-        Session session = sessionFactory.openSession();
-        try {
-            return (T) session.get(type, id);
-        } finally {
-            session.close();
-        }
+        return modelDAO.read(id);
     }
 
     @Override
     public void update(T instance) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        session.update(instance);
-        transaction.commit();
-        session.close();
+        modelDAO.update(instance);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void delete(UUID id) {
-        try {
-            T instance = (T) type.newInstance();
-            instance.setId(id);
-            Session session = sessionFactory.openSession();
-            Transaction transaction = session.beginTransaction();
-            session.delete(instance);
-            transaction.commit();
-            session.close();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalStateException("Unable to instantiate an instance to assign an id to.");
-        }
+        modelDAO.delete(id);
     }
-
 }

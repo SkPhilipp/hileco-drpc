@@ -1,14 +1,14 @@
 package machine.management.services.lib.services;
 
-import machine.management.services.lib.model.Model;
+import machine.management.services.lib.dao.Model;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.UUID;
 
 /**
- * Provides create / read / update / delete methods, where for all operations on an existing {@link machine.management.services.lib.model.Model} the
- * {@link machine.management.services.lib.model.Model}'s Id must be known.
+ * Provides create / read / update / delete methods, where for all operations on an existing {@link machine.management.services.lib.dao.Model} the
+ * {@link machine.management.services.lib.dao.Model}'s Id must be known.
  *
  * @param <T> any persistable entity model with operations matching the methods available on this class.
  */

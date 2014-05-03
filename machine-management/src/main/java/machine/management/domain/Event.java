@@ -1,6 +1,6 @@
-package machine.management.model;
+package machine.management.domain;
 
-import machine.management.services.lib.model.Model;
+import machine.management.services.lib.dao.Model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;

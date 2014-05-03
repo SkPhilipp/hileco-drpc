@@ -12,10 +12,10 @@
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
-        <mapping class="machine.management.model.Definition"/>
-        <mapping class="machine.management.model.Server"/>
-        <mapping class="machine.management.model.Task"/>
-        <mapping class="machine.management.model.Subscriber"/>
-        <mapping class="machine.management.model.Event"/>
+        <mapping class="machine.management.domain.Definition"/>
+        <mapping class="machine.management.domain.Server"/>
+        <mapping class="machine.management.domain.Task"/>
+        <mapping class="machine.management.domain.Subscriber"/>
+        <mapping class="machine.management.domain.Event"/>
     </session-factory>
 </hibernate-configuration>

@@ -1,6 +1,6 @@
 package machine.management.services;
 
-import machine.management.model.Subscriber;
+import machine.management.domain.Subscriber;
 import machine.management.services.helpers.AbstractModelServiceTester;
 import machine.management.services.lib.services.AbstractModelService;
 import org.junit.Assert;

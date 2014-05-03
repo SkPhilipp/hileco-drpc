@@ -1,15 +1,16 @@
 package machine.management.services;
 
-import machine.management.model.Event;
-import machine.management.services.helpers.AbstractQueryableModelServiceTester;
-import machine.management.services.lib.services.AbstractQueryableModelService;
+import machine.management.domain.Event;
+import machine.management.services.helpers.AbstractModelServiceTester;
+import machine.management.services.lib.services.AbstractModelService;
 import org.junit.Assert;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import java.util.UUID;
 
-public class EventServiceImplTest extends AbstractQueryableModelServiceTester<Event> {
+public class EventServiceImplTest extends AbstractModelServiceTester<Event> {
 
     private EventServiceImpl eventService = new EventServiceImpl();
 
@@ -23,15 +24,17 @@ public class EventServiceImplTest extends AbstractQueryableModelServiceTester<Ev
 
     @Override
     public void randomizeModel(Event original) {
-        // TODO: Test helpers *must* be split up before any new tests, as we are now missing coverage because of the inheritance structure
-        // original.setContent(UUID.randomUUID().toString().getBytes(Charsets.UTF_8));
         original.setTopic(UUID.randomUUID().toString());
         Date now = Calendar.getInstance().getTime();
         original.setTimestamp(now.getTime());
+        byte[] bytes = new byte[100];
+        Random random = new Random();
+        random.nextBytes(bytes);
+        original.setContent(bytes);
     }
 
     @Override
-    public AbstractQueryableModelService<Event> getQueryableModelServiceImpl() {
+    public AbstractModelService<Event> getModelServiceImpl() {
         return eventService;
     }
 

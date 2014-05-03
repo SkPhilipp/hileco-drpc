@@ -1,6 +1,6 @@
-package machine.management.model;
+package machine.management.domain;
 
-import machine.management.services.lib.model.Model;
+import machine.management.services.lib.dao.Model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
@@ -10,8 +10,8 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "task")
-public class Task implements Model {
+@Table(name = "definition")
+public class Definition implements Model {
 
     @Id
     @Type(type = "uuid-char")
@@ -21,8 +21,8 @@ public class Task implements Model {
     private String bottable;
     @Column(name = "type")
     private String type;
-    @Column(name = "status")
-    private TaskStatus status;
+    @Column(name = "format")
+    private String format;
 
     public UUID getId() {
         return id;
@@ -48,12 +48,12 @@ public class Task implements Model {
         this.type = type;
     }
 
-    public TaskStatus getStatus() {
-        return status;
+    public String getFormat() {
+        return format;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+    public void setFormat(String format) {
+        this.format = format;
     }
 
 }
