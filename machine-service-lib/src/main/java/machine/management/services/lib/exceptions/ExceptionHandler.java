@@ -1,5 +1,6 @@
 package machine.management.services.lib.exceptions;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -16,13 +17,13 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
     public Response handleFunctional(Exception exception) {
         RawException exceptionMessage = new RawException();
         exceptionMessage.setException(exception);
-        return Response.status(Response.Status.BAD_REQUEST).entity(exceptionMessage).build();
+        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(exceptionMessage).build();
     }
 
     public Response handleTechnical(Exception exception) {
         RawException exceptionMessage = new RawException();
         exceptionMessage.setException(exception);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(exceptionMessage).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON_TYPE).entity(exceptionMessage).build();
     }
 
     @Override

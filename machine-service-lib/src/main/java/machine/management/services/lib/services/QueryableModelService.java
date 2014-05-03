@@ -2,6 +2,7 @@ package machine.management.services.lib.services;
 
 import machine.management.services.lib.dao.Model;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
