@@ -1,6 +1,6 @@
 package machine.management.model;
 
-import machine.services.lib.model.Model;
+import machine.management.services.lib.model.Model;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;

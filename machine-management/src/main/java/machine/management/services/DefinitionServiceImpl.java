@@ -1,7 +1,7 @@
-package machine.services;
+package machine.management.services;
 
 import machine.management.model.Definition;
-import machine.services.lib.services.AbstractQueryableModelService;
+import machine.management.services.lib.services.AbstractQueryableModelService;
 
 import javax.ws.rs.Path;
 

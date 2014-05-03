@@ -1,6 +1,6 @@
-package machine.services.lib.services;
+package machine.management.services.lib.services;
 
-import machine.services.lib.model.Model;
+import machine.management.services.lib.model.Model;
 import org.hibernate.Session;
 import org.hibernate.criterion.Example;
 

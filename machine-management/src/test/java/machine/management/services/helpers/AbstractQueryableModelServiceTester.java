@@ -1,9 +1,9 @@
-package machine.services.helpers;
+package machine.management.services.helpers;
 
 import com.google.common.reflect.TypeToken;
-import machine.services.lib.model.Model;
-import machine.services.lib.services.AbstractModelService;
-import machine.services.lib.services.AbstractQueryableModelService;
+import machine.management.services.lib.model.Model;
+import machine.management.services.lib.services.AbstractModelService;
+import machine.management.services.lib.services.AbstractQueryableModelService;
 import org.junit.Assert;
 import org.junit.Test;
 

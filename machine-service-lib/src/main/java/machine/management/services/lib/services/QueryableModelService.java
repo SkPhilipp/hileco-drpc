@@ -1,6 +1,6 @@
-package machine.services.lib.services;
+package machine.management.services.lib.services;
 
-import machine.services.lib.model.Model;
+import machine.management.services.lib.model.Model;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;

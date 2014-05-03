@@ -1,8 +1,8 @@
-package machine.services;
+package machine.management.services;
 
 import com.google.common.base.Preconditions;
 import machine.management.model.Server;
-import machine.services.lib.services.AbstractQueryableModelService;
+import machine.management.services.lib.services.AbstractQueryableModelService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;

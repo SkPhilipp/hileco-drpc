@@ -1,4 +1,4 @@
-package machine.services.lib.exceptions;
+package machine.management.services.lib.exceptions;
 
 import com.google.common.base.Charsets;
 

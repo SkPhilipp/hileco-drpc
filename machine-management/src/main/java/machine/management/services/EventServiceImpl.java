@@ -1,14 +1,32 @@
-package machine.services;
+package machine.management.services;
 
 import com.google.common.base.Preconditions;
 import machine.management.model.Event;
-import machine.services.lib.services.AbstractQueryableModelService;
+import machine.management.services.lib.services.AbstractQueryableModelService;
 
 import javax.ws.rs.Path;
 import java.util.List;
+import java.util.UUID;
 
 @Path("/events")
 public class EventServiceImpl extends AbstractQueryableModelService<Event> {
+
+    /**
+     * Creates an entity, assigns an ID to it.
+     *
+     * - given event's content must not be empty
+     * - given event's topic must not be empty
+     * - timestamp will be overridden by default
+     *
+     * @param instance {@link Event} instance whose properties to use for instantiating the entity
+     * @return the {@link java.util.UUID} assigned to the new entity
+     */
+    @Override
+    public UUID create(Event instance){
+        Preconditions.checkArgument(instance.getContent() != null, "Content must not be empty");
+        Preconditions.checkArgument(instance.getTopic() != null, "Topic must not be empty");
+        return super.create(instance);
+    }
 
     /**
      * Queries only when all of the following preconditions are met:

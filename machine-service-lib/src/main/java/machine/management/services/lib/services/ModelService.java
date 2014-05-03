@@ -1,14 +1,14 @@
-package machine.services.lib.services;
+package machine.management.services.lib.services;
 
-import machine.services.lib.model.Model;
+import machine.management.services.lib.model.Model;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.UUID;
 
 /**
- * Provides create / read / update / delete methods, where for all operations on an existing {@link machine.services.lib.model.Model} the
- * {@link machine.services.lib.model.Model}'s Id must be known.
+ * Provides create / read / update / delete methods, where for all operations on an existing {@link machine.management.services.lib.model.Model} the
+ * {@link machine.management.services.lib.model.Model}'s Id must be known.
  *
  * @param <T> any persistable entity model with operations matching the methods available on this class.
  */
@@ -17,7 +17,7 @@ import java.util.UUID;
 public interface ModelService<T extends Model> {
 
     /**
-     * Creates an entity, assigns an ID to it.
+     * Creates an entity, assigns a new UUID to it, even if it already has a UUID assigned.
      *
      * @param instance {@link T} instance whose properties to use for instantiating the entity
      * @return the {@link java.util.UUID} assigned to the new entity

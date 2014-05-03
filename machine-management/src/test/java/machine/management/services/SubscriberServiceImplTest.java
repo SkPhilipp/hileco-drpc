@@ -1,8 +1,8 @@
-package machine.services;
+package machine.management.services;
 
 import machine.management.model.Subscriber;
-import machine.services.helpers.AbstractModelServiceTester;
-import machine.services.lib.services.AbstractModelService;
+import machine.management.services.helpers.AbstractModelServiceTester;
+import machine.management.services.lib.services.AbstractModelService;
 import org.junit.Assert;
 
 import java.util.UUID;

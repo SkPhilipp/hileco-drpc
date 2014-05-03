@@ -1,8 +1,8 @@
-package machine.services;
+package machine.management.services;
 
 import machine.management.model.Server;
-import machine.services.helpers.AbstractQueryableModelServiceTester;
-import machine.services.lib.services.AbstractQueryableModelService;
+import machine.management.services.helpers.AbstractQueryableModelServiceTester;
+import machine.management.services.lib.services.AbstractQueryableModelService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.mockito.Mockito;

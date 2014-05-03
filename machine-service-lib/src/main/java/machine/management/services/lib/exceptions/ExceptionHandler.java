@@ -1,4 +1,4 @@
-package machine.services.lib.exceptions;
+package machine.management.services.lib.exceptions;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

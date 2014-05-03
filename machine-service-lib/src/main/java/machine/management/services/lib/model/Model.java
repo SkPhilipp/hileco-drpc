@@ -1,4 +1,4 @@
-package machine.services.lib.model;
+package machine.management.services.lib.model;
 
 import java.io.Serializable;
 import java.util.UUID;
