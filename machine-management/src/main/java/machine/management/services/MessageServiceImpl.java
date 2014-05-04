@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@Path("/events")
+@Path("/messages")
 public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
 
     private static final GenericModelDAO<Message> messageDAO = new GenericModelDAO<>(Message.class);
