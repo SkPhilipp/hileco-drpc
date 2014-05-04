@@ -9,23 +9,23 @@ import static machine.management.services.utils.Randoms.randomString;
 
 public class MessageServiceImplTest {
 
-    private MessageServiceImpl eventService = new MessageServiceImpl();
+    private MessageServiceImpl service = new MessageServiceImpl();
 
+    /**
+     * Create an instance, reads it out and asserts:
+     * - missing field id is now filled
+     * - missing field timestamp is now filled
+     */
     @Test
     public void testCreateRead() throws Exception {
-
-        // create a message
-        Message message = new Message();
-        message.setTopic(randomString());
-        message.setContent(randomBytes());
-        eventService.create(message);
-
-        // read it out by id and assert missing fields are now filled
-        Message readMessage = eventService.read(message);
-        Assert.assertNotNull(readMessage);
-        Assert.assertNotNull(readMessage.getId());
-        Assert.assertNotNull(readMessage.getTimestamp());
-
+        //
+        Message instance = new Message();
+        instance.setTopic(randomString());
+        instance.setContent(randomBytes());
+        service.create(instance);
+        Message readInstance = service.read(instance);
+        Assert.assertNotNull(readInstance.getId());
+        Assert.assertNotNull(readInstance.getTimestamp());
     }
 
 }

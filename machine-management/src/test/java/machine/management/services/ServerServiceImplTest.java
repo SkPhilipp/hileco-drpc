@@ -1,43 +1,41 @@
 package machine.management.services;
 
 import machine.management.domain.Server;
-import machine.management.services.helpers.AbstractQueryableModelServiceTester;
-import machine.management.services.lib.services.AbstractQueryableModelService;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
-public class ServerServiceImplTest extends AbstractQueryableModelServiceTester<Server> {
+public class ServerServiceImplTest {
 
     private static final String TEST_ADDRESS = "127.0.0.1";
-    private ServerServiceImpl serverService;
+
+    private ServerServiceImpl service;
 
     @Before
     public void before() throws Exception {
         HttpServletRequest mockedRequest = Mockito.mock(HttpServletRequest.class);
         Mockito.when(mockedRequest.getRemoteAddr()).thenReturn(TEST_ADDRESS);
-        serverService = new ServerServiceImpl(mockedRequest);
+        service = new ServerServiceImpl(mockedRequest);
     }
 
-    @Override
-    public void assertEquals(Server expected, Server actual) {
-        Assert.assertEquals(expected.getId(), actual.getId());
-        Assert.assertEquals(expected.getIpAddress(), TEST_ADDRESS);
-        Assert.assertEquals(expected.getHostname(), actual.getHostname());
-        Assert.assertEquals(expected.getPort(), actual.getPort());
-    }
-
-    @Override
-    public void randomizeModel(Server original) {
-        original.setHostname(UUID.randomUUID().toString());
-    }
-
-    @Override
-    public AbstractQueryableModelService<Server> getQueryableModelServiceImpl() {
-        return serverService;
+    /**
+     * Create an instance, reads it out and asserts:
+     * - missing field id is now filled
+     * - missing field ipaddress is now filled
+     */
+    @Test
+    public void testCreateRead() throws Exception {
+        // create a message, read it and assert missing fields are now filled
+        Server instance = new Server();
+        instance.setHostname(UUID.randomUUID().toString());
+        service.create(instance);
+        Server readInstance = service.read(instance);
+        Assert.assertNotNull(readInstance.getId());
+        Assert.assertEquals(TEST_ADDRESS, readInstance.getIpAddress());
     }
 
 }
