@@ -50,6 +50,14 @@ public interface ModelDAO<T extends Model> {
     public List<T> query(T example);
 
     /**
+     * Performs a query using a {@link QueryModifier}.
+     *
+     * @param queryModifier modifier
+     * @return querymodifier result
+     */
+    public<QT> QT query(QueryModifier<QT> queryModifier);
+
+    /**
      * Performs a count by {@link org.hibernate.criterion.Example} on {@link T}.
      *
      * @param example an example instance
@@ -67,4 +75,13 @@ public interface ModelDAO<T extends Model> {
      */
     public List<T> query(T example, int offset, int limit);
 
+    /**
+     * Performs a query using a {@link QueryModifier}.
+     *
+     * @param queryModifier modifier
+     * @param offset offset to use in querying
+     * @param limit limit to use in querying
+     * @return querymodifier result
+     */
+    public <QT> QT query(QueryModifier<QT> queryModifier, int offset, int limit);
 }

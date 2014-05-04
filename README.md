@@ -11,7 +11,7 @@ The general idea of Machine is that task processing is split up into:
 
 Machine Management provides webservice and webapplication interfaces to manage servers and tasks and is also a message
 broker, where instances can subscribe to topics and publish events on those topics. Events are routed to all subscribers
-to a given event's topic.
+to a given message's topic.
 
 ## Machine Humanity
 

@@ -1,21 +1,19 @@
 package machine.management.services;
 
-import machine.management.domain.Event;
+import machine.management.domain.Message;
 import machine.management.services.helpers.AbstractModelServiceTester;
 import machine.management.services.lib.services.AbstractModelService;
 import org.junit.Assert;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
-public class EventServiceImplTest extends AbstractModelServiceTester<Event> {
+public class MessageServiceImplTest extends AbstractModelServiceTester<Message> {
 
-    private EventServiceImpl eventService = new EventServiceImpl();
+    private MessageServiceImpl eventService = new MessageServiceImpl();
 
     @Override
-    public void assertEquals(Event expected, Event actual) {
+    public void assertEquals(Message expected, Message actual) {
         Assert.assertEquals(expected.getId(), actual.getId());
         Assert.assertArrayEquals(expected.getContent(), actual.getContent());
         Assert.assertEquals(expected.getTimestamp(), actual.getTimestamp());
@@ -23,10 +21,8 @@ public class EventServiceImplTest extends AbstractModelServiceTester<Event> {
     }
 
     @Override
-    public void randomizeModel(Event original) {
+    public void randomizeModel(Message original) {
         original.setTopic(UUID.randomUUID().toString());
-        Date now = Calendar.getInstance().getTime();
-        original.setTimestamp(now.getTime());
         byte[] bytes = new byte[100];
         Random random = new Random();
         random.nextBytes(bytes);
@@ -34,7 +30,7 @@ public class EventServiceImplTest extends AbstractModelServiceTester<Event> {
     }
 
     @Override
-    public AbstractModelService<Event> getModelServiceImpl() {
+    public AbstractModelService<Message> getModelServiceImpl() {
         return eventService;
     }
 

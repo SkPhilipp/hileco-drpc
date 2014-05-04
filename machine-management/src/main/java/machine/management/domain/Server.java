@@ -1,36 +1,21 @@
 package machine.management.domain;
 
 import machine.management.services.lib.dao.Model;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.UUID;
 
 @Entity
 @Table(name = "server")
-public class Server implements Model {
+public class Server extends Model {
 
-    @Id
-    @Type(type = "uuid-char")
-    @Column(name = "id")
-    private UUID id;
     @Column(name = "hostname")
     private String hostname;
     @Column(name = "ipaddress")
     private String ipAddress;
     @Column(name = "port")
     private Integer port;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getHostname() {
         return hostname;

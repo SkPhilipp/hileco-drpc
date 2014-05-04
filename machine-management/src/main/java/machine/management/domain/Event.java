@@ -5,50 +5,38 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.UUID;
 
 /**
- * Represents an event for a given topic.
+ * Represents an event for a topic, to be sent to a subscriber.
  */
 @Entity
 @Table(name = "event")
-public class Event implements Model {
+public class Event extends Model {
 
-    @Id
+    @Column(name = "target")
+    private String target;
     @Type(type = "uuid-char")
-    @Column(name = "id")
-    private UUID id;
-    @Column(name = "topic")
-    private String topic;
-    @Column(name = "content")
-    private byte[] content;
+    @Column(name = "message")
+    private UUID message;
     @Column(name = "timestamp")
     private Long timestamp;
 
-    public UUID getId() {
-        return id;
+    public String getTarget() {
+        return target;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
-    public String getTopic() {
-        return topic;
+    public UUID getMessage() {
+        return message;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    public byte[] getContent() {
-        return content;
-    }
-
-    public void setContent(byte[] content) {
-        this.content = content;
+    public void setMessage(UUID message) {
+        this.message = message;
     }
 
     public Long getTimestamp() {
@@ -58,4 +46,5 @@ public class Event implements Model {
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
+
 }

@@ -116,6 +116,34 @@ public class GenericModelDAO<T extends Model> implements ModelDAO<T> {
 
     @SuppressWarnings("unchecked")
     @Override
+    public <QT> QT query(QueryModifier<QT> queryModifier) {
+        Session session = this.openSession();
+        try {
+            Class<T> type = this.getType();
+            Criteria criteria = session.createCriteria(type);
+            return queryModifier.call(criteria);
+        } finally {
+            session.close();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <QT> QT query(QueryModifier<QT> queryModifier, int offset, int limit) {
+        Session session = this.openSession();
+        try {
+            Class<T> type = this.getType();
+            Criteria criteria = session.createCriteria(type)
+                    .setFirstResult(offset)
+                    .setMaxResults(limit);
+            return queryModifier.call(criteria);
+        } finally {
+            session.close();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public List<T> query(T example, int offset, int limit) {
         Session session = this.openSession();
         try {
