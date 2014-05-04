@@ -37,15 +37,21 @@ abstract public class AbstractModelServiceTester<T extends Model> {
         };
         Class<? super T> type = typeToken.getRawType();
         T original = (T) type.newInstance();
+
+        System.out.println("ORIGINAL=" + original);
         this.randomizeModel(original);
         abstractModelService.create(original);
         // read it out by id and assert equality
         T read = abstractModelService.read(original.getId());
+        Assert.assertNotNull(original);
+        Assert.assertNotNull(read);
         this.assertEquals(original, read);
         // update it by id, read and expect equality
         this.randomizeModel(original);
         abstractModelService.update(original);
         T readUpdated = abstractModelService.read(original.getId());
+        Assert.assertNotNull(original);
+        Assert.assertNotNull(readUpdated);
         this.assertEquals(original, readUpdated);
         // delete it by id, read and expect null
         abstractModelService.delete(original.getId());

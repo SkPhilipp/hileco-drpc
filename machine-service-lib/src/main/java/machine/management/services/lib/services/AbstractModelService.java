@@ -33,6 +33,12 @@ public abstract class AbstractModelService<T extends Model> implements ModelServ
         return modelDAO.read(id);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public T read(Model model) {
+        return modelDAO.read(model.getId());
+    }
+
     @Override
     public void update(T instance) {
         modelDAO.update(instance);

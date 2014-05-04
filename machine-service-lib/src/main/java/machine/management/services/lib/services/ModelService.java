@@ -37,6 +37,14 @@ public interface ModelService<T extends Model> {
     public T read(@PathParam("id") UUID id);
 
     /**
+     * Finds an entity by another entity's id.
+     *
+     * @param model model with id of the entity to be found.
+     * @return matching entity or null.
+     */
+    public T read(T model);
+
+    /**
      * Updates an entity by id.
      *
      * @param instance {@link T} instance whose properties to assign to the entity with the given id

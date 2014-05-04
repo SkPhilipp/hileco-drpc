@@ -10,7 +10,6 @@ import machine.management.services.lib.services.AbstractQueryableModelService;
 
 import javax.ws.rs.Path;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -68,21 +67,19 @@ public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
             event.setTarget(target);
             eventDAO.create(event);
         }
+        messageDAO.create(instance);
         eventProcessor.alert();
         return instanceId;
     }
 
-    /**
-     * Queries only when all of the following preconditions are met:
-     * - the content is not set on the example object
-     *
-     * @param example an example instance
-     * @return the list of matching events
-     */
     @Override
-    public List<Message> query(Message example) {
-        Preconditions.checkArgument(example.getContent() == null, "Clients are not permitted to search by content.");
-        return super.query(example);
+    public void update(Message instance) {
+        throw new UnsupportedOperationException("Messages may not be updated.");
+    }
+
+    @Override
+    public void delete(UUID id) {
+        throw new UnsupportedOperationException("Messages may not be deleted.");
     }
 
 }

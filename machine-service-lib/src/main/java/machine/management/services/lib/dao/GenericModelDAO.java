@@ -69,11 +69,9 @@ public class GenericModelDAO<T extends Model> implements ModelDAO<T> {
     @Override
     public T read(UUID id) {
         Session session = sessionFactory.openSession();
-        try {
-            return (T) session.get(type, id);
-        } finally {
-            session.close();
-        }
+        T result = (T) session.get(type, id);
+        session.close();
+        return result;
     }
 
     @Override

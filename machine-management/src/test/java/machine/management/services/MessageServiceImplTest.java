@@ -1,37 +1,31 @@
 package machine.management.services;
 
 import machine.management.domain.Message;
-import machine.management.services.helpers.AbstractModelServiceTester;
-import machine.management.services.lib.services.AbstractModelService;
 import org.junit.Assert;
+import org.junit.Test;
 
-import java.util.Random;
-import java.util.UUID;
+import static machine.management.services.utils.Randoms.randomBytes;
+import static machine.management.services.utils.Randoms.randomString;
 
-public class MessageServiceImplTest extends AbstractModelServiceTester<Message> {
+public class MessageServiceImplTest {
 
     private MessageServiceImpl eventService = new MessageServiceImpl();
 
-    @Override
-    public void assertEquals(Message expected, Message actual) {
-        Assert.assertEquals(expected.getId(), actual.getId());
-        Assert.assertArrayEquals(expected.getContent(), actual.getContent());
-        Assert.assertEquals(expected.getTimestamp(), actual.getTimestamp());
-        Assert.assertEquals(expected.getTopic(), actual.getTopic());
-    }
+    @Test
+    public void testCreateRead() throws Exception {
 
-    @Override
-    public void randomizeModel(Message original) {
-        original.setTopic(UUID.randomUUID().toString());
-        byte[] bytes = new byte[100];
-        Random random = new Random();
-        random.nextBytes(bytes);
-        original.setContent(bytes);
-    }
+        // create a message
+        Message message = new Message();
+        message.setTopic(randomString());
+        message.setContent(randomBytes());
+        eventService.create(message);
 
-    @Override
-    public AbstractModelService<Message> getModelServiceImpl() {
-        return eventService;
+        // read it out by id and assert missing fields are now filled
+        Message readMessage = eventService.read(message);
+        Assert.assertNotNull(readMessage);
+        Assert.assertNotNull(readMessage.getId());
+        Assert.assertNotNull(readMessage.getTimestamp());
+
     }
 
 }
