@@ -18,6 +18,11 @@
             <version>${machine.version}</version>
         </dependency>
         <dependency>
+            <groupId>machine</groupId>
+            <artifactId>machine-humanity-api</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>

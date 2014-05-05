@@ -1,5 +1,7 @@
-package machine.lib.client.messaging;
+package machine.management.services.messaging;
 
+import com.google.common.base.Charsets;
+import machine.management.api.domain.NetworkMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -7,10 +9,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -21,18 +25,17 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class NetworkMessageRouter {
 
-    public static final NetworkMessageSerializer DEFAULT_SERIALIZER = new NetworkMessageSerializer();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    public static Charset CHARSET = Charsets.UTF_8;
     public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
     public static final int DEFAULT_SENDER_POOL_SIZE = 100;
 
     private static final Logger LOG = LoggerFactory.getLogger(NetworkMessageRouter.class);
 
-    private final NetworkMessageSerializer serializer;
     private final HttpClient httpClient;
     private final ScheduledExecutorService executorService;
 
-    public NetworkMessageRouter(int senderPoolSize, int requestTimeout, NetworkMessageSerializer serializer){
-        this.serializer = serializer;
+    public NetworkMessageRouter(int senderPoolSize, int requestTimeout){
         this.executorService = Executors.newScheduledThreadPool(senderPoolSize);
         RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
                 .setConnectTimeout(requestTimeout)
@@ -48,7 +51,7 @@ public class NetworkMessageRouter {
      * Sets up the message router with a default request timeout of {@link #DEFAULT_REQUEST_TIMEOUT} and pool size of {@link #DEFAULT_SENDER_POOL_SIZE}.
      */
     public NetworkMessageRouter() {
-        this(DEFAULT_SENDER_POOL_SIZE, DEFAULT_REQUEST_TIMEOUT, DEFAULT_SERIALIZER);
+        this(DEFAULT_SENDER_POOL_SIZE, DEFAULT_REQUEST_TIMEOUT);
     }
 
     /**
@@ -63,7 +66,7 @@ public class NetworkMessageRouter {
         return this.executorService.submit(new Callable<HttpResponse>() {
             @Override
             public HttpResponse call() throws Exception {
-                String body = serializer.serialize(networkMessage);
+                String body = OBJECT_MAPPER.writeValueAsString(networkMessage);
                 StringEntity stringEntity = new StringEntity(body, ContentType.APPLICATION_JSON);
                 HttpPost request = new HttpPost(target);
                 request.setEntity(stringEntity);

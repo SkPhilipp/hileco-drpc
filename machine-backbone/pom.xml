@@ -28,11 +28,6 @@
             <version>${machine.version}</version>
         </dependency>
         <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-lib-client</artifactId>
-            <version>${machine.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>

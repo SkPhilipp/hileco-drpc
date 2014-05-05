@@ -1,4 +1,4 @@
-package machine.lib.client.messaging;
+package machine.management.api.domain;
 
 import java.io.Serializable;
 

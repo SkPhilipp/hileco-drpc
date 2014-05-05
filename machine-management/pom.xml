@@ -19,11 +19,6 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-lib-client</artifactId>
-            <version>${machine.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
             <artifactId>machine-management-api</artifactId>
             <version>${machine.version}</version>
         </dependency>

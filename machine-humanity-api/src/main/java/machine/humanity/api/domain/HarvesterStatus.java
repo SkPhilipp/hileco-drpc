@@ -1,4 +1,4 @@
-package machine.humanity.harvesting;
+package machine.humanity.api.domain;
 
 public enum HarvesterStatus {
 

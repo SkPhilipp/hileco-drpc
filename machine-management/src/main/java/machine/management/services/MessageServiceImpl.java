@@ -1,8 +1,8 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.lib.client.messaging.NetworkMessage;
-import machine.lib.client.messaging.NetworkMessageRouter;
+import machine.management.api.domain.NetworkMessage;
+import machine.management.services.messaging.NetworkMessageRouter;
 import machine.lib.service.dao.GenericModelDAO;
 import machine.management.api.domain.Subscriber;
 import machine.management.api.services.MessageService;

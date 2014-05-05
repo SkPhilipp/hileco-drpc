@@ -1,4 +1,4 @@
-import machine.lib.client.messaging.NetworkMessage;
+import machine.management.api.domain.NetworkMessage;
 import machine.management.api.services.MessageService;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;

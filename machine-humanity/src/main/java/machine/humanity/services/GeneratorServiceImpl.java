@@ -1,14 +1,13 @@
 package machine.humanity.services;
 
+import machine.humanity.api.domain.HarvesterStatus;
+import machine.humanity.api.services.GeneratorService;
 import machine.humanity.generating.TrainableGenerator;
 import machine.humanity.generating.ngram.NGramSentenceGenerator;
-import machine.humanity.harvesting.HarvesterStatus;
 import machine.humanity.harvesting.fourchan.FourchanBoardHarvester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of {@link GeneratorService} using 4chan as its sources.
  */
-@Path("/generators")
 public class GeneratorServiceImpl implements GeneratorService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GeneratorServiceImpl.class);
@@ -26,13 +24,13 @@ public class GeneratorServiceImpl implements GeneratorService {
     private static final Map<String, HarvesterStatus> generatorStatusMap = new HashMap<>();
 
     @Override
-    public HarvesterStatus status(@QueryParam("source") String source) {
+    public HarvesterStatus status(String source) {
         HarvesterStatus harvesterStatus = generatorStatusMap.get(source);
         return harvesterStatus == null ? HarvesterStatus.NONE : harvesterStatus;
     }
 
     @Override
-    public HarvesterStatus harvest(@QueryParam("source") final String source) {
+    public HarvesterStatus harvest(final String source) {
         HarvesterStatus harvesterStatus = this.status(source);
         if (harvesterStatus == HarvesterStatus.NONE) {
             this.generatorStatusMap.put(source, HarvesterStatus.HARVESTING);
@@ -61,7 +59,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     }
 
     @Override
-    public List<String> generate(@QueryParam("source") String source, @QueryParam("amount")Integer amount) {
+    public List<String> generate(String source, Integer amount) {
         if (this.status(source) == HarvesterStatus.HARVESTED) {
             List<String> stringList = new ArrayList<>();
             TrainableGenerator trainableGenerator = this.trainableGeneratorMap.get(source);
