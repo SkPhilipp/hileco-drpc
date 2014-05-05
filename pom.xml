@@ -13,7 +13,8 @@
         <module>machine-humanity</module>
         <module>machine-management</module>
         <module>machine-backbone</module>
-        <module>machine-service-lib</module>
+        <module>machine-lib-service</module>
+        <module>machine-lib-client</module>
     </modules>
 
     <properties>

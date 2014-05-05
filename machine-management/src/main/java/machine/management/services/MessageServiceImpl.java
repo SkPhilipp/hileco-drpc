@@ -1,29 +1,36 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
+import machine.lib.client.messaging.NetworkMessage;
+import machine.lib.client.messaging.NetworkMessageRouter;
+import machine.lib.client.messaging.NetworkMessageSerializer;
+import machine.lib.service.dao.GenericModelDAO;
 import machine.management.domain.Event;
 import machine.management.domain.Message;
 import machine.management.domain.Subscriber;
 import machine.management.processes.EventProcessor;
-import machine.management.services.lib.dao.GenericModelDAO;
-import machine.management.services.lib.services.AbstractQueryableModelService;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Path("/messages")
-public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class MessageServiceImpl {
 
     private static final GenericModelDAO<Message> messageDAO = new GenericModelDAO<>(Message.class);
     private static final GenericModelDAO<Subscriber> subscriberDAO = new GenericModelDAO<>(Subscriber.class);
     private static final GenericModelDAO<Event> eventDAO = new GenericModelDAO<>(Event.class);
-    private final EventProcessor eventProcessor = EventProcessor.getInstance();
 
-    public MessageServiceImpl() {
-        super(messageDAO);
-    }
+    private final EventProcessor eventProcessor = EventProcessor.getInstance();
+    private final NetworkMessageSerializer networkMessageSerializer = NetworkMessageRouter.DEFAULT_SERIALIZER;
 
     /**
      * Finds all targets subcribed to the given topic.
@@ -43,45 +50,36 @@ public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
     }
 
     /**
-     * Creates an entity, assigns an ID to it.
-     * <p/>
-     * - given event's content must not be empty
-     * - given event's topic must not be empty
-     * - timestamp will be overridden by default
+     * Creates a new message, and events for each subscriber to the message's topic, then notifies the event processor.
      *
-     * @param instance {@link machine.management.domain.Message} instance whose properties to use for instantiating the entity
-     * @return the {@link java.util.UUID} assigned to the new entity
+     * @param instance {@link NetworkMessage} message to distribute
+     * @return the {@link java.util.UUID} assigned to the stored message
      */
-    @Override
-    public UUID create(Message instance) {
+    @POST
+    @Path("/publish")
+    public UUID publish(NetworkMessage<?> instance) {
         Preconditions.checkArgument(instance.getContent() != null, "Content must not be empty");
         Preconditions.checkArgument(instance.getTopic() != null, "Topic must not be empty");
-        Preconditions.checkArgument(instance.getTimestamp() == null, "Timestamp may not be provided by clients");
-        instance.setTimestamp(System.currentTimeMillis());
-        UUID instanceId = super.create(instance);
+        Message message = new Message();
+        message.setTimestamp(System.currentTimeMillis());
+        try {
+            message.setContent(networkMessageSerializer.serializeToBytes(instance));
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unable to serialize the incoming network message", e);
+        }
+        messageDAO.create(message);
         Set<String> targets = this.getTargets(instance.getTopic());
         if (!targets.isEmpty()) {
-            messageDAO.create(instance);
             for (String target : targets) {
                 Event event = new Event();
-                event.setMessage(instanceId);
-                event.setTimestamp(instance.getTimestamp());
+                event.setMessage(message.getId());
+                event.setTimestamp(message.getTimestamp());
                 event.setTarget(target);
                 eventDAO.create(event);
             }
             eventProcessor.alert();
         }
-        return instanceId;
-    }
-
-    @Override
-    public void update(Message instance) {
-        throw new UnsupportedOperationException("Messages may not be updated.");
-    }
-
-    @Override
-    public void delete(UUID id) {
-        throw new UnsupportedOperationException("Messages may not be deleted.");
+        return message.getId();
     }
 
 }

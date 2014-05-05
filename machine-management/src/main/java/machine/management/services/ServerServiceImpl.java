@@ -2,8 +2,8 @@ package machine.management.services;
 
 import com.google.common.base.Preconditions;
 import machine.management.domain.Server;
-import machine.management.services.lib.dao.GenericModelDAO;
-import machine.management.services.lib.services.AbstractQueryableModelService;
+import machine.lib.service.dao.GenericModelDAO;
+import machine.lib.service.services.AbstractQueryableModelService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;

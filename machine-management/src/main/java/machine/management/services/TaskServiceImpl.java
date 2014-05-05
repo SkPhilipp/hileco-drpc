@@ -1,8 +1,8 @@
 package machine.management.services;
 
 import machine.management.domain.Task;
-import machine.management.services.lib.dao.GenericModelDAO;
-import machine.management.services.lib.services.AbstractQueryableModelService;
+import machine.lib.service.dao.GenericModelDAO;
+import machine.lib.service.services.AbstractQueryableModelService;
 
 import javax.ws.rs.Path;
 

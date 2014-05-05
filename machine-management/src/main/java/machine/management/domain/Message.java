@@ -1,6 +1,6 @@
 package machine.management.domain;
 
-import machine.management.services.lib.dao.Model;
+import machine.lib.service.dao.Model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

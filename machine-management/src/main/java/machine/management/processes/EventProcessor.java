@@ -1,10 +1,11 @@
 package machine.management.processes;
 
+import machine.lib.client.messaging.NetworkMessageRouter;
+import machine.lib.client.messaging.NetworkMessageSerializer;
+import machine.lib.service.dao.GenericModelDAO;
+import machine.lib.service.dao.QueryModifier;
 import machine.management.domain.Event;
 import machine.management.domain.Message;
-import machine.management.processes.events.EventRouter;
-import machine.management.services.lib.dao.GenericModelDAO;
-import machine.management.services.lib.dao.QueryModifier;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -26,13 +27,13 @@ public class EventProcessor extends TimerTask implements ServletContextListener 
     private static final Integer AUTOMATIC_POLL_INTERVAL = 1000;
     private static EventProcessor INSTANCE;
 
-    private EventRouter eventRouter;
+    private NetworkMessageRouter networkMessageRouter;
     private GenericModelDAO<Message> messageDAO;
     private GenericModelDAO<Event> eventDAO;
     private long lastTimestamp;
 
     public EventProcessor() {
-        this.eventRouter = new EventRouter();
+        this.networkMessageRouter = new NetworkMessageRouter();
         this.messageDAO = new GenericModelDAO<>(Message.class);
         this.eventDAO = new GenericModelDAO<>(Event.class);
         this.lastTimestamp = 0L;
@@ -75,7 +76,7 @@ public class EventProcessor extends TimerTask implements ServletContextListener 
             }
             Message message = this.messageDAO.read(event.getId());
             LOG.trace("Submitting event with id {}", event.getId());
-            eventRouter.submit(event, message);
+            networkMessageRouter.submit(event.getTarget(), new String(message.getContent(), NetworkMessageSerializer.CHARSET));
             eventDAO.delete(event.getId());
         }
     }
@@ -102,7 +103,7 @@ public class EventProcessor extends TimerTask implements ServletContextListener 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         LOG.debug("Shutting down event router");
-        this.eventRouter.shutdown();
+        this.networkMessageRouter.shutdown();
     }
 
 }

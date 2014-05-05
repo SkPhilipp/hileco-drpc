@@ -1,17 +1,20 @@
 package machine.management.services;
 
+import machine.lib.client.messaging.NetworkMessage;
+import machine.lib.service.dao.GenericModelDAO;
 import machine.management.domain.Message;
-import machine.management.domain.TaskStatus;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import static machine.management.services.utils.Randoms.*;
+import java.util.UUID;
 
-@Ignore
+import static machine.management.services.utils.Randoms.randomBytes;
+import static machine.management.services.utils.Randoms.randomString;
+
 public class MessageServiceImplTest {
 
     private MessageServiceImpl service = new MessageServiceImpl();
+    private static final GenericModelDAO<Message> messageDAO = new GenericModelDAO<>(Message.class);
 
     /**
      * Create an instance, reads it out and asserts:
@@ -20,12 +23,9 @@ public class MessageServiceImplTest {
      */
     @Test
     public void testCreateRead() throws Exception {
-        TaskStatus taskStatus = randomEnum(TaskStatus.class);
-        Message instance = new Message();
-        instance.setTopic(randomString());
-        instance.setContent(randomBytes());
-        service.create(instance);
-        Message readInstance = service.read(instance);
+        NetworkMessage<byte[]> instance = new NetworkMessage<>(randomString(), randomBytes());
+        UUID messageId = service.publish(instance);
+        Message readInstance = messageDAO.read(messageId);
         Assert.assertNotNull(readInstance.getId());
         Assert.assertNotNull(readInstance.getTimestamp());
     }
