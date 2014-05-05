@@ -1,13 +1,11 @@
 package machine.management.services;
 
-import machine.management.domain.Definition;
 import machine.lib.service.dao.GenericModelDAO;
 import machine.lib.service.services.AbstractQueryableModelService;
+import machine.management.api.services.DefinitionService;
+import machine.management.api.domain.Definition;
 
-import javax.ws.rs.Path;
-
-@Path("/definitions")
-public class DefinitionServiceImpl extends AbstractQueryableModelService<Definition> {
+public class DefinitionServiceImpl extends AbstractQueryableModelService<Definition> implements DefinitionService {
 
     private static final GenericModelDAO<Definition> DAO = new GenericModelDAO<>(Definition.class);
 

@@ -23,6 +23,11 @@
             <version>${machine.version}</version>
         </dependency>
         <dependency>
+            <groupId>machine</groupId>
+            <artifactId>machine-management-api</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>

@@ -1,7 +1,9 @@
 import machine.lib.client.messaging.NetworkMessage;
 import machine.lib.client.messaging.NetworkMessageRouter;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class CallManagement {
 
     @Test

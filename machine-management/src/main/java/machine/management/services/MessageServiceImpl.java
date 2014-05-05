@@ -4,28 +4,21 @@ import com.google.common.base.Preconditions;
 import machine.lib.client.messaging.NetworkMessage;
 import machine.lib.client.messaging.NetworkMessageRouter;
 import machine.lib.service.dao.GenericModelDAO;
-import machine.management.domain.Subscriber;
+import machine.management.api.domain.Subscriber;
+import machine.management.api.services.MessageService;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.util.HashSet;
 import java.util.Set;
 
-@Path("/messages")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public class MessageServiceImpl {
+public class MessageServiceImpl implements MessageService {
 
     private static final GenericModelDAO<Subscriber> subscriberDAO = new GenericModelDAO<>(Subscriber.class);
-
     private final NetworkMessageRouter networkMessageRouter;
 
-    public MessageServiceImpl(){
+    public MessageServiceImpl() {
         this.networkMessageRouter = new NetworkMessageRouter();
     }
+
     /**
      * Finds all targets subcribed to the given topic.
      *
@@ -48,13 +41,11 @@ public class MessageServiceImpl {
      *
      * @param instance {@link NetworkMessage} message to distribute
      */
-    @POST
-    @Path("/publish")
     public void publish(NetworkMessage<?> instance) {
         Preconditions.checkArgument(instance.getContent() != null, "Content must not be empty");
         Preconditions.checkArgument(instance.getTopic() != null, "Topic must not be empty");
         Set<String> targets = this.getTargets(instance.getTopic());
-        for(String target : targets){
+        for (String target : targets) {
             networkMessageRouter.submit(target, instance);
         }
     }

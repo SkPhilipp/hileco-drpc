@@ -21,7 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class NetworkMessageRouter {
 
-    public static final NetworkMessageSerializer DEFAULT_SERIALIZER = new JSONNetworkMessageSerializer();
+    public static final NetworkMessageSerializer DEFAULT_SERIALIZER = new NetworkMessageSerializer();
     public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
     public static final int DEFAULT_SENDER_POOL_SIZE = 100;
 

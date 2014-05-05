@@ -1,9 +1,10 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.management.domain.Server;
 import machine.lib.service.dao.GenericModelDAO;
 import machine.lib.service.services.AbstractQueryableModelService;
+import machine.management.api.services.ServerService;
+import machine.management.api.domain.Server;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -11,7 +12,7 @@ import javax.ws.rs.core.Context;
 import java.util.UUID;
 
 @Path("/servers")
-public class ServerServiceImpl extends AbstractQueryableModelService<Server> {
+public class ServerServiceImpl extends AbstractQueryableModelService<Server> implements ServerService {
 
     private static final GenericModelDAO<Server> DAO = new GenericModelDAO<>(Server.class);
 

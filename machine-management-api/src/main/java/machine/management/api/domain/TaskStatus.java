@@ -1,4 +1,4 @@
-package machine.management.domain;
+package machine.management.api.domain;
 
 public enum TaskStatus {
 
