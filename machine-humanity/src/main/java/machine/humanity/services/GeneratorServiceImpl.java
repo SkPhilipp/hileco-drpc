@@ -7,11 +7,8 @@ import machine.humanity.harvesting.fourchan.FourchanBoardHarvester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,18 +25,12 @@ public class GeneratorServiceImpl implements GeneratorService {
     private static final Map<String, TrainableGenerator> trainableGeneratorMap = new HashMap<>();
     private static final Map<String, HarvesterStatus> generatorStatusMap = new HashMap<>();
 
-    @GET
-    @Path("/status")
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public HarvesterStatus status(@QueryParam("source") String source) {
         HarvesterStatus harvesterStatus = generatorStatusMap.get(source);
         return harvesterStatus == null ? HarvesterStatus.NONE : harvesterStatus;
     }
 
-    @GET
-    @Path("/harvest")
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public HarvesterStatus harvest(@QueryParam("source") final String source) {
         HarvesterStatus harvesterStatus = this.status(source);
@@ -69,9 +60,6 @@ public class GeneratorServiceImpl implements GeneratorService {
         return this.status(source);
     }
 
-    @GET
-    @Path("/generate")
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public List<String> generate(@QueryParam("source") String source, @QueryParam("amount")Integer amount) {
         if (this.status(source) == HarvesterStatus.HARVESTED) {

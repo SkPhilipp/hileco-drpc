@@ -2,8 +2,15 @@ package machine.humanity.services;
 
 import machine.humanity.harvesting.HarvesterStatus;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public interface GeneratorService {
 
     /**
@@ -12,6 +19,8 @@ public interface GeneratorService {
      * @param source
      * @return
      */
+    @GET
+    @Path("/status")
     public HarvesterStatus status(String source);
 
     /**
@@ -21,6 +30,8 @@ public interface GeneratorService {
      *
      * @param source
      */
+    @GET
+    @Path("/harvest")
     public HarvesterStatus harvest(String source);
 
     /**
@@ -31,6 +42,8 @@ public interface GeneratorService {
      * @param source
      * @param amount
      */
+    @GET
+    @Path("/generate")
     public List<String> generate(String source, Integer amount);
 
 }

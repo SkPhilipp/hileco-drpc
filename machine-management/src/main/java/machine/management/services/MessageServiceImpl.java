@@ -19,7 +19,6 @@ public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
     private static final GenericModelDAO<Message> messageDAO = new GenericModelDAO<>(Message.class);
     private static final GenericModelDAO<Subscriber> subscriberDAO = new GenericModelDAO<>(Subscriber.class);
     private static final GenericModelDAO<Event> eventDAO = new GenericModelDAO<>(Event.class);
-
     private final EventProcessor eventProcessor = EventProcessor.getInstance();
 
     public MessageServiceImpl() {
@@ -36,7 +35,7 @@ public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
         Subscriber example = new Subscriber();
         example.setTopic(topic);
         Set<String> targets = new HashSet<>();
-        for(Subscriber subscriber : subscriberDAO.query(example)){
+        for (Subscriber subscriber : subscriberDAO.query(example)) {
             String target = subscriber.getTarget();
             targets.add(target);
         }
@@ -45,7 +44,7 @@ public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
 
     /**
      * Creates an entity, assigns an ID to it.
-     *
+     * <p/>
      * - given event's content must not be empty
      * - given event's topic must not be empty
      * - timestamp will be overridden by default
@@ -54,21 +53,24 @@ public class MessageServiceImpl extends AbstractQueryableModelService<Message> {
      * @return the {@link java.util.UUID} assigned to the new entity
      */
     @Override
-    public UUID create(Message instance){
+    public UUID create(Message instance) {
         Preconditions.checkArgument(instance.getContent() != null, "Content must not be empty");
         Preconditions.checkArgument(instance.getTopic() != null, "Topic must not be empty");
         Preconditions.checkArgument(instance.getTimestamp() == null, "Timestamp may not be provided by clients");
         instance.setTimestamp(System.currentTimeMillis());
         UUID instanceId = super.create(instance);
-        for(String target : this.getTargets(instance.getTopic())){
-            Event event  = new Event();
-            event.setMessage(instanceId);
-            event.setTimestamp(instance.getTimestamp());
-            event.setTarget(target);
-            eventDAO.create(event);
+        Set<String> targets = this.getTargets(instance.getTopic());
+        if (!targets.isEmpty()) {
+            messageDAO.create(instance);
+            for (String target : targets) {
+                Event event = new Event();
+                event.setMessage(instanceId);
+                event.setTimestamp(instance.getTimestamp());
+                event.setTarget(target);
+                eventDAO.create(event);
+            }
+            eventProcessor.alert();
         }
-        messageDAO.create(instance);
-        eventProcessor.alert();
         return instanceId;
     }
 
