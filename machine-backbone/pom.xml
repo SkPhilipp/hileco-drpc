@@ -14,7 +14,12 @@
     <dependencies>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-service-lib</artifactId>
+            <artifactId>machine-lib-service</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>machine</groupId>
+            <artifactId>machine-lib-client</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>

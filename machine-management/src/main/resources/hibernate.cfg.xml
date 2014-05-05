@@ -16,7 +16,5 @@
         <mapping class="machine.management.domain.Server"/>
         <mapping class="machine.management.domain.Task"/>
         <mapping class="machine.management.domain.Subscriber"/>
-        <mapping class="machine.management.domain.Message"/>
-        <mapping class="machine.management.domain.Event"/>
     </session-factory>
 </hibernate-configuration>
