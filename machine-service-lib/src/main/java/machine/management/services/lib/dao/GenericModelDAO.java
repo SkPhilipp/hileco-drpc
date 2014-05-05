@@ -88,7 +88,7 @@ public class GenericModelDAO<T extends Model> implements ModelDAO<T> {
     @Override
     public void delete(UUID id) {
         try {
-            T instance = (T) type.newInstance();
+            T instance = type.newInstance();
             instance.setId(id);
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();

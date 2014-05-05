@@ -13,7 +13,7 @@ import java.util.UUID;
 @Path("/servers")
 public class ServerServiceImpl extends AbstractQueryableModelService<Server> {
 
-    private static final GenericModelDAO<Server> DAO = new GenericModelDAO<Server>(Server.class);
+    private static final GenericModelDAO<Server> DAO = new GenericModelDAO<>(Server.class);
 
     public static final int DEFAULT_PORT = 80;
 

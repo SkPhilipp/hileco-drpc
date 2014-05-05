@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 @Path("/subscribers")
 public class SubscriberServiceImpl extends AbstractQueryableModelService<Subscriber> {
 
-    private static final GenericModelDAO<Subscriber> DAO = new GenericModelDAO<Subscriber>(Subscriber.class);
+    private static final GenericModelDAO<Subscriber> DAO = new GenericModelDAO<>(Subscriber.class);
 
     public SubscriberServiceImpl() {
         super(DAO);

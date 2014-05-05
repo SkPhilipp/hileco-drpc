@@ -1,12 +1,14 @@
 package machine.management.services;
 
 import machine.management.domain.Message;
+import machine.management.domain.TaskStatus;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import static machine.management.services.utils.Randoms.randomBytes;
-import static machine.management.services.utils.Randoms.randomString;
+import static machine.management.services.utils.Randoms.*;
 
+@Ignore
 public class MessageServiceImplTest {
 
     private MessageServiceImpl service = new MessageServiceImpl();
@@ -18,7 +20,7 @@ public class MessageServiceImplTest {
      */
     @Test
     public void testCreateRead() throws Exception {
-        //
+        TaskStatus taskStatus = randomEnum(TaskStatus.class);
         Message instance = new Message();
         instance.setTopic(randomString());
         instance.setContent(randomBytes());

@@ -1,5 +1,8 @@
 package machine.management.services.lib.exceptions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -14,24 +17,18 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class ExceptionHandler implements ExceptionMapper<Exception> {
 
-    public Response handleFunctional(Exception exception) {
-        RawException exceptionMessage = new RawException();
-        exceptionMessage.setException(exception);
-        return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(exceptionMessage).build();
-    }
-
-    public Response handleTechnical(Exception exception) {
-        RawException exceptionMessage = new RawException();
-        exceptionMessage.setException(exception);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON_TYPE).entity(exceptionMessage).build();
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandler.class);
 
     @Override
     public Response toResponse(Exception exception) {
+        RawException exceptionMessage = new RawException();
+        exceptionMessage.setException(exception);
         if (exception instanceof IllegalArgumentException) {
-            return this.handleFunctional(exception);
+            LOG.warn("Handling a functional exception:", exception);
+            return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON_TYPE).entity(exceptionMessage).build();
         } else {
-            return this.handleTechnical(exception);
+            LOG.error("Handling a technical exception:", exception);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON_TYPE).entity(exceptionMessage).build();
         }
     }
 

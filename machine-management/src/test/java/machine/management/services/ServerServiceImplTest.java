@@ -3,12 +3,14 @@ package machine.management.services;
 import machine.management.domain.Server;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
+@Ignore
 public class ServerServiceImplTest {
 
     private static final String TEST_ADDRESS = "127.0.0.1";

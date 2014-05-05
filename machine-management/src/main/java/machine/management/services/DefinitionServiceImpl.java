@@ -9,7 +9,7 @@ import javax.ws.rs.Path;
 @Path("/definitions")
 public class DefinitionServiceImpl extends AbstractQueryableModelService<Definition> {
 
-    private static final GenericModelDAO<Definition> DAO = new GenericModelDAO<Definition>(Definition.class);
+    private static final GenericModelDAO<Definition> DAO = new GenericModelDAO<>(Definition.class);
 
     public DefinitionServiceImpl() {
         super(DAO);
