@@ -35,7 +35,7 @@ public class ServerServiceImplTest {
         Server instance = new Server();
         instance.setHostname(UUID.randomUUID().toString());
         service.create(instance);
-        Server readInstance = service.read(instance);
+        Server readInstance = service.read(instance.getId());
         Assert.assertNotNull(readInstance.getId());
         Assert.assertEquals(TEST_ADDRESS, readInstance.getIpAddress());
     }
