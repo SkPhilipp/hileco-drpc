@@ -21,7 +21,8 @@ public class ServerServiceImplTest {
     public void before() throws Exception {
         HttpServletRequest mockedRequest = Mockito.mock(HttpServletRequest.class);
         Mockito.when(mockedRequest.getRemoteAddr()).thenReturn(TEST_ADDRESS);
-        service = new ServerServiceImpl(mockedRequest);
+        service = new ServerServiceImpl();
+        service.setRequest(mockedRequest);
     }
 
     /**
@@ -34,7 +35,7 @@ public class ServerServiceImplTest {
         // create a message, read it and assert missing fields are now filled
         Server instance = new Server();
         instance.setHostname(UUID.randomUUID().toString());
-        service.create(instance);
+        service.save(instance);
         Server readInstance = service.read(instance.getId());
         Assert.assertNotNull(readInstance.getId());
         Assert.assertEquals(TEST_ADDRESS, readInstance.getIpAddress());

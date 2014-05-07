@@ -1,4 +1,4 @@
-package machine.backbone.configuration;
+package machine.backbone.local;
 
 import machine.management.api.entities.Server;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -21,6 +21,7 @@ public class Configuration {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String PROPERTY_SERVER = "local-server.json";
+
     private final String basePath;
 
     public Configuration(String basePath) {

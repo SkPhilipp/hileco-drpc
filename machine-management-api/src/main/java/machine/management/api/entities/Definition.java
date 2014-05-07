@@ -1,11 +1,12 @@
 package machine.management.api.entities;
 
-import machine.lib.service.dao.Model;
+import machine.lib.service.api.entities.Model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "definition")
 public class Definition extends Model {

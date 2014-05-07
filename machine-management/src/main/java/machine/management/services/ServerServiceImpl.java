@@ -3,8 +3,8 @@ package machine.management.services;
 import com.google.common.base.Preconditions;
 import machine.lib.service.dao.GenericModelDAO;
 import machine.lib.service.services.AbstractQueryableModelService;
-import machine.management.api.services.ServerService;
 import machine.management.api.entities.Server;
+import machine.management.api.services.ServerService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -18,11 +18,11 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
 
     public static final int DEFAULT_PORT = 80;
 
+    @Context
     private HttpServletRequest request;
 
-    public ServerServiceImpl(@Context HttpServletRequest request) {
+    public ServerServiceImpl() {
         super(DAO);
-        this.request = request;
     }
 
     /**
@@ -32,6 +32,10 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
         return request.getRemoteAddr();
     }
 
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
     /**
      * Instantiates a server, ensures the IP address is not provided by the client.
      *
@@ -39,14 +43,14 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
      * @return the {@link UUID} assigned to the new entity
      */
     @Override
-    public UUID create(Server instance) {
+    public UUID save(Server instance) {
         Preconditions.checkArgument(instance.getIpAddress() == null, "Clients are not permitted to provide the IP-address themselves.");
         if (instance.getPort() == null) {
             instance.setPort(DEFAULT_PORT);
         }
         String clientIpAddress = this.getContextualRequestAddress();
         instance.setIpAddress(clientIpAddress);
-        return super.create(instance);
+        return super.save(instance);
     }
 
 }

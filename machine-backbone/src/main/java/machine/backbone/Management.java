@@ -20,10 +20,6 @@ public class Management {
     private SubscriberService subscriberService;
     private TaskService taskService;
 
-    public static Management getInstance() {
-        return INSTANCE;
-    }
-
     public Management() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(MANAGEMENT_URL);
@@ -32,6 +28,10 @@ public class Management {
         serverService = target.proxy(ServerService.class);
         subscriberService = target.proxy(SubscriberService.class);
         taskService = target.proxy(TaskService.class);
+    }
+
+    public static Management getInstance() {
+        return INSTANCE;
     }
 
     public DefinitionService getDefinitionService() {

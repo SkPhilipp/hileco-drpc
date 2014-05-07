@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-lib-service</artifactId>
+            <artifactId>machine-lib-service-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
     </dependencies>

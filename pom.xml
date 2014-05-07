@@ -10,14 +10,14 @@
     <version>3.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>machine-lib-service</module>
+        <module>machine-lib-service-api</module>
         <module>machine-management-api</module>
         <module>machine-humanity-api</module>
         <module>machine-backbone-api</module>
+        <module>machine-lib-service</module>
         <module>machine-management</module>
         <module>machine-humanity</module>
         <module>machine-backbone</module>
-        <module>machine-lib-server</module>
     </modules>
 
     <properties>
@@ -59,7 +59,12 @@
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>1.7.7</version>
             </dependency>
-            <!-- resteasy -->
+            <!-- resteasy, embedded jetty -->
+            <dependency>
+                <groupId>org.eclipse.jetty.aggregate</groupId>
+                <artifactId>jetty-all</artifactId>
+                <version>9.2.0.M0</version>
+            </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jackson-provider</artifactId>
@@ -67,8 +72,19 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
+                <artifactId>jaxrs-api</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
                 <artifactId>resteasy-jaxrs</artifactId>
                 <version>3.0.4.Final</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>slf4j-simple</artifactId>
+                        <groupId>org.slf4j</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -93,15 +109,14 @@
                 <version>4.3.5.Final</version>
             </dependency>
             <dependency>
+                <groupId>org.hibernate.javax.persistence</groupId>
+                <artifactId>hibernate-jpa-2.1-api</artifactId>
+                <version>1.0.0.Final</version>
+            </dependency>
+            <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>5.1.30</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.persistence</groupId>
-                <artifactId>persistence-api</artifactId>
-                <version>1.0.2</version>
-                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -116,16 +131,6 @@
                     <configuration>
                         <source>1.7</source>
                         <target>1.7</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-maven-plugin</artifactId>
-                    <version>9.2.0.M0</version>
-                    <configuration>
-                        <scanIntervalSeconds>10</scanIntervalSeconds>
-                        <scanTargets>
-                        </scanTargets>
                     </configuration>
                 </plugin>
             </plugins>

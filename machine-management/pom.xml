@@ -14,12 +14,12 @@
     <dependencies>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-lib-service</artifactId>
+            <artifactId>machine-management-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-management-api</artifactId>
+            <artifactId>machine-lib-service</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>
@@ -64,13 +64,12 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -88,10 +87,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

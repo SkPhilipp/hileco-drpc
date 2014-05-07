@@ -33,7 +33,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     public HarvesterStatus harvest(final String source) {
         HarvesterStatus harvesterStatus = this.status(source);
         if (harvesterStatus == HarvesterStatus.NONE) {
-            this.generatorStatusMap.put(source, HarvesterStatus.HARVESTING);
+            generatorStatusMap.put(source, HarvesterStatus.HARVESTING);
             // create the new generator
             final TrainableGenerator gramSentenceGenerator = new NGramSentenceGenerator(4);
             trainableGeneratorMap.put(source, gramSentenceGenerator);
@@ -47,10 +47,10 @@ public class GeneratorServiceImpl implements GeneratorService {
                         boardHarvester.harvestBoard(gramSentenceGenerator, source);
                         boardHarvester.shutdown();
                         boardHarvester.awaitTermination(100, TimeUnit.DAYS);
-                        GeneratorServiceImpl.this.generatorStatusMap.put(source, HarvesterStatus.HARVESTED);
+                        GeneratorServiceImpl.generatorStatusMap.put(source, HarvesterStatus.HARVESTED);
                     } catch (InterruptedException e) {
                         LOG.warn("Erred while awaiting termination of board harvester.", e);
-                        GeneratorServiceImpl.this.generatorStatusMap.put(source, HarvesterStatus.ERRED);
+                        GeneratorServiceImpl.generatorStatusMap.put(source, HarvesterStatus.ERRED);
                     }
                 }
             }).start();
@@ -62,7 +62,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     public List<String> generate(String source, Integer amount) {
         if (this.status(source) == HarvesterStatus.HARVESTED) {
             List<String> stringList = new ArrayList<>();
-            TrainableGenerator trainableGenerator = this.trainableGeneratorMap.get(source);
+            TrainableGenerator trainableGenerator = trainableGeneratorMap.get(source);
             for (int i = 0; i < Math.min(amount, 100); i++) {
                 String generated = trainableGenerator.generate();
                 stringList.add(generated);
