@@ -1,6 +1,6 @@
 package machine.management.api.services;
 
-import machine.management.api.domain.NetworkMessage;
+import machine.management.api.entities.NetworkMessage;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;

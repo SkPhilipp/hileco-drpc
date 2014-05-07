@@ -1,10 +1,10 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.management.api.domain.NetworkMessage;
+import machine.management.api.entities.NetworkMessage;
 import machine.management.services.messaging.NetworkMessageRouter;
 import machine.lib.service.dao.GenericModelDAO;
-import machine.management.api.domain.Subscriber;
+import machine.management.api.entities.Subscriber;
 import machine.management.api.services.MessageService;
 
 import java.util.HashSet;

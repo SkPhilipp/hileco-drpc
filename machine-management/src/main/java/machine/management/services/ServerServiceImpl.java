@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import machine.lib.service.dao.GenericModelDAO;
 import machine.lib.service.services.AbstractQueryableModelService;
 import machine.management.api.services.ServerService;
-import machine.management.api.domain.Server;
+import machine.management.api.entities.Server;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;

@@ -1,7 +1,6 @@
-package machine.backbone.process;
+package machine.backbone;
 
-import machine.backbone.processes.Management;
-import machine.management.api.domain.NetworkMessage;
+import machine.management.api.entities.NetworkMessage;
 import machine.management.api.services.MessageService;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,7 +13,8 @@ public class ManagementTest {
      */
     @Test
     public void testPublishMessages() throws Exception {
-        MessageService messageService = Management.getInstance().getMessageService();
+        Management management = Management.getInstance();
+        MessageService messageService = management.getMessageService();
         for (int i = 0; i < 10; i++) {
             NetworkMessage<String> stringNetworkMessage = new NetworkMessage<>("hello", "hello world");
             messageService.publish(stringNetworkMessage);

@@ -1,7 +1,7 @@
 package machine.management.services.messaging;
 
 import com.google.common.base.Charsets;
-import machine.management.api.domain.NetworkMessage;
+import machine.management.api.entities.NetworkMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;

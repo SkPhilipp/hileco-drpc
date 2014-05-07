@@ -1,6 +1,6 @@
 package machine.management.services;
 
-import machine.management.api.domain.Server;
+import machine.management.api.entities.Server;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

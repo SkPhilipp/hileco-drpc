@@ -1,4 +1,4 @@
-package machine.management.api.domain;
+package machine.management.api.entities;
 
 import machine.lib.service.dao.Model;
 
@@ -7,15 +7,15 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "task")
-public class Task extends Model {
+@Table(name = "definition")
+public class Definition extends Model {
 
     @Column(name = "bottable")
     private String bottable;
     @Column(name = "type")
     private String type;
-    @Column(name = "status")
-    private TaskStatus status;
+    @Column(name = "format")
+    private String format;
 
     public String getBottable() {
         return bottable;
@@ -33,12 +33,12 @@ public class Task extends Model {
         this.type = type;
     }
 
-    public TaskStatus getStatus() {
-        return status;
+    public String getFormat() {
+        return format;
     }
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+    public void setFormat(String format) {
+        this.format = format;
     }
 
 }

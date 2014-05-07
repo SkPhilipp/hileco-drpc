@@ -1,11 +1,9 @@
-package machine.backbone.processes;
+package machine.backbone;
 
 import machine.management.api.services.*;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Holds all Java proxy clients to a `machine-management` instance.
@@ -13,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class Management {
 
     public static final String MANAGEMENT_URL = System.getProperty("MANAGEMENT_URL", "http://localhost:8080/services/");
-    private static final Logger LOG = LoggerFactory.getLogger(Management.class);
+
     private static final Management INSTANCE = new Management();
 
     private DefinitionService definitionService;
@@ -25,6 +23,7 @@ public class Management {
     public static Management getInstance() {
         return INSTANCE;
     }
+
     public Management() {
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(MANAGEMENT_URL);

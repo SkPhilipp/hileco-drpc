@@ -13,9 +13,11 @@
         <module>machine-lib-service</module>
         <module>machine-management-api</module>
         <module>machine-humanity-api</module>
+        <module>machine-backbone-api</module>
         <module>machine-management</module>
         <module>machine-humanity</module>
         <module>machine-backbone</module>
+        <module>machine-lib-server</module>
     </modules>
 
     <properties>

@@ -1,7 +1,7 @@
 package machine.management.api.services;
 
 import machine.lib.service.services.QueryableModelService;
-import machine.management.api.domain.Server;
+import machine.management.api.entities.Server;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;

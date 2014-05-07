@@ -1,4 +1,4 @@
-package machine.management.api.domain;
+package machine.management.api.entities;
 
 import java.io.Serializable;
 

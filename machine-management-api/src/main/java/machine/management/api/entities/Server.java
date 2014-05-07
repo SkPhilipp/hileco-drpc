@@ -1,4 +1,4 @@
-package machine.management.api.domain;
+package machine.management.api.entities;
 
 import machine.lib.service.dao.Model;
 
