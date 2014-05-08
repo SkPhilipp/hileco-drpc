@@ -2,6 +2,7 @@ package machine.backbone;
 
 import com.google.common.primitives.Ints;
 import machine.backbone.local.Installer;
+import machine.backbone.services.RemoteCommandServiceImpl;
 import machine.lib.service.EmbeddedServer;
 
 import java.util.HashSet;
@@ -18,7 +19,7 @@ public class Main {
         // run the server
         EmbeddedServer embeddedServer = new EmbeddedServer(SERVER_PORT);
         Set<Object> services = new HashSet<>();
-        // TODO: create RemoteCommandService implementation
+        services.add(new RemoteCommandServiceImpl());
         embeddedServer.start(services);
     }
 
