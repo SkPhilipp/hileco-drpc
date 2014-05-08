@@ -23,7 +23,6 @@ public class Management {
      *
      * @param managementUrl full url to managenent, i.e. "http://localhost:80/"
      */
-    @SuppressWarnings("deprecation")
     public Management(String managementUrl) {
         List<?> providers = Collections.singletonList(new JacksonJsonProvider());
         definitionService = JAXRSClientFactory.create(managementUrl, DefinitionService.class, providers);
