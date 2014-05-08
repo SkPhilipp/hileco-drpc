@@ -43,7 +43,7 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
      * @return the {@link UUID} assigned to the new entity
      */
     @Override
-    public UUID save(Server instance) {
+    public Server save(Server instance) {
         Preconditions.checkArgument(instance.getIpAddress() == null, "Clients are not permitted to provide the IP-address themselves.");
         if (instance.getPort() == null) {
             instance.setPort(DEFAULT_PORT);

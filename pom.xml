@@ -122,6 +122,12 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>5.1.30</version>
             </dependency>
+            <!-- service clients -->
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-client</artifactId>
+                <version>3.0.0-milestone1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

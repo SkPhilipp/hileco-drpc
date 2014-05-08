@@ -20,7 +20,8 @@ import java.nio.file.Paths;
 public class Configuration {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final String PROPERTY_SERVER = "local-server.json";
+    private static final String PROPERTY_SERVER = "local.json";
+    private static final String PROPERTY_MANAGEMENT_URL = "management-url.json";
 
     private final String basePath;
 
@@ -61,6 +62,14 @@ public class Configuration {
 
     public void setServer(Server localMachine) throws IOException {
         writeToFile(PROPERTY_SERVER, localMachine);
+    }
+
+    public String getManagementURL() throws IOException {
+        return readFromFile(PROPERTY_MANAGEMENT_URL, String.class);
+    }
+
+    public void setManagementURL(String managementURL) throws IOException {
+        writeToFile(PROPERTY_MANAGEMENT_URL, managementURL);
     }
 
 }

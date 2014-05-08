@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Main {
 
-    public static final Integer SERVER_PORT = Ints.tryParse(System.getProperty("SERVER_PORT", "80"));
+    public static final Integer SERVER_PORT = Ints.tryParse(System.getProperty("SERVER_PORT", "81"));
 
     public static void main(String[] args) throws Exception {
         // run the server
