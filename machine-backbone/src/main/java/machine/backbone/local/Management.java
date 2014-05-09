@@ -12,6 +12,8 @@ import java.util.List;
  */
 public class Management {
 
+    private static final List<?> providers = Collections.singletonList(new JacksonJsonProvider());
+
     private DefinitionService definitionService;
     private MessageService messageService;
     private ServerService serverService;
@@ -21,15 +23,23 @@ public class Management {
     /**
      * Instantiates a Management object, creates all service proxies.
      *
-     * @param managementUrl full url to managenent, i.e. "http://localhost:80/"
+     * @param managementURL full url to managenent, i.e. "http://localhost:80/"
      */
-    public Management(String managementUrl) {
-        List<?> providers = Collections.singletonList(new JacksonJsonProvider());
-        definitionService = JAXRSClientFactory.create(managementUrl, DefinitionService.class, providers);
-        messageService = JAXRSClientFactory.create(managementUrl, MessageService.class, providers);
-        serverService = JAXRSClientFactory.create(managementUrl, ServerService.class, providers);
-        subscriberService = JAXRSClientFactory.create(managementUrl, SubscriberService.class, providers);
-        taskService = JAXRSClientFactory.create(managementUrl, TaskService.class, providers);
+    public Management(String managementURL) {
+        this.setURL(managementURL);
+    }
+
+    /**
+     * Initializes all client proxies, point them to the given management URL.
+     *
+     * @param managementURL where all the services are.
+     */
+    public void setURL(String managementURL){
+        definitionService = JAXRSClientFactory.create(managementURL, DefinitionService.class, providers);
+        messageService = JAXRSClientFactory.create(managementURL, MessageService.class, providers);
+        serverService = JAXRSClientFactory.create(managementURL, ServerService.class, providers);
+        subscriberService = JAXRSClientFactory.create(managementURL, SubscriberService.class, providers);
+        taskService = JAXRSClientFactory.create(managementURL, TaskService.class, providers);
     }
 
     public DefinitionService getDefinitionService() {

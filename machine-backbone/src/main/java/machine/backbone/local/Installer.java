@@ -11,12 +11,11 @@ import java.net.UnknownHostException;
 public class Installer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
-    private static final String CONFIGURATION_DIR = System.getProperty("CONFIGURATION_DIR", "/etc/machine-backbone.conf.d");
 
     private Configuration configuration;
 
-    public Installer() {
-        configuration = new Configuration(CONFIGURATION_DIR);
+    public Installer(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     /**
@@ -27,7 +26,7 @@ public class Installer {
      *
      * @param defaultManagementUrl default url to the management server
      * @param port port the server is listening on
-     * @return management instance
+     * @return management object
      */
     public Management install(String defaultManagementUrl, int port) {
         try {
@@ -35,6 +34,7 @@ public class Installer {
             // if a local management url configuration is not available, default it
             String managementURL = configuration.getManagementURL();
             if(managementURL == null){
+                LOG.info("Management URL is not set, defaulting to {}", defaultManagementUrl);
                 managementURL = defaultManagementUrl;
                 configuration.setManagementURL(managementURL);
             }
@@ -42,7 +42,9 @@ public class Installer {
             // if a local server configuration is not available, register the server
             Server server = configuration.getServer();
             if (server == null) {
+                LOG.info("Server object not set, registering");
                 server = registerServer(management.getServerService(), port);
+                LOG.info("Registered server object with id {}", server.getId());
                 configuration.setServer(server);
             }
             return management;
