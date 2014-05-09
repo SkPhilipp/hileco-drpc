@@ -44,7 +44,7 @@ public class Main {
         embeddedServer.start(services);
 
         // begin processes
-        HeartbeatProcess heartbeatProcess = new HeartbeatProcess(management.getServerService());
+        HeartbeatProcess heartbeatProcess = new HeartbeatProcess(management.getServerService(), configuration.getServer().getId());
         heartbeatProcess.schedule(HEARTBEAT_PERIOD);
 
     }

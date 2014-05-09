@@ -11,16 +11,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Path("/servers")
 public class ServerServiceImpl extends AbstractQueryableModelService<Server> implements ServerService {
 
-    private static final GenericModelDAO<Server> DAO = new GenericModelDAO<>(Server.class);
-
     public static final int DEFAULT_PORT = 80;
-
+    private static final GenericModelDAO<Server> DAO = new GenericModelDAO<>(Server.class);
     @Context
     private HttpServletRequest request;
 
@@ -57,20 +54,15 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
     }
 
     /**
-     * Updates all servers' heartbeat date, for the given incoming IP address, to the local Java time.
+     * Updates a servers' heartbeat date, to the local Java time.
      */
     @Override
-    public void heartbeat() {
-        Server example = new Server();
-        String clientIpAddress = this.getContextualRequestAddress();
-        example.setIpAddress(clientIpAddress);
-        List<Server> servers = DAO.query(example);
-        Preconditions.checkArgument(servers.size() > 0, "\"servers.size() > 0\" is required.");
+    public void heartbeat(UUID serverId) {
+        Server server = DAO.read(serverId);
+        Preconditions.checkNotNull(server, "No entity found for the given Id.");
         Date now = Calendar.getInstance().getTime();
-        for(Server server : servers){
-            server.setHeartbeat(now);
-            DAO.save(server);
-        }
+        server.setHeartbeat(now);
+        DAO.save(server);
     }
 
 }
