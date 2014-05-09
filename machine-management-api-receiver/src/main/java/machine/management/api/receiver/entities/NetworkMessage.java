@@ -1,4 +1,4 @@
-package machine.management.api.entities;
+package machine.management.api.receiver.entities;
 
 import java.io.Serializable;
 

@@ -22,7 +22,6 @@ public class Configuration {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String PROPERTY_SERVER = "local.json";
     private static final String PROPERTY_MANAGEMENT_URL = "management-url.json";
-
     private final String basePath;
 
     public Configuration(String basePath) {
@@ -32,43 +31,57 @@ public class Configuration {
     /**
      * Creates all missing directories in {@link #basePath}.
      *
-     * @throws IOException
+     * @throws IOException if creating the directories erred, or the path is not read & writeable.
      */
     public void initialize() throws IOException {
         Path path = Paths.get(basePath);
         Files.createDirectories(path);
-    }
-
-    private <T extends Serializable> T readFromFile(String filename, Class<T> type) throws IOException {
-        Path path = Paths.get(basePath, filename);
-        if (Files.exists(path)) {
-            InputStream fileStream = Files.newInputStream(path);
-            return OBJECT_MAPPER.readValue(fileStream, type);
-        } else {
-            return null;
+        if(!Files.isWritable(path)){
+            throw new IOException("The configuration directory is not writeable.");
+        }
+        if(!Files.isReadable(path)){
+            throw new IOException("The configuration directory is not readable.");
         }
     }
 
-    private <T extends Serializable> void writeToFile(String filename, T value) throws IOException {
-        Path path = Paths.get(basePath, filename);
-        OutputStream fileStream = Files.newOutputStream(path);
-        OBJECT_MAPPER.writeValue(fileStream, value);
-        fileStream.close();
+    private <T extends Serializable> T readFromFile(String filename, Class<T> type) {
+        try {
+            Path path = Paths.get(basePath, filename);
+            if (Files.exists(path)) {
+                InputStream fileStream = Files.newInputStream(path);
+                return OBJECT_MAPPER.readValue(fileStream, type);
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write to a configuration file; This should have been caught during initialization.");
+        }
     }
 
-    public Server getServer() throws IOException {
+    private <T extends Serializable> void writeToFile(String filename, T value) {
+        try {
+            Path path = Paths.get(basePath, filename);
+            OutputStream fileStream = Files.newOutputStream(path);
+            OBJECT_MAPPER.writeValue(fileStream, value);
+            fileStream.close();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write to a configuration file; This should have been caught during initialization.");
+        }
+    }
+
+    public Server getServer() {
         return readFromFile(PROPERTY_SERVER, Server.class);
     }
 
-    public void setServer(Server localMachine) throws IOException {
+    public void setServer(Server localMachine) {
         writeToFile(PROPERTY_SERVER, localMachine);
     }
 
-    public String getManagementURL() throws IOException {
+    public String getManagementURL() {
         return readFromFile(PROPERTY_MANAGEMENT_URL, String.class);
     }
 
-    public void setManagementURL(String managementURL) throws IOException {
+    public void setManagementURL(String managementURL) {
         writeToFile(PROPERTY_MANAGEMENT_URL, managementURL);
     }
 

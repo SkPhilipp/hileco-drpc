@@ -9,17 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>machine-management-api</artifactId>
+    <artifactId>machine-management-api-receiver</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>machine</groupId>
             <artifactId>machine-lib-service-api</artifactId>
-            <version>${machine.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-management-api-receiver</artifactId>
             <version>${machine.version}</version>
         </dependency>
     </dependencies>

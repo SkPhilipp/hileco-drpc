@@ -1,9 +1,11 @@
 package machine.backbone.processes;
 
+import com.google.common.base.Preconditions;
+import machine.backbone.local.Configuration;
+import machine.management.api.entities.Server;
 import machine.management.api.services.ServerService;
 
 import java.util.TimerTask;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -13,11 +15,11 @@ public class HeartbeatProcess extends TimerTask {
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
     private ServerService serverService;
-    private UUID localId;
+    private Configuration configuration;
 
-    public HeartbeatProcess(ServerService serverService, UUID localId) {
+    public HeartbeatProcess(ServerService serverService, Configuration configuration) {
         this.serverService = serverService;
-        this.localId = localId;
+        this.configuration = configuration;
     }
 
     /**
@@ -31,7 +33,9 @@ public class HeartbeatProcess extends TimerTask {
 
     @Override
     public void run() {
-        this.serverService.heartbeat(localId);
+        Server local = configuration.getServer();
+        Preconditions.checkNotNull(local, "Local server entity is required for heartbeat process.");
+        this.serverService.heartbeat(local.getId());
     }
 
 }
