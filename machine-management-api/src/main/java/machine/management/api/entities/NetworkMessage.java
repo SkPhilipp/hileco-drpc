@@ -18,10 +18,6 @@ public class NetworkMessage<T extends Serializable> {
         this.content = content;
     }
 
-    /**
-     * For use with serialization frameworks only which most likely require a parameterless constructor.
-     */
-    @Deprecated
     public NetworkMessage() {
     }
 

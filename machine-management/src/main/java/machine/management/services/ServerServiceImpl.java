@@ -9,6 +9,9 @@ import machine.management.api.services.ServerService;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Path("/servers")
@@ -51,6 +54,23 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
         String clientIpAddress = this.getContextualRequestAddress();
         instance.setIpAddress(clientIpAddress);
         return super.save(instance);
+    }
+
+    /**
+     * Updates all servers' heartbeat date, for the given incoming IP address, to the local Java time.
+     */
+    @Override
+    public void heartbeat() {
+        Server example = new Server();
+        String clientIpAddress = this.getContextualRequestAddress();
+        example.setIpAddress(clientIpAddress);
+        List<Server> servers = DAO.query(example);
+        Preconditions.checkArgument(servers.size() > 0, "\"servers.size() > 0\" is required.");
+        Date now = Calendar.getInstance().getTime();
+        for(Server server : servers){
+            server.setHeartbeat(now);
+            DAO.save(server);
+        }
     }
 
 }

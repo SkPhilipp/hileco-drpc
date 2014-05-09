@@ -5,6 +5,7 @@ import machine.lib.service.api.entities.Model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 
 @SuppressWarnings("unused")
 @Entity
@@ -17,6 +18,8 @@ public class Server extends Model {
     private String ipAddress;
     @Column(name = "port")
     private Integer port;
+    @Column(name = "heartbeat")
+    private Date heartbeat;
 
     public String getHostname() {
         return hostname;
@@ -40,6 +43,14 @@ public class Server extends Model {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public Date getHeartbeat() {
+        return heartbeat;
+    }
+
+    public void setHeartbeat(Date heartbeat) {
+        this.heartbeat = heartbeat;
     }
 
 }
