@@ -19,6 +19,7 @@
         <module>machine-humanity</module>
         <module>machine-backbone</module>
         <module>machine-management-api-receiver</module>
+        <module>machine-bot-demo</module>
     </modules>
 
     <properties>
