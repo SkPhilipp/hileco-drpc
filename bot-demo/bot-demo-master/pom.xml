@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-management-api-receiver</artifactId>
+            <artifactId>machine-message-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>

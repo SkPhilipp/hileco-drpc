@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-management-api-receiver</artifactId>
+            <artifactId>machine-message-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>
@@ -44,10 +44,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
