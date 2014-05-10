@@ -1,8 +1,7 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.lib.service.dao.GenericModelDAO;
-import machine.lib.service.services.AbstractQueryableModelService;
+import machine.management.dao.GenericModelDAO;
 import machine.management.api.entities.Server;
 import machine.management.api.services.ServerService;
 

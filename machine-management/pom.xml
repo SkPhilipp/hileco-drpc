@@ -19,6 +19,11 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
+            <artifactId>machine-management-api-receiver</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>machine</groupId>
             <artifactId>machine-lib-service</artifactId>
             <version>${machine.version}</version>
         </dependency>

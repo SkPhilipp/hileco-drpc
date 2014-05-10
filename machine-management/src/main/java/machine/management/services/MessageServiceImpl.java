@@ -1,7 +1,7 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.lib.service.dao.GenericModelDAO;
+import machine.management.dao.GenericModelDAO;
 import machine.management.api.entities.Subscriber;
 import machine.management.api.receiver.entities.NetworkMessage;
 import machine.management.api.receiver.services.MessageService;
