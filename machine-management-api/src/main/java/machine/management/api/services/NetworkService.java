@@ -9,10 +9,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/subscribers")
+@Path("/network")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface SubscriberService extends QueryableModelService<Subscriber> {
+public interface NetworkService extends QueryableModelService<Subscriber> {
 
     @POST
     @Path("/publish")

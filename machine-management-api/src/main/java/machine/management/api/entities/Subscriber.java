@@ -11,8 +11,10 @@ public class Subscriber extends Model {
 
     @Column(name = "topic")
     private String topic;
-    @Column(name = "target")
-    private String target;
+    @Column(name = "ipaddress")
+    private String ipAddress;
+    @Column(name = "port")
+    private Integer port;
 
     public String getTopic() {
         return topic;
@@ -22,11 +24,20 @@ public class Subscriber extends Model {
         this.topic = topic;
     }
 
-    public String getTarget() {
-        return target;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
 }

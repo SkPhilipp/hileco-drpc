@@ -16,7 +16,7 @@ public class Main {
         Set<Object> services = new HashSet<>();
         services.add(new DefinitionServiceImpl());
         services.add(new ServerServiceImpl());
-        services.add(new SubscriberServiceImpl());
+        services.add(new NetworkServiceImpl());
         services.add(new TaskServiceImpl());
         embeddedServer.start(services);
     }

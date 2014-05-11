@@ -1,9 +1,9 @@
 package machine.management.services;
 
 import com.google.common.base.Preconditions;
-import machine.management.dao.GenericModelDAO;
-import machine.management.api.services.SubscriberService;
 import machine.management.api.entities.Subscriber;
+import machine.management.api.services.NetworkService;
+import machine.management.dao.GenericModelDAO;
 import machine.message.api.entities.NetworkMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,15 +16,15 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Path;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-@Path("/subscribers")
-public class SubscriberServiceImpl extends AbstractQueryableModelService<Subscriber> implements SubscriberService {
+public class NetworkServiceImpl extends AbstractQueryableModelService<Subscriber> implements NetworkService {
 
     public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
     public static final int DEFAULT_SENDER_POOL_SIZE = 100;
@@ -32,12 +32,18 @@ public class SubscriberServiceImpl extends AbstractQueryableModelService<Subscri
     private static final GenericModelDAO<Subscriber> DAO = new GenericModelDAO<>(Subscriber.class);
     private static final GenericModelDAO<Subscriber> subscriberDAO = new GenericModelDAO<>(Subscriber.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriberServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NetworkServiceImpl.class);
 
     private final HttpClient httpClient;
     private final ScheduledExecutorService executorService;
+    @Context
+    private HttpServletRequest request;
 
-    public SubscriberServiceImpl() {
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    public NetworkServiceImpl() {
         super(DAO);
         this.executorService = Executors.newScheduledThreadPool(DEFAULT_SENDER_POOL_SIZE);
         RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
@@ -62,7 +68,7 @@ public class SubscriberServiceImpl extends AbstractQueryableModelService<Subscri
         example.setTopic(topic);
         Set<String> targets = new HashSet<>();
         for (Subscriber subscriber : subscriberDAO.query(example)) {
-            String target = subscriber.getTarget();
+            String target = String.format("http://%s:%d/", subscriber.getIpAddress(), subscriber.getPort());
             targets.add(target);
         }
         return targets;
@@ -91,6 +97,22 @@ public class SubscriberServiceImpl extends AbstractQueryableModelService<Subscri
                 }
             });
         }
+    }
+
+    /**
+     * Instantiates a server, ensures the IP address is not provided by the client.
+     *
+     * @param instance {@link machine.management.api.entities.Server} instance whose properties to use for instantiating the entity
+     * @return the {@link java.util.UUID} assigned to the new entity
+     */
+    @Override
+    public Subscriber save(Subscriber instance) {
+        Preconditions.checkArgument(instance.getIpAddress() == null, "Clients are not permitted to provide the IP-address themselves.");
+        Preconditions.checkNotNull(instance.getTopic(), "Clients must provide a topic.");
+        Preconditions.checkNotNull(instance.getPort(), "Clients must provide a port.");
+        String clientIpAddress = this.request.getRemoteAddr();
+        instance.setIpAddress(clientIpAddress);
+        return super.save(instance);
     }
 
 }

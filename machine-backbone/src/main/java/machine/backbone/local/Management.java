@@ -2,8 +2,8 @@ package machine.backbone.local;
 
 import machine.backbone.util.proxy.Resolver;
 import machine.backbone.util.proxy.ResolvingProxyFactory;
+import machine.management.api.services.NetworkService;
 import machine.management.api.services.ServerService;
-import machine.management.api.services.SubscriberService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
@@ -21,10 +21,10 @@ public class Management {
     private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
 
     private final ServerService proxyServerService;
-    private final SubscriberService proxySubscriberService;
+    private final NetworkService proxyNetworkService;
 
     private ServerService actualServerService;
-    private SubscriberService actualSubscriberService;
+    private NetworkService actualNetworkService;
 
     /**
      * Instantiates a Management object, creates all service proxies.
@@ -38,10 +38,10 @@ public class Management {
                 return Management.this.actualServerService;
             }
         });
-        this.proxySubscriberService = PROXY_FACTORY.create(SubscriberService.class, new Resolver<SubscriberService>() {
+        this.proxyNetworkService = PROXY_FACTORY.create(NetworkService.class, new Resolver<NetworkService>() {
             @Override
-            public SubscriberService resolve() {
-                return Management.this.actualSubscriberService;
+            public NetworkService resolve() {
+                return Management.this.actualNetworkService;
             }
         });
         this.setURL(managementURL);
@@ -54,15 +54,15 @@ public class Management {
      */
     public void setURL(String managementURL) {
         actualServerService = JAXRSClientFactory.create(managementURL, ServerService.class, PROVIDERS);
-        actualSubscriberService = JAXRSClientFactory.create(managementURL, SubscriberService.class, PROVIDERS);
+        actualNetworkService = JAXRSClientFactory.create(managementURL, NetworkService.class, PROVIDERS);
     }
 
     public ServerService getServerService() {
         return proxyServerService;
     }
 
-    public SubscriberService getSubscriberService() {
-        return proxySubscriberService;
+    public NetworkService getNetworkService() {
+        return proxyNetworkService;
     }
 
 }

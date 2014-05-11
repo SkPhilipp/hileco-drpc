@@ -24,13 +24,6 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
         super(DAO);
     }
 
-    /**
-     * @return the client's IP address as a string
-     */
-    public String getContextualRequestAddress() {
-        return request.getRemoteAddr();
-    }
-
     public void setRequest(HttpServletRequest request) {
         this.request = request;
     }
@@ -47,7 +40,7 @@ public class ServerServiceImpl extends AbstractQueryableModelService<Server> imp
         if (instance.getPort() == null) {
             instance.setPort(DEFAULT_PORT);
         }
-        String clientIpAddress = this.getContextualRequestAddress();
+        String clientIpAddress = this.request.getRemoteAddr();
         instance.setIpAddress(clientIpAddress);
         return super.save(instance);
     }
