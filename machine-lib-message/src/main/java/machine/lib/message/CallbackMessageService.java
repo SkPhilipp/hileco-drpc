@@ -73,13 +73,13 @@ public class CallbackMessageService implements MessageService {
      * @param handler the callback handler
      * @return subscriber object returned by the networkservice
      */
-    public <T extends Serializable> Subscriber beginListen(String topic, CallbackHandler handler){
-        // create NetworkMessage and Subscriber object
-        Subscriber callback = new Subscriber();
-        callback.setPort(this.localPort);
-        callback.setTopic(topic);
+    public Subscriber beginListen(String topic, CallbackHandler handler){
+        // create NetworekMessage and Subscriber object
+        Subscriber subscriber = new Subscriber();
+        subscriber.setPort(this.localPort);
+        subscriber.setTopic(topic);
         // subscribe to the message id, and publish the message
-        Subscriber subscriber = this.networkService.save(callback);
+        subscriber = this.networkService.save(subscriber);
         this.handlerMap.put(topic, handler);
         return subscriber;
     }

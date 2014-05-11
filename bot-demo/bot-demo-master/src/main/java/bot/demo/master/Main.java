@@ -8,13 +8,18 @@ import machine.lib.service.EmbeddedServer;
 import machine.management.api.services.NetworkService;
 import machine.message.api.entities.NetworkMessage;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Main {
+
+    private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
 
     public static final String MANAGEMENT_URL = System.getProperty("MANAGEMENT_URL", "http://localhost:80/");
     public static final Integer SERVER_PORT = Ints.tryParse(System.getProperty("SERVER_PORT", "8080"));
@@ -26,7 +31,7 @@ public class Main {
         LOG.info("- MANAGEMENT_URL: {}", MANAGEMENT_URL);
         LOG.info("- SERVER_PORT: {}", SERVER_PORT);
         // set up services
-        NetworkService networkService = JAXRSClientFactory.create(MANAGEMENT_URL, NetworkService.class);
+        NetworkService networkService = JAXRSClientFactory.create(MANAGEMENT_URL, NetworkService.class, PROVIDERS);
         CallbackMessageService callbackMessageService = new CallbackMessageService(SERVER_PORT, networkService);
         // run the server
         EmbeddedServer embeddedServer = new EmbeddedServer(SERVER_PORT);
