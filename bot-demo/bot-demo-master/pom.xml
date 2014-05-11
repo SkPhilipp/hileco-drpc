@@ -13,6 +13,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>machine</groupId>
             <artifactId>machine-management-api</artifactId>
             <version>${machine.version}</version>
