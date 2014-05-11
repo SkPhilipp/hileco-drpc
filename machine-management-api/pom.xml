@@ -13,6 +13,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>machine</groupId>
+            <artifactId>machine-message-api</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jaxrs-api</artifactId>
         </dependency>
@@ -24,11 +29,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-message-api</artifactId>
-            <version>${machine.version}</version>
         </dependency>
     </dependencies>
 

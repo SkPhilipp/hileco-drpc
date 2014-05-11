@@ -1,6 +1,8 @@
 package machine.lib.service;
 
 import machine.lib.service.exceptions.ExceptionHandler;
+import org.codehaus.jackson.jaxrs.Annotations;
+import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -30,6 +32,7 @@ public class EmbeddedServer {
         Server server = new Server(port);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath(CONTEXT_PATH);
+        Services.add(new JacksonJaxbJsonProvider(Annotations.JACKSON));
         Services.add(new ExceptionHandler());
         for(Object service : services){
             Services.add(service);
