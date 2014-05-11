@@ -25,6 +25,11 @@
             <artifactId>hibernate-core</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>machine</groupId>
+            <artifactId>machine-message-api</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

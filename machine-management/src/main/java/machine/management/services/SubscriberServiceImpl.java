@@ -32,7 +32,7 @@ public class SubscriberServiceImpl extends AbstractQueryableModelService<Subscri
     private static final GenericModelDAO<Subscriber> DAO = new GenericModelDAO<>(Subscriber.class);
     private static final GenericModelDAO<Subscriber> subscriberDAO = new GenericModelDAO<>(Subscriber.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriberServiceImpl.class);
 
     private final HttpClient httpClient;
     private final ScheduledExecutorService executorService;
