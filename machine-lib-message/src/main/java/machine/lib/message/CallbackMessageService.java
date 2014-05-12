@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class CallbackMessageService implements MessageService {
 
-    public Map<String, CallbackHandler> handlerMap;
+    public Map<String, NetworkMessageListener> handlerMap;
     private Integer localPort;
     private NetworkService networkService;
 
@@ -39,7 +39,7 @@ public class CallbackMessageService implements MessageService {
     @Override
     public void handle(NetworkMessage<?> instance) throws NotSubscribedException {
         String topic = instance.getTopic();
-        CallbackHandler handler = this.handlerMap.get(topic);
+        NetworkMessageListener handler = this.handlerMap.get(topic);
         if (handler != null) {
             handler.handle(instance);
         } else {
@@ -57,7 +57,7 @@ public class CallbackMessageService implements MessageService {
      * @param handler the callback handler
      * @return subscriber object returned by the networkservice
      */
-    public <T extends Serializable, K extends Serializable> Subscriber beginCallback(String topic, T content, CallbackHandler<K> handler) {
+    public <T extends Serializable, K extends Serializable> Subscriber beginCallback(String topic, T content, NetworkMessageListener<K> handler) {
         // create NetworkMessage and Subscriber object
         NetworkMessage<T> networkMessage = new NetworkMessage<>(topic, content);
         Subscriber subscriber = this.beginListen(networkMessage.getMessageId().toString(), handler);
@@ -73,7 +73,7 @@ public class CallbackMessageService implements MessageService {
      * @param handler the callback handler
      * @return subscriber object returned by the networkservice
      */
-    public Subscriber beginListen(String topic, CallbackHandler handler) {
+    public Subscriber beginListen(String topic, NetworkMessageListener handler) {
         // create NetworekMessage and Subscriber object
         Subscriber subscriber = new Subscriber();
         subscriber.setPort(this.localPort);

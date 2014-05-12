@@ -6,13 +6,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.Serializable;
 
-public abstract class CallbackHandler<K extends Serializable> {
+public abstract class NetworkMessageListener<K extends Serializable> {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final Class<? super K> messageType;
 
-    public CallbackHandler(){
+    public NetworkMessageListener(){
         TypeToken<K> typeToken = new TypeToken<K>(this.getClass()) {};
         this.messageType = typeToken.getRawType();
     }

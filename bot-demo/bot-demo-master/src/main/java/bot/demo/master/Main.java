@@ -3,7 +3,7 @@ package bot.demo.master;
 import bot.demo.messages.ScanReply;
 import bot.demo.messages.Topics;
 import com.google.common.primitives.Ints;
-import machine.lib.message.CallbackHandler;
+import machine.lib.message.NetworkMessageListener;
 import machine.lib.message.CallbackMessageService;
 import machine.lib.service.EmbeddedServer;
 import machine.management.api.services.NetworkService;
@@ -41,7 +41,7 @@ public class Main {
         services.add(callbackMessageService);
         embeddedServer.start(services);
         // do a sample callback
-        callbackMessageService.beginCallback(Topics.SCAN, "", new CallbackHandler<ScanReply>() {
+        callbackMessageService.beginCallback(Topics.SCAN, "", new NetworkMessageListener<ScanReply>() {
             @Override
             public void handle(NetworkMessage<?> message) {
                 LOG.info("Received a message with topic {} and id {}", message.getTopic(), message.getMessageId());
