@@ -1,9 +1,27 @@
 package machine.lib.message;
 
+import com.google.common.reflect.TypeToken;
 import machine.message.api.entities.NetworkMessage;
+import org.codehaus.jackson.map.ObjectMapper;
 
-public interface CallbackHandler {
+import java.io.Serializable;
 
-    public void handle(NetworkMessage<?> message);
+public abstract class CallbackHandler<K extends Serializable> {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private final Class<? super K> messageType;
+
+    public CallbackHandler(){
+        TypeToken<K> typeToken = new TypeToken<K>(this.getClass()) {};
+        this.messageType = typeToken.getRawType();
+    }
+
+    public abstract void handle(NetworkMessage<?> message);
+
+    @SuppressWarnings("unchecked")
+    public K open(NetworkMessage<?> message){
+        return OBJECT_MAPPER.convertValue(message.getContent(), (Class<K>) this.messageType);
+    }
 
 }

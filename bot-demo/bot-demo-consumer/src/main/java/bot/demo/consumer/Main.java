@@ -14,6 +14,7 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
 public class Main {
@@ -41,7 +42,7 @@ public class Main {
         services.add(callbackMessageService);
         embeddedServer.start(services);
         // do a sample callback
-        callbackMessageService.beginListen(Topics.SCAN, new CallbackHandler() {
+        callbackMessageService.beginListen(Topics.SCAN, new CallbackHandler<Serializable>() {
             @Override
             public void handle(NetworkMessage<?> message) {
                 LOG.info("Received a message with topic {} and id {}", message.getTopic(), message.getMessageId());

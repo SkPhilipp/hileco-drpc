@@ -68,7 +68,7 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscriber
         example.setTopic(topic);
         Set<String> targets = new HashSet<>();
         for (Subscriber subscriber : subscriberDAO.query(example)) {
-            String target = String.format("http://%s:%d/", subscriber.getIpAddress(), subscriber.getPort());
+            String target = String.format("http://%s:%d/message/", subscriber.getIpAddress(), subscriber.getPort());
             targets.add(target);
         }
         return targets;

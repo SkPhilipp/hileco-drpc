@@ -20,7 +20,7 @@ public class CallbackMessageService implements MessageService {
     private NetworkService networkService;
 
     /**
-     * @param localPort port over which this service is made available
+     * @param localPort      port over which this service is made available
      * @param networkService networkservice on which to subscribe and publish messages over
      */
     public CallbackMessageService(Integer localPort, NetworkService networkService) {
@@ -35,6 +35,7 @@ public class CallbackMessageService implements MessageService {
      * @param instance message to handle
      * @throws NotSubscribedException when there is no registered callback handler
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void handle(NetworkMessage<?> instance) throws NotSubscribedException {
         String topic = instance.getTopic();
@@ -51,13 +52,12 @@ public class CallbackMessageService implements MessageService {
      * generated message id; Any incoming messages with topic being that message id will be delegated to the handler
      * until the handler is unregistered.
      *
-     *
-     * @param topic the message topic
+     * @param topic   the message topic
      * @param content the message content
      * @param handler the callback handler
      * @return subscriber object returned by the networkservice
      */
-    public <T extends Serializable> Subscriber beginCallback(String topic, T content, CallbackHandler handler){
+    public <T extends Serializable, K extends Serializable> Subscriber beginCallback(String topic, T content, CallbackHandler<K> handler) {
         // create NetworkMessage and Subscriber object
         NetworkMessage<T> networkMessage = new NetworkMessage<>(topic, content);
         Subscriber subscriber = this.beginListen(networkMessage.getMessageId().toString(), handler);
@@ -69,11 +69,11 @@ public class CallbackMessageService implements MessageService {
      * Registers a callback. Any incoming messages with topic being that message id will be delegated to the handler
      * until the handler is unregistered.
      *
-     * @param topic the message topic
+     * @param topic   the message topic
      * @param handler the callback handler
      * @return subscriber object returned by the networkservice
      */
-    public Subscriber beginListen(String topic, CallbackHandler handler){
+    public Subscriber beginListen(String topic, CallbackHandler handler) {
         // create NetworekMessage and Subscriber object
         Subscriber subscriber = new Subscriber();
         subscriber.setPort(this.localPort);
@@ -89,7 +89,7 @@ public class CallbackMessageService implements MessageService {
      *
      * @param subscriber the subscription to remove.
      */
-    public void stopSubscription(Subscriber subscriber){
+    public void stopSubscription(Subscriber subscriber) {
         this.handlerMap.remove(subscriber.getTopic());
         this.networkService.delete(subscriber.getId());
     }
