@@ -107,13 +107,11 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscriber
      */
     @Override
     public Subscriber save(Subscriber instance) {
-        LOG.info("A subscriber {}!", instance.getTopic());
         Preconditions.checkArgument(instance.getIpAddress() == null, "Clients are not permitted to provide the IP-address themselves.");
         Preconditions.checkNotNull(instance.getTopic(), "Clients must provide a topic.");
         Preconditions.checkNotNull(instance.getPort(), "Clients must provide a port.");
         String clientIpAddress = this.request.getRemoteAddr();
         instance.setIpAddress(clientIpAddress);
-        LOG.info("A subscriber being saved! {} {}", instance.getTopic(), instance.getIpAddress());
         return super.save(instance);
     }
 

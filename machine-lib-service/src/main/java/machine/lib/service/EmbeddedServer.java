@@ -23,7 +23,7 @@ public class EmbeddedServer {
     }
 
     /**
-     * Starts the server on port {@link #port}, and joins its thread.
+     * Starts the server on port {@link #port}.
      *
      * @param services set of jax rs services, `machine-lib-service` providers are already included in this.
      * @throws Exception
@@ -42,7 +42,6 @@ public class EmbeddedServer {
         context.addServlet(servletHolder, PATH_SPEC);
         server.setHandler(context);
         server.start();
-        server.join();
     }
 
 }
