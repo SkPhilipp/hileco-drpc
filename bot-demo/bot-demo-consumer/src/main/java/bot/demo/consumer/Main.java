@@ -3,8 +3,8 @@ package bot.demo.consumer;
 import bot.demo.messages.ScanReply;
 import bot.demo.messages.Topics;
 import com.google.common.primitives.Ints;
+import machine.lib.message.HandlingMessageService;
 import machine.lib.message.NetworkMessageListener;
-import machine.lib.message.CallbackMessageService;
 import machine.lib.service.EmbeddedServer;
 import machine.management.api.services.NetworkService;
 import machine.management.api.services.RemoteManagementService;
@@ -35,14 +35,14 @@ public class Main {
         String managementURL = remoteManagementService.getManagementURL();
         final UUID serverId = remoteManagementService.getServerId();
         final NetworkService networkService = JAXRSClientFactory.create(managementURL, NetworkService.class, PROVIDERS);
-        CallbackMessageService callbackMessageService = new CallbackMessageService(SERVER_PORT, networkService);
+        HandlingMessageService handlingMessageService = new HandlingMessageService(SERVER_PORT, networkService);
         // run the server
         EmbeddedServer embeddedServer = new EmbeddedServer(SERVER_PORT);
         Set<Object> services = new HashSet<>();
-        services.add(callbackMessageService);
+        services.add(handlingMessageService);
         embeddedServer.start(services);
         // do a sample callback
-        callbackMessageService.beginListen(Topics.SCAN, new NetworkMessageListener<Serializable>() {
+        handlingMessageService.beginListen(Topics.SCAN, new NetworkMessageListener<Serializable>() {
             @Override
             public void handle(NetworkMessage<?> message) {
                 LOG.info("Received a message with topic {} and id {}", message.getTopic(), message.getMessageId());

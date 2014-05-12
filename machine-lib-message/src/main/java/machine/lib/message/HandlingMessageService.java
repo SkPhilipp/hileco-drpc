@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * An implementation of MessageService that delegates message handlers to registered callbacks for handlerMap.
  */
-public class CallbackMessageService implements MessageService {
+public class HandlingMessageService implements MessageService {
 
     public Map<String, NetworkMessageListener> handlerMap;
     private Integer localPort;
@@ -23,7 +23,7 @@ public class CallbackMessageService implements MessageService {
      * @param localPort      port over which this service is made available
      * @param networkService networkservice on which to subscribe and publish messages over
      */
-    public CallbackMessageService(Integer localPort, NetworkService networkService) {
+    public HandlingMessageService(Integer localPort, NetworkService networkService) {
         this.localPort = localPort;
         this.networkService = networkService;
         this.handlerMap = new HashMap<>();
