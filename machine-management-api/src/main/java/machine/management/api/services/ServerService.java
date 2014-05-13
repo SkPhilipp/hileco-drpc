@@ -14,7 +14,7 @@ import java.util.UUID;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ServerService extends QueryableModelService<Server> {
 
-    @GET
+    @POST
     @Path("/heartbeat")
     public void heartbeat(UUID serverId);
 

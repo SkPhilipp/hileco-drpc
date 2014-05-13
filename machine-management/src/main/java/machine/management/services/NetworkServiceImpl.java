@@ -81,7 +81,6 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscriber
      */
     @Override
     public void publish(final NetworkMessage<?> networkMessage) {
-        Preconditions.checkArgument(networkMessage.getContent() != null, "Content must not be empty");
         Preconditions.checkArgument(networkMessage.getTopic() != null, "Topic must not be empty");
         Set<String> targets = this.getTargets(networkMessage.getTopic());
         for (final String target : targets) {
