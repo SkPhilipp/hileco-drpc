@@ -45,12 +45,10 @@ public class Main {
         handlingMessageService.beginListen(Topics.SCAN, new NetworkMessageListener<Serializable>() {
             @Override
             public void handle(NetworkMessage<?> message) {
-                LOG.info("Received a message with topic {} and id {}", message.getTopic(), message.getMessageId());
                 ScanReply scanReply = new ScanReply();
                 scanReply.setServerId(serverId);
-                NetworkMessage<?> reply = new NetworkMessage<>(message.getMessageId().toString(), scanReply);
+                NetworkMessage<?> reply = new NetworkMessage<>(Topics.SCAN_REPLY, scanReply);
                 networkService.publish(reply);
-                LOG.info("Published a reply.");
             }
         });
     }

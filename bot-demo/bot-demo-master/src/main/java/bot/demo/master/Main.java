@@ -2,23 +2,21 @@ package bot.demo.master;
 
 import bot.demo.messages.ScanReply;
 import bot.demo.messages.Topics;
+import com.google.common.cache.Cache;
 import com.google.common.primitives.Ints;
 import machine.lib.message.HandlingMessageService;
-import machine.lib.message.NetworkMessageListener;
+import machine.lib.message.indexing.Indexer;
+import machine.lib.message.indexing.RequestlessAbstractIndexer;
 import machine.lib.service.EmbeddedServer;
 import machine.management.api.services.NetworkService;
 import machine.message.api.entities.NetworkMessage;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -41,19 +39,21 @@ public class Main {
         services.add(handlingMessageService);
         embeddedServer.start(services);
         // do a sample callback
-        handlingMessageService.beginCallback(Topics.SCAN, "", new NetworkMessageListener<ScanReply>() {
+
+        Indexer<UUID, Long> indexer = new RequestlessAbstractIndexer<ScanReply, UUID, Long>(Topics.SCAN_REPLY, Topics.SCAN, 2, TimeUnit.MINUTES) {
             @Override
             public void handle(NetworkMessage<?> message) {
-                LOG.info("Received a message with topic {} and id {}", message.getTopic(), message.getMessageId());
-                ObjectMapper objectMapper = new ObjectMapper();
-                try {
-                    LOG.info("{}", objectMapper.writeValueAsString(message));
-                    LOG.info("{}", this.open(message).getServerId());
-                } catch (IOException e) {
-                    LOG.error("Shit", e);
-                }
+                Cache<UUID, Long> index = this.getIndex();
+                ScanReply scanReply = this.open(message);
+                UUID serverId = scanReply.getServerId();
+                long value = System.currentTimeMillis();
+                index.put(serverId, value);
+                LOG.info("bot-demo-consumer {} last seen {}", serverId, value);
             }
-        });
+        };
+
+        indexer.indexPassivelyAndScheduled(handlingMessageService, 5, TimeUnit.SECONDS);
+
     }
 
 }
