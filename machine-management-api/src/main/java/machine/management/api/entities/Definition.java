@@ -6,14 +6,19 @@ import javax.persistence.Table;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "definition")
+@Table(name = Definition.DEFINITION)
 public class Definition extends Model {
 
-    @Column(name = "bottable")
+    public static final String DEFINITION = "definition";
+    public static final String BOTTABLE = "bottable";
+    public static final String TYPE = "type";
+    public static final String FORMAT = "format";
+
+    @Column(name = BOTTABLE)
     private String bottable;
-    @Column(name = "type")
+    @Column(name = TYPE)
     private String type;
-    @Column(name = "format")
+    @Column(name = FORMAT)
     private String format;
 
     public String getBottable() {

@@ -15,6 +15,6 @@
         <mapping class="machine.management.api.entities.Definition"/>
         <mapping class="machine.management.api.entities.Server"/>
         <mapping class="machine.management.api.entities.Task"/>
-        <mapping class="machine.management.api.entities.Subscriber"/>
+        <mapping class="machine.management.api.entities.Subscription"/>
     </session-factory>
 </hibernate-configuration>

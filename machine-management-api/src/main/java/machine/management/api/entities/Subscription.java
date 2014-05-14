@@ -3,18 +3,27 @@ package machine.management.api.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "subscriber")
-public class Subscriber extends Model {
+@Table(name = Subscription.SUBSCRIPTION)
+public class Subscription extends Model {
 
-    @Column(name = "topic")
+    public static final String EXPIRES = "expires";
+    public static final String PORT = "port";
+    public static final String IPADDRESS = "ipaddress";
+    public static final String TOPIC = "topic";
+    public static final String SUBSCRIPTION = "subscription";
+
+    @Column(name = TOPIC)
     private String topic;
-    @Column(name = "ipaddress")
+    @Column(name = IPADDRESS)
     private String ipAddress;
-    @Column(name = "port")
+    @Column(name = PORT)
     private Integer port;
+    @Column(name = EXPIRES)
+    private Date expires;
 
     public String getTopic() {
         return topic;
@@ -38,6 +47,14 @@ public class Subscriber extends Model {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public Date getExpires() {
+        return expires;
+    }
+
+    public void setExpires(Date expires) {
+        this.expires = expires;
     }
 
 }

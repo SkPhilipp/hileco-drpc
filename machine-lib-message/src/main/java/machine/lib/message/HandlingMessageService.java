@@ -1,6 +1,6 @@
 package machine.lib.message;
 
-import machine.management.api.entities.Subscriber;
+import machine.management.api.entities.Subscription;
 import machine.management.api.services.NetworkService;
 import machine.message.api.entities.NetworkMessage;
 import machine.message.api.exceptions.NotSubscribedException;
@@ -62,14 +62,14 @@ public class HandlingMessageService implements MessageService {
      * @param topic   the message topic
      * @param content the message content
      * @param handler the callback handler
-     * @return subscriber object returned by the networkservice
+     * @return subscription object returned by the networkservice
      */
-    public <T extends Serializable> Subscriber beginCallback(String topic, T content, NetworkMessageListener<?> handler) {
-        // create NetworkMessage and Subscriber object
+    public <T extends Serializable> Subscription beginCallback(String topic, T content, NetworkMessageListener<?> handler) {
+        // create NetworkMessage and Subscription object
         NetworkMessage<T> networkMessage = new NetworkMessage<>(topic, content);
-        Subscriber subscriber = this.beginListen(networkMessage.getMessageId().toString(), handler);
+        Subscription subscription = this.beginListen(networkMessage.getMessageId().toString(), handler);
         this.networkService.publish(networkMessage);
-        return subscriber;
+        return subscription;
     }
 
     /**
@@ -79,9 +79,9 @@ public class HandlingMessageService implements MessageService {
      *
      * @param topic   the message topic
      * @param handler the callback handler
-     * @return subscriber object returned by the networkservice
+     * @return subscription object returned by the networkservice
      */
-    public <K extends Serializable> Subscriber beginCallback(String topic, NetworkMessageListener<K> handler) {
+    public <K extends Serializable> Subscription beginCallback(String topic, NetworkMessageListener<K> handler) {
         return this.beginCallback(topic, null, handler);
     }
 
@@ -91,27 +91,27 @@ public class HandlingMessageService implements MessageService {
      *
      * @param topic   the message topic
      * @param handler the callback handler
-     * @return subscriber object returned by the networkservice
+     * @return subscription object returned by the networkservice
      */
-    public Subscriber beginListen(String topic, NetworkMessageListener handler) {
-        // create NetworekMessage and Subscriber object
-        Subscriber subscriber = new Subscriber();
-        subscriber.setPort(this.localPort);
-        subscriber.setTopic(topic);
+    public Subscription beginListen(String topic, NetworkMessageListener handler) {
+        // create NetworekMessage and Subscription object
+        Subscription subscription = new Subscription();
+        subscription.setPort(this.localPort);
+        subscription.setTopic(topic);
         // subscribe to the message id, and publish the message
-        subscriber = this.networkService.save(subscriber);
+        subscription = this.networkService.save(subscription);
         this.handlerMap.put(topic, handler);
-        return subscriber;
+        return subscription;
     }
 
     /**
      * Removes a callbackhandler from the internal {@link #handlerMap} and deletes the subcription.
      *
-     * @param subscriber the subscription to remove.
+     * @param subscription the subscription to remove.
      */
-    public void stopSubscription(Subscriber subscriber) {
-        this.handlerMap.remove(subscriber.getTopic());
-        this.networkService.delete(subscriber.getId());
+    public void stopSubscription(Subscription subscription) {
+        this.handlerMap.remove(subscription.getTopic());
+        this.networkService.delete(subscription.getId());
     }
 
     /**

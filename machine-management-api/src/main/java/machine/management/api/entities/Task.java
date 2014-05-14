@@ -6,14 +6,19 @@ import javax.persistence.Table;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "task")
+@Table(name = Task.TASK)
 public class Task extends Model {
 
-    @Column(name = "bottable")
+    public static final String BOTTABLE = "bottable";
+    public static final String TASK = "task";
+    public static final String TYPE = "type";
+    public static final String STATUS = "status";
+
+    @Column(name = BOTTABLE)
     private String bottable;
-    @Column(name = "type")
+    @Column(name = TYPE)
     private String type;
-    @Column(name = "status")
+    @Column(name = STATUS)
     private TaskStatus status;
 
     public String getBottable() {
