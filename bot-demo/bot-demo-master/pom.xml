@@ -81,7 +81,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>bot.demo.master.Main</mainClass>
+                            <mainClass>bot.demo.master.BotDemoMasterServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -18,7 +18,7 @@ public class SubscriptionPool {
     private final Map<String, Timer> resubscribeTimers;
     private final Map<String, Timer> unsubscribeTimers;
 
-    public SubscriptionPool(NetworkService networkService, int port){
+    public SubscriptionPool(int port, NetworkService networkService){
         this.networkService = networkService;
         this.port = port;
         this.subscriptionIds = new HashMap<>();
@@ -107,6 +107,14 @@ public class SubscriptionPool {
      */
     public boolean isSubscribed(String topic) {
         return this.subscriptionIds.containsKey(topic);
+    }
+
+    public NetworkService getNetworkService() {
+        return networkService;
+    }
+
+    public int getPort() {
+        return port;
     }
 
 }

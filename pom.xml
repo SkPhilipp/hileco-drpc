@@ -20,6 +20,7 @@
         <module>machine-backbone</module>
         <module>bot-demo</module>
         <module>machine-lib-message</module>
+        <module>machine-integration-tests</module>
     </modules>
 
     <properties>

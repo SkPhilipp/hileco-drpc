@@ -6,6 +6,7 @@ import com.google.common.primitives.Ints;
 import machine.lib.message.HandlingMessageService;
 import machine.lib.message.NetworkMessageListener;
 import machine.lib.service.EmbeddedServer;
+import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.api.services.NetworkService;
 import machine.management.api.services.RemoteManagementService;
 import machine.message.api.entities.NetworkMessage;
@@ -17,31 +18,46 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.*;
 
-public class Main {
+public class BotDemoConsumerServer {
 
     private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
+    private static final Logger LOG = LoggerFactory.getLogger(BotDemoConsumerServer.class);
+    private final BotDemoConsumerConfiguration configuration;
 
-    public static final String BACKBONE_URL = System.getProperty("BACKBONE_URL", "http://localhost:82/");
-    public static final Integer SERVER_PORT = Ints.tryParse(System.getProperty("SERVER_PORT", "8081"));
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    public BotDemoConsumerServer(BotDemoConsumerConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
-    public static void main(String[] args) throws Exception {
-        // log environment
-        LOG.info("Starting with:");
-        LOG.info("- BACKBONE_URL: {}", BACKBONE_URL);
-        LOG.info("- SERVER_PORT: {}", SERVER_PORT);
-        // set up services
-        RemoteManagementService remoteManagementService = JAXRSClientFactory.create(BACKBONE_URL, RemoteManagementService.class, PROVIDERS);
+    public static void main(String[] args) throws EmbeddedServerStartException {
+
+        String backboneUrl = System.getProperty("BACKBONE_URL", "http://localhost:82/");
+        Integer serverPort = Ints.tryParse(System.getProperty("SERVER_PORT", "8081"));
+
+        LOG.info("BACKBONE_URL: {}", backboneUrl);
+        LOG.info("SERVER_PORT: {}", serverPort);
+
+        BotDemoConsumerConfiguration configuration = new BotDemoConsumerConfiguration();
+        configuration.setBackboneUrl(backboneUrl);
+        configuration.setServerPort(serverPort);
+
+        BotDemoConsumerServer server = new BotDemoConsumerServer(configuration);
+        server.start();
+
+    }
+
+    public void start() throws EmbeddedServerStartException {
+
+        RemoteManagementService remoteManagementService = JAXRSClientFactory.create(configuration.getBackboneUrl(), RemoteManagementService.class, PROVIDERS);
         String managementURL = remoteManagementService.getManagementURL();
         final UUID serverId = remoteManagementService.getServerId();
         final NetworkService networkService = JAXRSClientFactory.create(managementURL, NetworkService.class, PROVIDERS);
-        HandlingMessageService handlingMessageService = new HandlingMessageService(SERVER_PORT, networkService);
-        // run the server
-        EmbeddedServer embeddedServer = new EmbeddedServer(SERVER_PORT);
+        HandlingMessageService handlingMessageService = new HandlingMessageService(configuration.getServerPort(), networkService);
+
+        EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(handlingMessageService);
         embeddedServer.start(services);
-        // do a sample callback
+
         handlingMessageService.beginListen(Topics.SCAN, new NetworkMessageListener<Serializable>() {
             @Override
             public void handle(NetworkMessage<?> message) {
@@ -51,6 +67,7 @@ public class Main {
                 networkService.publish(reply);
             }
         });
+
     }
 
 }

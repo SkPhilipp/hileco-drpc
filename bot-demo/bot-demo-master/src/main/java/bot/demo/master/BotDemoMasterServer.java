@@ -8,6 +8,7 @@ import machine.lib.message.HandlingMessageService;
 import machine.lib.message.indexing.Indexer;
 import machine.lib.message.indexing.RequestlessAbstractIndexer;
 import machine.lib.service.EmbeddedServer;
+import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.api.services.NetworkService;
 import machine.message.api.entities.NetworkMessage;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -18,27 +19,42 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class Main {
+public class BotDemoMasterServer {
 
-    public static final String MANAGEMENT_URL = System.getProperty("MANAGEMENT_URL", "http://localhost:80/");
-    public static final Integer SERVER_PORT = Ints.tryParse(System.getProperty("SERVER_PORT", "8080"));
     private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BotDemoMasterServer.class);
+    private final BotDemoMasterConfiguration configuration;
+
+    public BotDemoMasterServer(BotDemoMasterConfiguration configuration) throws EmbeddedServerStartException {
+        this.configuration = configuration;
+    }
 
     public static void main(String[] args) throws Exception {
-        // log environment
-        LOG.info("Starting with:");
-        LOG.info("- MANAGEMENT_URL: {}", MANAGEMENT_URL);
-        LOG.info("- SERVER_PORT: {}", SERVER_PORT);
-        // set up services
-        NetworkService networkService = JAXRSClientFactory.create(MANAGEMENT_URL, NetworkService.class, PROVIDERS);
-        HandlingMessageService handlingMessageService = new HandlingMessageService(SERVER_PORT, networkService);
-        // run the server
-        EmbeddedServer embeddedServer = new EmbeddedServer(SERVER_PORT);
+
+        String MANAGEMENT_URL = System.getProperty("MANAGEMENT_URL", "http://localhost:80/");
+        Integer SERVER_PORT = Ints.tryParse(System.getProperty("SERVER_PORT", "8080"));
+
+        LOG.info("MANAGEMENT_URL: {}", MANAGEMENT_URL);
+        LOG.info("SERVER_PORT: {}", SERVER_PORT);
+
+        BotDemoMasterConfiguration configuration = new BotDemoMasterConfiguration();
+        configuration.setManagementUrl(MANAGEMENT_URL);
+        configuration.setServerPort(SERVER_PORT);
+
+        BotDemoMasterServer server = new BotDemoMasterServer(configuration);
+        server.start();
+
+    }
+
+    public void start() throws EmbeddedServerStartException {
+
+        NetworkService networkService = JAXRSClientFactory.create(configuration.getManagementUrl(), NetworkService.class, PROVIDERS);
+        HandlingMessageService handlingMessageService = new HandlingMessageService(configuration.getServerPort(), networkService);
+
+        EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(handlingMessageService);
         embeddedServer.start(services);
-        // do a sample callback
 
         Indexer<UUID, Long> indexer = new RequestlessAbstractIndexer<ScanReply, UUID, Long>(Topics.SCAN_REPLY, Topics.SCAN, 2, TimeUnit.MINUTES) {
             @Override
@@ -51,7 +67,6 @@ public class Main {
                 LOG.info("bot-demo-consumer {} last seen {}", serverId, value);
             }
         };
-
         indexer.indexPassivelyAndScheduled(handlingMessageService, 5, TimeUnit.SECONDS);
 
     }

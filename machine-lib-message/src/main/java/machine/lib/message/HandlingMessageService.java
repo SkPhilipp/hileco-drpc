@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -42,7 +43,7 @@ public class HandlingMessageService implements MessageService {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void handle(NetworkMessage<?> instance) throws NotSubscribedException {
+    public void handle(UUID subscriptionid, NetworkMessage<?> instance) throws NotSubscribedException {
         String topic = instance.getTopic();
         NetworkMessageListener handler = this.handlerMap.get(topic);
         if (handler != null) {

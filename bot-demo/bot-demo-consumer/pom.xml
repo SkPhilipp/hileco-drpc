@@ -76,7 +76,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>bot.demo.consumer.Main</mainClass>
+                            <mainClass>bot.demo.consumer.BotDemoConsumerServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

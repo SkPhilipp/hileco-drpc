@@ -12,19 +12,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Setters and getters on this method actually write and load files, a {@link Configuration} object is
+ * Setters and getters on this method actually write and load files, a {@link LocalConfiguration} object is
  * created with an initial basePath and should be {@link #initialize()}'d before use, to create the basePath.
  * <p/>
  * {@link IOException}s are usually only thrown when privileges are missing, getters on missing files will return null.
  */
-public class Configuration {
+public class LocalConfiguration {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String PROPERTY_SERVER = "local.json";
     private static final String PROPERTY_MANAGEMENT_URL = "management-url.json";
     private final String basePath;
 
-    public Configuration(String basePath) {
+    public LocalConfiguration(String basePath) {
         this.basePath = basePath;
     }
 

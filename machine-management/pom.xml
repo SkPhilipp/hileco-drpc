@@ -108,7 +108,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>machine.management.Main</mainClass>
+                            <mainClass>machine.management.ManagementServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

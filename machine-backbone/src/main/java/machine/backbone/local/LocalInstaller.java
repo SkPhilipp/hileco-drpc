@@ -8,44 +8,44 @@ import org.slf4j.LoggerFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class Installer {
+public class LocalInstaller {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalInstaller.class);
 
-    private Configuration configuration;
+    private LocalConfiguration localConfiguration;
 
-    public Installer(Configuration configuration) {
-        this.configuration = configuration;
+    public LocalInstaller(LocalConfiguration localConfiguration) {
+        this.localConfiguration = localConfiguration;
     }
 
     /**
      * Installs machine-backbone, if not already installed:
      * <p/>
-     * - Sets up configuration directories.
+     * - Sets up localConfiguration directories.
      * - Registers at the management server.
      *
      * @param defaultManagementUrl default url to the management server
-     * @param port port the server is listening on
+     * @param defaultServerPort port the server is listening on
      * @return management object
      */
-    public Management install(String defaultManagementUrl, int port) {
+    public Management install(String defaultManagementUrl, int defaultServerPort) {
         try {
-            configuration.initialize();
-            // if a local management url configuration is not available, default it
-            String managementURL = configuration.getManagementURL();
+            localConfiguration.initialize();
+            // if a local management url localConfiguration is not available, default it
+            String managementURL = localConfiguration.getManagementURL();
             if(managementURL == null){
                 LOG.info("Management URL is not set, defaulting to {}", defaultManagementUrl);
                 managementURL = defaultManagementUrl;
-                configuration.setManagementURL(managementURL);
+                localConfiguration.setManagementURL(managementURL);
             }
             Management management = new Management(managementURL);
-            // if a local server configuration is not available, register the server
-            Server server = configuration.getServer();
+            // if a local server localConfiguration is not available, register the server
+            Server server = localConfiguration.getServer();
             if (server == null) {
                 LOG.info("Server object not set, registering");
-                server = registerServer(management.getServerService(), port);
+                server = registerServer(management.getServerService(), defaultServerPort);
                 LOG.info("Registered server object with id {}", server.getId());
-                configuration.setServer(server);
+                localConfiguration.setServer(server);
             }
             return management;
         } catch (Exception e) {

@@ -82,7 +82,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>machine.backbone.Main</mainClass>
+                            <mainClass>machine.backbone.BackboneServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

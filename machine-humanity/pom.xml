@@ -86,7 +86,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>machine.humanity.Main</mainClass>
+                            <mainClass>machine.humanity.HumanityServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

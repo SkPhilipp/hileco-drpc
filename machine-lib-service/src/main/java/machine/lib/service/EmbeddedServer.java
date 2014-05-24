@@ -1,5 +1,6 @@
 package machine.lib.service;
 
+import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.lib.service.exceptions.ExceptionHandler;
 import org.codehaus.jackson.jaxrs.Annotations;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
@@ -15,7 +16,6 @@ public class EmbeddedServer {
     public static final String CONTEXT_PATH = "/";
     public static final String PATH_SPEC = "/*";
     public static final String JAVAX_WS_RS_APPLICATION = "javax.ws.rs.Application";
-
     private final int port;
 
     public EmbeddedServer(int port) {
@@ -26,22 +26,26 @@ public class EmbeddedServer {
      * Starts the server on port {@link #port}.
      *
      * @param services set of jax rs services, `machine-lib-service` providers are already included in this.
-     * @throws Exception
+     * @throws EmbeddedServerStartException
      */
-    public void start(Set<Object> services) throws Exception {
-        Server server = new Server(port);
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath(CONTEXT_PATH);
-        Services.add(new JacksonJaxbJsonProvider(Annotations.JACKSON));
-        Services.add(new ExceptionHandler());
-        for(Object service : services){
-            Services.add(service);
+    public void start(Set<Object> services) throws EmbeddedServerStartException {
+        try {
+            Server server = new Server(port);
+            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+            context.setContextPath(CONTEXT_PATH);
+            Services.add(new JacksonJaxbJsonProvider(Annotations.JACKSON));
+            Services.add(new ExceptionHandler());
+            for (Object service : services) {
+                Services.add(service);
+            }
+            ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
+            servletHolder.setInitParameter(JAVAX_WS_RS_APPLICATION, Services.class.getName());
+            context.addServlet(servletHolder, PATH_SPEC);
+            server.setHandler(context);
+            server.start();
+        } catch (Exception e) {
+            throw new EmbeddedServerStartException(e);
         }
-        ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
-        servletHolder.setInitParameter(JAVAX_WS_RS_APPLICATION, Services.class.getName());
-        context.addServlet(servletHolder, PATH_SPEC);
-        server.setHandler(context);
-        server.start();
     }
 
 }
