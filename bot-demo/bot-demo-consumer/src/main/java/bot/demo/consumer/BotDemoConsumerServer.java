@@ -3,8 +3,8 @@ package bot.demo.consumer;
 import bot.demo.messages.ScanReply;
 import bot.demo.messages.Topics;
 import com.google.common.primitives.Ints;
-import machine.lib.message.HandlingMessageService;
-import machine.lib.message.NetworkMessageListener;
+import machine.lib.message.DelegatingMessageService;
+import machine.lib.message.MessageHandler;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.api.services.NetworkService;
@@ -51,14 +51,14 @@ public class BotDemoConsumerServer {
         String managementURL = remoteManagementService.getManagementURL();
         final UUID serverId = remoteManagementService.getServerId();
         final NetworkService networkService = JAXRSClientFactory.create(managementURL, NetworkService.class, PROVIDERS);
-        HandlingMessageService handlingMessageService = new HandlingMessageService(configuration.getServerPort(), networkService);
+        DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), networkService);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
-        services.add(handlingMessageService);
+        services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        handlingMessageService.beginListen(Topics.SCAN, new NetworkMessageListener<Serializable>() {
+        delegatingMessageService.registerHandler(Topics.SCAN, new MessageHandler<Serializable>() {
             @Override
             public void handle(NetworkMessage<?> message) {
                 ScanReply scanReply = new ScanReply();

@@ -6,22 +6,22 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.Serializable;
 
-public abstract class NetworkMessageListener<K extends Serializable> {
+public abstract class MessageHandler<T extends Serializable> {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private final Class<? super K> messageType;
+    private final Class<? super T> messageType;
 
-    public NetworkMessageListener(){
-        TypeToken<K> typeToken = new TypeToken<K>(this.getClass()) {};
+    public MessageHandler(){
+        TypeToken<T> typeToken = new TypeToken<T>(this.getClass()) {};
         this.messageType = typeToken.getRawType();
     }
 
     public abstract void handle(NetworkMessage<?> message);
 
     @SuppressWarnings("unchecked")
-    public K open(NetworkMessage<?> message){
-        return OBJECT_MAPPER.convertValue(message.getContent(), (Class<K>) this.messageType);
+    public T open(NetworkMessage<?> message){
+        return OBJECT_MAPPER.convertValue(message.getContent(), (Class<T>) this.messageType);
     }
 
 }

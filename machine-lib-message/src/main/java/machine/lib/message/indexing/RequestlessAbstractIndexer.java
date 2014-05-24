@@ -8,9 +8,8 @@ import java.util.concurrent.TimeUnit;
  */
 abstract public class RequestlessAbstractIndexer <REQT extends Serializable, K, V> extends AbstractIndexer<REQT, Serializable, K, V> {
 
-
     /**
-     * - Instantiates an index using the given expire parameters.
+     * Instantiates an index using the given expire parameters.
      *
      * @param passiveIndexTopic the topic under which to listen for index responses
      * @param activeIndexTopic  the topic under which to send index requests

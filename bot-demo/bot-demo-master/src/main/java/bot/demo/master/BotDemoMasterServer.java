@@ -4,7 +4,7 @@ import bot.demo.messages.ScanReply;
 import bot.demo.messages.Topics;
 import com.google.common.cache.Cache;
 import com.google.common.primitives.Ints;
-import machine.lib.message.HandlingMessageService;
+import machine.lib.message.DelegatingMessageService;
 import machine.lib.message.indexing.Indexer;
 import machine.lib.message.indexing.RequestlessAbstractIndexer;
 import machine.lib.service.EmbeddedServer;
@@ -49,11 +49,11 @@ public class BotDemoMasterServer {
     public void start() throws EmbeddedServerStartException {
 
         NetworkService networkService = JAXRSClientFactory.create(configuration.getManagementUrl(), NetworkService.class, PROVIDERS);
-        HandlingMessageService handlingMessageService = new HandlingMessageService(configuration.getServerPort(), networkService);
+        DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), networkService);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
-        services.add(handlingMessageService);
+        services.add(delegatingMessageService);
         embeddedServer.start(services);
 
         Indexer<UUID, Long> indexer = new RequestlessAbstractIndexer<ScanReply, UUID, Long>(Topics.SCAN_REPLY, Topics.SCAN, 2, TimeUnit.MINUTES) {
@@ -67,7 +67,7 @@ public class BotDemoMasterServer {
                 LOG.info("bot-demo-consumer {} last seen {}", serverId, value);
             }
         };
-        indexer.indexPassivelyAndScheduled(handlingMessageService, 5, TimeUnit.SECONDS);
+        indexer.indexPassivelyAndScheduled(delegatingMessageService, 5, TimeUnit.SECONDS);
 
     }
 

@@ -5,7 +5,7 @@ import machine.management.api.entities.Subscription;
 import machine.management.api.services.NetworkService;
 import machine.management.dao.GenericModelDAO;
 import machine.message.api.entities.NetworkMessage;
-import org.apache.http.HttpResponse;
+import machine.message.api.services.MessageService;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -65,7 +64,7 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
         example.setTopic(topic);
         Set<String> targets = new HashSet<>();
         for (Subscription subscription : subscriptionDAO.query(example)) {
-            String target = String.format("http://%s:%d/message/?subscription=" + subscription.getId().toString(), subscription.getIpAddress(), subscription.getPort());
+            String target = String.format("http://%s:%d/message/?%s=%s", subscription.getIpAddress(), subscription.getPort(), MessageService.SUBSCRIPTION_ID, subscription.getId().toString());
             targets.add(target);
         }
         return targets;
@@ -84,13 +83,17 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
             String body = OBJECT_MAPPER.writeValueAsString(networkMessage);
             final StringEntity stringEntity = new StringEntity(body, ContentType.APPLICATION_JSON);
             for (final String target : targets) {
-                this.executorService.submit(new Callable<HttpResponse>() {
+                this.executorService.submit(new Runnable() {
                     @Override
-                    public HttpResponse call() throws Exception {
+                    public void run() {
                         HttpPost request = new HttpPost(target);
                         request.setEntity(stringEntity);
                         LOG.debug("Performing a request against: {}", target);
-                        return httpClient.execute(request);
+                        try {
+                            httpClient.execute(request);
+                        } catch (IOException e) {
+                            LOG.warn("Erred while sending to a subscribed receiver", e);
+                        }
                     }
                 });
             }

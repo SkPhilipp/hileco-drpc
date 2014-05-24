@@ -52,7 +52,7 @@ public class ManagementServer {
         embeddedServer.start(services);
 
         SubscriptionCleaner subscriptionCleaner = new SubscriptionCleaner();
-        scheduledExecutorService.scheduleWithFixedDelay(subscriptionCleaner, 0, 5000, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(subscriptionCleaner, 0, 5, TimeUnit.SECONDS);
 
     }
 
