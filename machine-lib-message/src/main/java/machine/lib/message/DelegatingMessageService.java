@@ -50,7 +50,7 @@ public class DelegatingMessageService extends SubscriptionPoolManager implements
             }
         } else {
             LOG.debug("Ignoring {}:{} with topic {}, active subscription is {}", subscriptionId, instance.getMessageId(), instance.getTopic(), activeSubscriptionId);
-            throw new NotSubscribedException();
+            throw new NotSubscribedException(subscriptionId, topic, activeSubscriptionId);
         }
     }
 
