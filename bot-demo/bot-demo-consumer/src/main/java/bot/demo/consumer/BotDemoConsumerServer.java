@@ -61,10 +61,10 @@ public class BotDemoConsumerServer {
         delegatingMessageService.registerHandler(Topics.SCAN, new MessageHandler<Serializable>() {
             @Override
             public void handle(NetworkMessage<?> message) {
+                LOG.info("Received a {} message", Topics.SCAN);
                 ScanReply scanReply = new ScanReply();
                 scanReply.setServerId(serverId);
-                NetworkMessage<?> reply = new NetworkMessage<>(Topics.SCAN_REPLY, scanReply);
-                networkService.publish(reply);
+                delegatingMessageService.publish(Topics.SCAN_REPLY, scanReply);
             }
         });
 

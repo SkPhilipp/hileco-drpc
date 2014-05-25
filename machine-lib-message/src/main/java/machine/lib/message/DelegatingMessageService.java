@@ -42,15 +42,14 @@ public class DelegatingMessageService extends SubscriptionPoolManager implements
         String topic = instance.getTopic();
         UUID activeSubscriptionId = this.getSubscriptionId(topic);
         if (Objects.equals(activeSubscriptionId, subscriptionId)) {
-            LOG.trace("Handling message with topic {} and id {}", instance.getTopic(), instance.getMessageId());
+            LOG.debug("Handling message with topic {} and id {}", instance.getTopic(), instance.getMessageId());
             Collection<MessageHandler<?>> handlers = this.getHandlers(topic);
             for (MessageHandler<?> handler : handlers) {
                 // TODO: handle in threads & catch exceptions
                 handler.handle(instance);
             }
         } else {
-            LOG.trace("Ignoring message with topic {} and id {}", instance.getTopic(), instance.getMessageId());
-            LOG.trace("Not subscribed; Received {} vs active {}", subscriptionId, activeSubscriptionId);
+            LOG.debug("Ignoring {}:{} with topic {}, active subscription is {}", subscriptionId, instance.getMessageId(), instance.getTopic(), activeSubscriptionId);
             throw new NotSubscribedException();
         }
     }
@@ -62,6 +61,7 @@ public class DelegatingMessageService extends SubscriptionPoolManager implements
      */
     public <T extends Serializable> UUID publish(String topic, T content) {
         NetworkMessage<?> networkMessage = new NetworkMessage<>(topic, content);
+        LOG.debug("Publishing message {} with topic {}", networkMessage.getMessageId(), networkMessage.getTopic());
         this.networkService.publish(networkMessage);
         return networkMessage.getMessageId();
     }

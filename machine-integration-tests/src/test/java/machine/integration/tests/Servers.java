@@ -1,3 +1,5 @@
+package machine.integration.tests;
+
 import bot.demo.consumer.BotDemoConsumerConfiguration;
 import bot.demo.consumer.BotDemoConsumerServer;
 import bot.demo.master.BotDemoMasterConfiguration;
@@ -61,7 +63,7 @@ public class Servers {
         BotDemoMasterServer botDemoMasterServer = new BotDemoMasterServer(botDemoMasterConfiguration);
         botDemoMasterServer.start();
 
-        Thread.sleep(60000);
+        Thread.sleep(600000);
 
     }
 

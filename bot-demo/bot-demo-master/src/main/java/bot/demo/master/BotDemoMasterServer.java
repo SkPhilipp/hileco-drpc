@@ -59,6 +59,7 @@ public class BotDemoMasterServer {
         Indexer<UUID, Long> indexer = new RequestlessAbstractIndexer<ScanReply, UUID, Long>(Topics.SCAN_REPLY, Topics.SCAN, 2, TimeUnit.MINUTES) {
             @Override
             public void handle(NetworkMessage<?> message) {
+                LOG.info("Received a {} message", Topics.SCAN_REPLY);
                 Cache<UUID, Long> index = this.getIndex();
                 ScanReply scanReply = this.open(message);
                 UUID serverId = scanReply.getServerId();

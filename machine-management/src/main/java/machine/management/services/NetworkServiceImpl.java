@@ -6,6 +6,7 @@ import machine.management.api.services.NetworkService;
 import machine.management.dao.GenericModelDAO;
 import machine.message.api.entities.NetworkMessage;
 import machine.message.api.services.MessageService;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
@@ -59,13 +60,13 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
      * @param topic an event topic
      * @return all targets subcribed to the given topic
      */
-    public Set<String> getTargets(String topic) {
+    public Map<UUID, String> getTargets(String topic) {
         Subscription example = new Subscription();
         example.setTopic(topic);
-        Set<String> targets = new HashSet<>();
+        Map<UUID, String> targets = new HashMap<>();
         for (Subscription subscription : subscriptionDAO.query(example)) {
             String target = String.format("http://%s:%d/message/?%s=%s", subscription.getIpAddress(), subscription.getPort(), MessageService.SUBSCRIPTION_ID, subscription.getId().toString());
-            targets.add(target);
+            targets.put(subscription.getId(), target);
         }
         return targets;
     }
@@ -78,19 +79,28 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
     @Override
     public void publish(final NetworkMessage<?> networkMessage) {
         Preconditions.checkArgument(networkMessage.getTopic() != null, "Topic must not be empty");
-        Set<String> targets = this.getTargets(networkMessage.getTopic());
+        Map<UUID, String> targets = this.getTargets(networkMessage.getTopic());
         try {
             String body = OBJECT_MAPPER.writeValueAsString(networkMessage);
             final StringEntity stringEntity = new StringEntity(body, ContentType.APPLICATION_JSON);
-            for (final String target : targets) {
+            for (Map.Entry<UUID, String> entry : targets.entrySet()) {
                 this.executorService.submit(new Runnable() {
                     @Override
                     public void run() {
+                        String target = entry.getValue();
                         HttpPost request = new HttpPost(target);
                         request.setEntity(stringEntity);
-                        LOG.debug("Performing a request against: {}", target);
+                        LOG.trace("Sending message {} with topic {} to {}", networkMessage.getMessageId(), networkMessage.getTopic(), target);
                         try {
-                            httpClient.execute(request);
+                            HttpResponse response = httpClient.execute(request);
+                            int statusCode = response.getStatusLine().getStatusCode();
+                            if(statusCode == 400){
+                                LOG.trace("Request completed against {}, status code indicates subscription must be deleted.", target);
+                                NetworkServiceImpl.this.delete(entry.getKey());
+                            }
+                            else{
+                                LOG.trace("Request completed against {}.", target);
+                            }
                         } catch (IOException e) {
                             LOG.warn("Erred while sending to a subscribed receiver", e);
                         }

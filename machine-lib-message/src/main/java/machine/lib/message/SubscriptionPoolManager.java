@@ -4,11 +4,14 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import machine.management.api.entities.Subscription;
 import machine.management.api.services.NetworkService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class SubscriptionPoolManager {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionPoolManager.class);
     public static final int RESUBSCRIBE_PERIOD_MILLISECONDS = (int) (NetworkService.DEFAULT_SUBSCRIPTION_EXPIRE_TIME * 0.9 * 60000);
     private final int port;
     private final NetworkService networkService;
@@ -37,12 +40,15 @@ public class SubscriptionPoolManager {
             Subscription subscription = new Subscription();
             subscription.setPort(this.port);
             subscription.setTopic(topic);
-            Subscription saved = networkService.save(subscription);
-            final UUID savedId = this.subscriptionIds.put(topic, saved.getId());
+            Subscription saved = this.networkService.save(subscription);
+            final UUID savedId = saved.getId();
+            this.subscriptionIds.put(topic, savedId);
+            LOG.trace("Saved subscription {} to topic {}", savedId, topic);
             Timer resubscribeTimer = new Timer(true);
             resubscribeTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
+                    LOG.trace("Extending subscription {} to topic {}", savedId, topic);
                     SubscriptionPoolManager.this.networkService.extend(savedId);
                 }
             }, RESUBSCRIBE_PERIOD_MILLISECONDS, RESUBSCRIBE_PERIOD_MILLISECONDS);
@@ -64,6 +70,7 @@ public class SubscriptionPoolManager {
                 UUID subscriptionId = this.subscriptionIds.remove(topic);
                 Timer removed = this.resubscribeTimers.remove(topic);
                 removed.cancel();
+                LOG.trace("Removing subscription {} to topic {}", subscriptionId, topic);
                 this.networkService.delete(subscriptionId);
             }
         }
