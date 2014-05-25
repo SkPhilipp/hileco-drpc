@@ -2,6 +2,7 @@ package machine.management;
 
 import com.google.common.primitives.Ints;
 import machine.lib.service.EmbeddedServer;
+import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.processes.SubscriptionCleaner;
 import machine.management.services.DefinitionServiceImpl;
@@ -17,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class ManagementServer {
+public class ManagementServer implements LocalServer {
 
     private static final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final Logger LOG = LoggerFactory.getLogger(ManagementServer.class);

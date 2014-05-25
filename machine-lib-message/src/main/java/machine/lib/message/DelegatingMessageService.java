@@ -1,5 +1,6 @@
 package machine.lib.message;
 
+import com.google.common.collect.Lists;
 import machine.management.api.services.NetworkService;
 import machine.message.api.entities.NetworkMessage;
 import machine.message.api.exceptions.NotSubscribedException;
@@ -42,14 +43,13 @@ public class DelegatingMessageService extends SubscriptionPoolManager implements
         String topic = instance.getTopic();
         UUID activeSubscriptionId = this.getSubscriptionId(topic);
         if (Objects.equals(activeSubscriptionId, subscriptionId)) {
-            LOG.debug("Handling message with topic {} and id {}", instance.getTopic(), instance.getMessageId());
-            Collection<MessageHandler<?>> handlers = this.getHandlers(topic);
+            LOG.debug("Handling message with topic {}, id {}, subscription {}", instance.getTopic(), instance.getMessageId(), subscriptionId);
+            Collection<MessageHandler<?>> handlers = Lists.newArrayList(this.getHandlers(topic));
             for (MessageHandler<?> handler : handlers) {
                 // TODO: handle in threads & catch exceptions
                 handler.handle(instance);
             }
         } else {
-            LOG.debug("Ignoring {}:{} with topic {}, active subscription is {}", subscriptionId, instance.getMessageId(), instance.getTopic(), activeSubscriptionId);
             throw new NotSubscribedException(subscriptionId, topic, activeSubscriptionId);
         }
     }
@@ -61,7 +61,7 @@ public class DelegatingMessageService extends SubscriptionPoolManager implements
      */
     public <T extends Serializable> UUID publish(String topic, T content) {
         NetworkMessage<?> networkMessage = new NetworkMessage<>(topic, content);
-        LOG.debug("Publishing message {} with topic {}", networkMessage.getMessageId(), networkMessage.getTopic());
+        LOG.debug("Publishing with topic {}", topic);
         this.networkService.publish(networkMessage);
         return networkMessage.getMessageId();
     }

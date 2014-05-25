@@ -1,7 +1,6 @@
 package machine.lib.message.util;
 
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.MessageHandler;
 import machine.message.api.entities.NetworkMessage;
 
 import java.io.Serializable;
@@ -10,13 +9,15 @@ import java.util.List;
 
 public class MessageHandlerBuilder<RES extends Serializable> {
 
-    private List<MessageHandler<RES>> handlers;
+    private List<MessageReceiver<RES>> handlers;
     private List<Runnable> finishListeners;
     private Long timeout;
     private Integer limit;
+    private Class<RES> responseClass;
     private DelegatingMessageService delegatingMessageService;
 
-    public MessageHandlerBuilder(DelegatingMessageService delegatingMessageService) {
+    public MessageHandlerBuilder(Class<RES> responseClass, DelegatingMessageService delegatingMessageService) {
+        this.responseClass = responseClass;
         this.delegatingMessageService = delegatingMessageService;
         this.handlers = new ArrayList<>();
         this.finishListeners = new ArrayList<>();
@@ -32,27 +33,43 @@ public class MessageHandlerBuilder<RES extends Serializable> {
         return this;
     }
 
-    public MessageHandlerBuilder<RES> onFinish(Runnable element) {
+    public MessageHandlerBuilder<RES> onFinished(Runnable element) {
         finishListeners.add(element);
         return this;
     }
 
-    public MessageHandlerBuilder<RES> onReceive(MessageHandler<RES> handler) {
+    public MessageHandlerBuilder<RES> onReceive(MessageReceiver<RES> handler) {
         this.handlers.add(handler);
         return this;
     }
 
-    public <REQ extends Serializable> void beginCallback(final String topic, REQ content) {
+    public <REQ extends Serializable> MessageHandlerBuilder<RES> callback(final String topic, REQ content) {
         NetworkMessage<REQ> networkMessage = new NetworkMessage<>(topic, content);
         String callbackTopic = networkMessage.getMessageId().toString();
-        BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(callbackTopic, delegatingMessageService, handlers, finishListeners, limit, timeout);
+        BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(responseClass, callbackTopic, delegatingMessageService, handlers, finishListeners, limit, timeout);
         delegatingMessageService.registerHandler(callbackTopic, handler);
         delegatingMessageService.publish(networkMessage);
+        return this;
     }
 
-    public void begin(final String topic) {
-        final BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(topic, delegatingMessageService, handlers, finishListeners, limit, timeout);
+    public MessageHandlerBuilder<RES> callback(final String topic) {
+        return this.callback(topic, null);
+    }
+
+    public <REQ extends Serializable> MessageHandlerBuilder<RES> send(final String topic, REQ content) {
+        NetworkMessage<REQ> networkMessage = new NetworkMessage<>(topic, content);
+        delegatingMessageService.publish(networkMessage);
+        return this;
+    }
+
+    public MessageHandlerBuilder<RES> send(final String topic) {
+        return this.send(topic, null);
+    }
+
+    public MessageHandlerBuilder<RES> listen(final String topic) {
+        final BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(responseClass, topic, delegatingMessageService, handlers, finishListeners, limit, timeout);
         delegatingMessageService.registerHandler(topic, handler);
+        return this;
     }
 
 }

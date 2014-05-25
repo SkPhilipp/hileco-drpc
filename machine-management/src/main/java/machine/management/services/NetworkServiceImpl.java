@@ -84,26 +84,23 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
             String body = OBJECT_MAPPER.writeValueAsString(networkMessage);
             final StringEntity stringEntity = new StringEntity(body, ContentType.APPLICATION_JSON);
             for (Map.Entry<UUID, String> entry : targets.entrySet()) {
-                this.executorService.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        String target = entry.getValue();
-                        HttpPost request = new HttpPost(target);
-                        request.setEntity(stringEntity);
-                        LOG.trace("Sending message {} with topic {} to {}", networkMessage.getMessageId(), networkMessage.getTopic(), target);
-                        try {
-                            HttpResponse response = httpClient.execute(request);
-                            int statusCode = response.getStatusLine().getStatusCode();
-                            if(statusCode == 400){
-                                LOG.trace("Request completed against {}, status code indicates subscription must be deleted.", target);
-                                NetworkServiceImpl.this.delete(entry.getKey());
-                            }
-                            else{
-                                LOG.trace("Request completed against {}.", target);
-                            }
-                        } catch (IOException e) {
-                            LOG.warn("Erred while sending to a subscribed receiver", e);
+                final String target = entry.getValue();
+                final UUID subscriptionId = entry.getKey();
+                this.executorService.submit(() -> {
+                    HttpPost request = new HttpPost(target);
+                    request.setEntity(stringEntity);
+                    LOG.debug("Sending message {} with topic {} to {}", networkMessage.getMessageId(), networkMessage.getTopic(), target);
+                    try {
+                        HttpResponse response = httpClient.execute(request);
+                        int statusCode = response.getStatusLine().getStatusCode();
+                        if (statusCode == 400) {
+                            LOG.debug("Request completed against {}, status code indicates subscription {} must be deleted.", target, subscriptionId);
+                            NetworkServiceImpl.this.delete(subscriptionId);
+                        } else {
+                            LOG.trace("Request completed against {}.", target);
                         }
+                    } catch (IOException e) {
+                        LOG.warn("Erred while sending to a subscribed receiver", e);
                     }
                 });
             }

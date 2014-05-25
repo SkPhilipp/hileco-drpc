@@ -8,6 +8,7 @@ import machine.backbone.processes.HeartbeatProcess;
 import machine.backbone.services.RemoteCommandServiceImpl;
 import machine.backbone.services.RemoteManagementImpl;
 import machine.lib.service.EmbeddedServer;
+import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BackboneServer {
+public class BackboneServer implements LocalServer {
 
     private static final Logger LOG = LoggerFactory.getLogger(BackboneServer.class);
     private final BackboneConfiguration configuration;

@@ -2,12 +2,11 @@ package bot.demo.master;
 
 import bot.demo.messages.ScanReply;
 import bot.demo.messages.Topics;
-import com.google.common.cache.Cache;
 import com.google.common.primitives.Ints;
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.indexing.Indexer;
-import machine.lib.message.indexing.RequestlessAbstractIndexer;
+import machine.lib.message.util.MessageHandlerBuilder;
 import machine.lib.service.EmbeddedServer;
+import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.api.services.NetworkService;
 import machine.message.api.entities.NetworkMessage;
@@ -17,9 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-public class BotDemoMasterServer {
+public class BotDemoMasterServer implements LocalServer {
 
     private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
     private static final Logger LOG = LoggerFactory.getLogger(BotDemoMasterServer.class);
@@ -56,19 +54,25 @@ public class BotDemoMasterServer {
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        Indexer<UUID, Long> indexer = new RequestlessAbstractIndexer<ScanReply, UUID, Long>(Topics.SCAN_REPLY, Topics.SCAN, 2, TimeUnit.MINUTES) {
+        MessageHandlerBuilder<ScanReply> builder = new MessageHandlerBuilder<>(ScanReply.class, delegatingMessageService)
+                //.limit(1)
+                //.time(1000L)
+                .onReceive((NetworkMessage<?> networkMessage, ScanReply content) -> {
+                    LOG.info("Received a message via built handler {}", networkMessage.getTopic());
+                }
+                )
+                .onFinished(() -> {
+                    LOG.info("Finished");
+                })
+                .listen(Topics.SCAN_REPLY);
+
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerTask() {
             @Override
-            public void handle(NetworkMessage<?> message) {
-                LOG.info("Received a {} message", Topics.SCAN_REPLY);
-                Cache<UUID, Long> index = this.getIndex();
-                ScanReply scanReply = this.open(message);
-                UUID serverId = scanReply.getServerId();
-                long value = System.currentTimeMillis();
-                index.put(serverId, value);
-                LOG.info("bot-demo-consumer {} last seen {}", serverId, value);
+            public void run() {
+                builder.send(Topics.SCAN);
             }
-        };
-        indexer.indexPassivelyAndScheduled(delegatingMessageService, 5, TimeUnit.SECONDS);
+        }, 0, 2000);
 
     }
 

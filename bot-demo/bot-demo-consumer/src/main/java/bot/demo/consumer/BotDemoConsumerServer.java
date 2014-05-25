@@ -6,6 +6,7 @@ import com.google.common.primitives.Ints;
 import machine.lib.message.DelegatingMessageService;
 import machine.lib.message.MessageHandler;
 import machine.lib.service.EmbeddedServer;
+import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.api.services.NetworkService;
 import machine.management.api.services.RemoteManagementService;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.*;
 
-public class BotDemoConsumerServer {
+public class BotDemoConsumerServer implements LocalServer {
 
     private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
     private static final Logger LOG = LoggerFactory.getLogger(BotDemoConsumerServer.class);
@@ -61,7 +62,6 @@ public class BotDemoConsumerServer {
         delegatingMessageService.registerHandler(Topics.SCAN, new MessageHandler<Serializable>() {
             @Override
             public void handle(NetworkMessage<?> message) {
-                LOG.info("Received a {} message", Topics.SCAN);
                 ScanReply scanReply = new ScanReply();
                 scanReply.setServerId(serverId);
                 delegatingMessageService.publish(Topics.SCAN_REPLY, scanReply);

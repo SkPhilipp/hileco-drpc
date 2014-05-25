@@ -3,6 +3,7 @@ package machine.humanity;
 import com.google.common.primitives.Ints;
 import machine.humanity.services.GeneratorServiceImpl;
 import machine.lib.service.EmbeddedServer;
+import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 
-public class HumanityServer {
+public class HumanityServer implements LocalServer {
 
     private static final Logger LOG = LoggerFactory.getLogger(HumanityServer.class);
     private HumanityConfiguration configuration;

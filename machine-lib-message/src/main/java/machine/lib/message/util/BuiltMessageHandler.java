@@ -12,21 +12,24 @@ import java.util.TimerTask;
 public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<T> {
 
     private boolean finished = false;
+    private Class<T> responseClass;
     private String topic;
     private DelegatingMessageService delegatingMessageService;
-    private List<MessageHandler<T>> handlers;
+    private List<MessageReceiver<T>> handlers;
     private List<Runnable> finishListeners;
     private Integer limit;
 
     /**
-     * @param topic the topic to use for unregistering
+     * @param responseClass            the response message's class type
+     * @param topic                    the topic to use for unregistering
      * @param delegatingMessageService the delegating message service to use for unregistering
-     * @param handlers the message event handlers
-     * @param finishListeners the finish event handlers
-     * @param limit the maximum amount of messages the event handlers may receive, null indicates not used
-     * @param timeoutMillis the maximum time the event handlers may receive, null indicates not used
+     * @param handlers                 the message event handlers
+     * @param finishListeners          the finish event handlers
+     * @param limit                    the maximum amount of messages the event handlers may receive, null indicates not used
+     * @param timeoutMillis            the maximum time the event handlers may receive, null indicates not used
      */
-    public BuiltMessageHandler(final String topic, final DelegatingMessageService delegatingMessageService, List<MessageHandler<T>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
+    public BuiltMessageHandler(Class<T> responseClass, final String topic, final DelegatingMessageService delegatingMessageService, List<MessageReceiver<T>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
+        this.responseClass = responseClass;
         this.topic = topic;
         this.finishListeners = finishListeners;
         this.delegatingMessageService = delegatingMessageService;
@@ -58,9 +61,10 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
             }
         }
         if (limit == null || limit >= 0) {
-            for (MessageHandler<T> anyHandler : handlers) {
+            T content = this.open(message, this.responseClass);
+            for (MessageReceiver<T> anyHandler : handlers) {
                 // TODO: handle in threads & catch exceptions
-                anyHandler.handle(message);
+                anyHandler.handle(message, content);
             }
         }
         if (doFinish) {
@@ -70,7 +74,7 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
 
     /**
      * Notifies any item in {@link #finishListeners} that finish was called.
-     *
+     * <p/>
      * The finish event can only occurs once per instance.
      */
     public void finish() {

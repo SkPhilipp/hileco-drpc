@@ -12,12 +12,12 @@ import java.util.*;
 public class SubscriptionPoolManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionPoolManager.class);
-    public static final int RESUBSCRIBE_PERIOD_MILLISECONDS = (int) (NetworkService.DEFAULT_SUBSCRIPTION_EXPIRE_TIME * 0.9 * 60000);
+    private static final int RESUBSCRIBE_PERIOD_MILLISECONDS = (int) (NetworkService.DEFAULT_SUBSCRIPTION_EXPIRE_TIME * 0.9 * 60000);
     private final int port;
     private final NetworkService networkService;
     private final Map<String, UUID> subscriptionIds;
     private final Multimap<String, MessageHandler<?>> topicHandlerIds;
-    private Map<String, Timer> resubscribeTimers;
+    private final Map<String, Timer> resubscribeTimers;
 
     public SubscriptionPoolManager(int port, NetworkService networkService) {
         this.port = port;
@@ -30,7 +30,7 @@ public class SubscriptionPoolManager {
     /**
      * Registers a handler for messages of a topic and ensures subscription to the topic until removed.
      *
-     * @param topic                 the message topic
+     * @param topic          the message topic
      * @param messageHandler the message handler
      */
     public void registerHandler(String topic, MessageHandler<?> messageHandler) {
@@ -43,7 +43,7 @@ public class SubscriptionPoolManager {
             Subscription saved = this.networkService.save(subscription);
             final UUID savedId = saved.getId();
             this.subscriptionIds.put(topic, savedId);
-            LOG.trace("Saved subscription {} to topic {}", savedId, topic);
+            LOG.debug("Saved subscription {} to topic {}", savedId, topic);
             Timer resubscribeTimer = new Timer(true);
             resubscribeTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -60,7 +60,7 @@ public class SubscriptionPoolManager {
      * Removes a handler of messages, and if this is the last handler for that topic it will unsubscribe and cancel
      * the internal resubscribe timer.
      *
-     * @param topic                 the topic of the registered id
+     * @param topic          the topic of the registered id
      * @param messageHandler the message handler to remove
      */
     public void removeHandler(String topic, MessageHandler<?> messageHandler) {
@@ -70,7 +70,7 @@ public class SubscriptionPoolManager {
                 UUID subscriptionId = this.subscriptionIds.remove(topic);
                 Timer removed = this.resubscribeTimers.remove(topic);
                 removed.cancel();
-                LOG.trace("Removing subscription {} to topic {}", subscriptionId, topic);
+                LOG.debug("Removing subscription {}", subscriptionId);
                 this.networkService.delete(subscriptionId);
             }
         }
@@ -81,6 +81,7 @@ public class SubscriptionPoolManager {
      * @return the reference of an active subscription
      */
     public UUID getSubscriptionId(String topic) {
+        LOG.debug("Subscription for topic {} with {} ?", topic, this.subscriptionIds);
         return subscriptionIds.get(topic);
     }
 
