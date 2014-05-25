@@ -26,7 +26,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class NetworkServiceImpl extends AbstractQueryableModelService<Subscription> implements NetworkService {
 
-    public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
+    public static final int DEFAULT_REQUEST_TIMEOUT = 2000;
     public static final int DEFAULT_SENDER_POOL_SIZE = 100;
     private static final GenericModelDAO<Subscription> subscriptionDAO = new GenericModelDAO<>(Subscription.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -89,7 +89,6 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
                 this.executorService.submit(() -> {
                     HttpPost request = new HttpPost(target);
                     request.setEntity(stringEntity);
-                    LOG.debug("Sending message {} with topic {} to {}", networkMessage.getMessageId(), networkMessage.getTopic(), target);
                     try {
                         HttpResponse response = httpClient.execute(request);
                         int statusCode = response.getStatusLine().getStatusCode();
@@ -97,9 +96,9 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
                             LOG.debug("Request completed against {}, status code indicates subscription {} must be deleted.", target, subscriptionId);
                             NetworkServiceImpl.this.delete(subscriptionId);
                         } else {
-                            LOG.trace("Request completed against {}.", target);
+                            LOG.debug("Sent message with topic {} subscription {} to {}.", networkMessage.getTopic(), subscriptionId, target);
                         }
-                    } catch (IOException e) {
+                    } catch (Throwable e) {
                         LOG.warn("Erred while sending to a subscribed receiver", e);
                     }
                 });

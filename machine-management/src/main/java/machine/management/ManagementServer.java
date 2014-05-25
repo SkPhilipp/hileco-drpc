@@ -53,7 +53,7 @@ public class ManagementServer implements LocalServer {
         embeddedServer.start(services);
 
         SubscriptionCleaner subscriptionCleaner = new SubscriptionCleaner();
-        scheduledExecutorService.scheduleAtFixedRate(subscriptionCleaner, 0, 5, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(subscriptionCleaner, 2, 2, TimeUnit.SECONDS);
 
     }
 

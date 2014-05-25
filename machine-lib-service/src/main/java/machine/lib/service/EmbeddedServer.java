@@ -33,13 +33,13 @@ public class EmbeddedServer {
             Server server = new Server(port);
             ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
             context.setContextPath(CONTEXT_PATH);
-            Services.add(new JacksonJaxbJsonProvider(Annotations.JACKSON));
-            Services.add(new ExceptionHandler());
+            LocalServices.add(new JacksonJaxbJsonProvider(Annotations.JACKSON));
+            LocalServices.add(new ExceptionHandler());
             for (Object service : services) {
-                Services.add(service);
+                LocalServices.add(service);
             }
             ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
-            servletHolder.setInitParameter(JAVAX_WS_RS_APPLICATION, Services.class.getName());
+            servletHolder.setInitParameter(JAVAX_WS_RS_APPLICATION, LocalServices.class.getName());
             context.addServlet(servletHolder, PATH_SPEC);
             server.setHandler(context);
             server.start();

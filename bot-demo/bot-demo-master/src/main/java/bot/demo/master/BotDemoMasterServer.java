@@ -72,7 +72,7 @@ public class BotDemoMasterServer implements LocalServer {
             public void run() {
                 builder.send(Topics.SCAN);
             }
-        }, 0, 2000);
+        }, 0, 20);
 
     }
 

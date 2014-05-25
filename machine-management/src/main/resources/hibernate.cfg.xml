@@ -8,9 +8,8 @@
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/management</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">root</property>
-        <property name="hibernate.connection.pool_size">10</property>
+        <property name="hibernate.connection.pool_size">30</property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
         <mapping class="machine.management.api.entities.Definition"/>
         <mapping class="machine.management.api.entities.Server"/>

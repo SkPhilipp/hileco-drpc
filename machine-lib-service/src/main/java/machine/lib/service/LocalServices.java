@@ -7,9 +7,9 @@ import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Services extends Application {
+public class LocalServices extends Application {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Services.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalServices.class);
     private static ThreadLocal<Set<Object>> inheritableLocalServices = new InheritableThreadLocal<>();
 
     /**

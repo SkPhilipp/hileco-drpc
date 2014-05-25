@@ -81,7 +81,6 @@ public class SubscriptionPoolManager {
      * @return the reference of an active subscription
      */
     public UUID getSubscriptionId(String topic) {
-        LOG.debug("Subscription for topic {} with {} ?", topic, this.subscriptionIds);
         return subscriptionIds.get(topic);
     }
 

@@ -41,7 +41,7 @@ public class Servers {
             } catch (EmbeddedServerStartException e) {
                 throw new IllegalStateException(e);
             }
-        });
+        }, localServer.getClass().getSimpleName());
         thread.start();
         thread.join();
     }
@@ -61,7 +61,7 @@ public class Servers {
         backboneConfiguration.setConfigurationDir("/etc/backbone-test-1");
         backboneConfiguration.setDefaultHeartbeatPeriod(5000);
         backboneConfiguration.setDefaultServerPort(BACKBONE_SERVER_PORT);
-        backboneConfiguration.setDefaultManagementUrl(String.format("http://localhost:%d", managementConfiguration.getServerPort()));
+        backboneConfiguration.setDefaultManagementUrl(String.format("http://127.0.0.1:%d", managementConfiguration.getServerPort()));
         BackboneServer backboneServer = new BackboneServer(backboneConfiguration);
 
         HumanityConfiguration humanityConfiguration = new HumanityConfiguration();
@@ -70,12 +70,12 @@ public class Servers {
 
         BotDemoConsumerConfiguration botDemoConsumerConfiguration = new BotDemoConsumerConfiguration();
         botDemoConsumerConfiguration.setServerPort(BOT_DEMO_CONSUMER_SERVER_PORT);
-        botDemoConsumerConfiguration.setBackboneUrl(String.format("http://localhost:%d", backboneConfiguration.getDefaultServerPort()));
+        botDemoConsumerConfiguration.setBackboneUrl(String.format("http://127.0.0.1:%d", backboneConfiguration.getDefaultServerPort()));
         BotDemoConsumerServer botDemoConsumerServer = new BotDemoConsumerServer(botDemoConsumerConfiguration);
 
         BotDemoMasterConfiguration botDemoMasterConfiguration = new BotDemoMasterConfiguration();
         botDemoMasterConfiguration.setServerPort(BOT_DEMO_MASTER_SERVER_PORT);
-        botDemoMasterConfiguration.setManagementUrl(String.format("http://localhost:%d", managementConfiguration.getServerPort()));
+        botDemoMasterConfiguration.setManagementUrl(String.format("http://127.0.0.1:%d", managementConfiguration.getServerPort()));
         BotDemoMasterServer botDemoMasterServer = new BotDemoMasterServer(botDemoMasterConfiguration);
 
         start(managementServer);
@@ -103,7 +103,7 @@ public class Servers {
         } else {
             throw new Error("That's not a module: " + module);
         }
-        String url = String.format("http://localhost:%d/", port);
+        String url = String.format("http://127.0.0.1:%d/", port);
         return JAXRSClientFactory.create(url, service, PROVIDERS);
 
     }
