@@ -46,7 +46,7 @@ public class MessageHandlerBuilder<RES extends Serializable> {
     public <REQ extends Serializable> MessageHandlerBuilder<RES> callback(final String topic, REQ content) {
         NetworkMessage<REQ> networkMessage = new NetworkMessage<>(topic, content);
         String callbackTopic = networkMessage.getMessageId().toString();
-        BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(responseClass, callbackTopic, delegatingMessageService, handlers, finishListeners, limit, timeout);
+        MessageHandler<RES> handler = new MessageHandler<>(responseClass, callbackTopic, delegatingMessageService, handlers, finishListeners, limit, timeout);
         delegatingMessageService.beginListen(callbackTopic, handler);
         delegatingMessageService.publishCustom(networkMessage);
         return this;
@@ -67,7 +67,7 @@ public class MessageHandlerBuilder<RES extends Serializable> {
     }
 
     public MessageHandlerBuilder<RES> listen(final String topic) {
-        final BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(responseClass, topic, delegatingMessageService, handlers, finishListeners, limit, timeout);
+        final MessageHandler<RES> handler = new MessageHandler<>(responseClass, topic, delegatingMessageService, handlers, finishListeners, limit, timeout);
         delegatingMessageService.beginListen(topic, handler);
         return this;
     }

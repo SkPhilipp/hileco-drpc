@@ -1,15 +1,15 @@
 package machine.lib.message.util;
 
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.MessageHandler;
-import machine.message.api.entities.NetworkMessage;
+import machine.lib.message.TypedMessage;
+import machine.lib.message.TypedMessageHandler;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<T> {
+public class MessageHandler<T extends Serializable> implements TypedMessageHandler {
 
     private boolean finished = false;
     private Class<T> responseClass;
@@ -28,7 +28,7 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
      * @param limit                    the maximum amount of messages the event handlers may receive, null indicates not used
      * @param timeoutMillis            the maximum time the event handlers may receive, null indicates not used
      */
-    public BuiltMessageHandler(Class<T> responseClass, final String topic, final DelegatingMessageService delegatingMessageService, List<MessageProcessor<T>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
+    public MessageHandler(Class<T> responseClass, final String topic, final DelegatingMessageService delegatingMessageService, List<MessageProcessor<T>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
         this.responseClass = responseClass;
         this.topic = topic;
         this.finishListeners = finishListeners;
@@ -40,7 +40,7 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
             removeTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    BuiltMessageHandler.this.finish();
+                    MessageHandler.this.finish();
                 }
             }, timeoutMillis);
         }
@@ -52,7 +52,7 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
      * @param message the message to process
      */
     @Override
-    public void handle(NetworkMessage<?> message) {
+    public void handle(TypedMessage message) {
         boolean doFinish = false;
         if (limit != null && limit > 0) {
             limit--;
@@ -61,10 +61,9 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
             }
         }
         if (limit == null || limit >= 0) {
-            T content = this.open(message, this.responseClass);
             for (MessageProcessor<T> anyHandler : handlers) {
                 // TODO: handle in threads & catch exceptions
-                anyHandler.process(message, content);
+                anyHandler.process(message, message.getContent(this.responseClass));
             }
         }
         if (doFinish) {

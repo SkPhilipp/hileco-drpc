@@ -1,17 +1,17 @@
 package bot.demo.master;
 
-import bot.demo.messages.ScanReply;
-import bot.demo.messages.Topics;
+import bot.demo.messages.Topic;
+import bot.demo.messages.process.ScanReply;
 import com.google.common.primitives.Ints;
 import machine.humanity.api.domain.HarvesterStatus;
 import machine.humanity.api.services.GeneratorService;
 import machine.lib.message.DelegatingMessageService;
+import machine.lib.message.TypedMessage;
 import machine.lib.message.util.MessageHandlerBuilder;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.api.services.NetworkService;
-import machine.message.api.entities.NetworkMessage;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
@@ -60,23 +60,22 @@ public class BotDemoMasterServer implements LocalServer {
         embeddedServer.start(services);
 
         MessageHandlerBuilder<ScanReply> builder = new MessageHandlerBuilder<>(ScanReply.class, delegatingMessageService);
-        builder.onReceive((NetworkMessage<?> networkMessage, ScanReply content) -> {
-            LOG.info("Received a message via built handler {}", networkMessage.getTopic());
-            //builder.send(Topics.SCAN);
+        builder.onReceive((TypedMessage typedMessage, ScanReply content) -> {
+            LOG.info("Received a message via built handler {}", typedMessage.getTopic());
             if (generatorService.status("g").equals(HarvesterStatus.HARVESTED)) {
                 List<String> generated = generatorService.generate("g", 10);
                 for (String entry : generated) {
                     LOG.info(entry);
                 }
-                LOG.info("Received a message via built handler {}", networkMessage.getTopic());
+                LOG.info("Received a message via built handler {}", typedMessage.getTopic());
             }
-        }).listen(Topics.SCAN_REPLY);
+        }).listen(Topic.PROCESS_SCAN_REPLY.toString());
 
         Timer timer = new Timer(true);
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                builder.send(Topics.SCAN);
+                builder.send(Topic.PROCESS_SCAN.toString());
             }
         }, 0, 2000);
 

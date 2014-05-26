@@ -16,7 +16,7 @@ import java.util.*;
 
 
 /**
- * An implementation of MessageService that delegates to message handlers.
+ * An implementation of {@link Network} and {@link MessageService}.
  */
 public class DelegatingMessageService implements MessageService, Network {
 
@@ -25,7 +25,7 @@ public class DelegatingMessageService implements MessageService, Network {
     private final int port;
     private final NetworkService networkService;
     private final Map<String, UUID> subscriptionIds;
-    private final Multimap<String, MessageHandler<?>> topicHandlerIds;
+    private final Multimap<String, TypedMessageHandler> topicHandlerIds;
     private final Map<String, Timer> resubscribeTimers;
 
     /**
@@ -44,11 +44,11 @@ public class DelegatingMessageService implements MessageService, Network {
      * Registers a handler for messages of a topic and ensures subscription to the topic until removed.
      *
      * @param topic          the message topic
-     * @param messageHandler the message handler
+     * @param typedMessageHandler the message handler
      */
-    public void beginListen(String topic, MessageHandler<?> messageHandler) {
+    public void beginListen(String topic, TypedMessageHandler typedMessageHandler) {
         boolean subscribed = this.topicHandlerIds.get(topic).size() > 0;
-        this.topicHandlerIds.put(topic, messageHandler);
+        this.topicHandlerIds.put(topic, typedMessageHandler);
         if (!subscribed) {
             Subscription subscription = new Subscription();
             subscription.setPort(this.port);
@@ -74,11 +74,25 @@ public class DelegatingMessageService implements MessageService, Network {
      * the internal resubscribe timer.
      *
      * @param topic          the topic of the registered id
-     * @param messageHandler the message handler to remove
+     * @param typedMessageHandler the message handler to remove
      */
-    public void stopListen(String topic, MessageHandler<?> messageHandler) {
-        boolean changed = this.topicHandlerIds.remove(topic, messageHandler);
+    public void stopListen(String topic, TypedMessageHandler typedMessageHandler) {
+        boolean changed = this.topicHandlerIds.remove(topic, typedMessageHandler);
         if (changed) {
+            if (this.topicHandlerIds.get(topic).isEmpty()) {
+                UUID subscriptionId = this.subscriptionIds.remove(topic);
+                Timer removed = this.resubscribeTimers.remove(topic);
+                removed.cancel();
+                LOG.debug("Removing subscription {}", subscriptionId);
+                this.networkService.delete(subscriptionId);
+            }
+        }
+    }
+
+    @Override
+    public void stopListen(String topic) {
+        Collection<TypedMessageHandler> removedItems = this.topicHandlerIds.removeAll(topic);
+        if (!removedItems.isEmpty()) {
             if (this.topicHandlerIds.get(topic).isEmpty()) {
                 UUID subscriptionId = this.subscriptionIds.remove(topic);
                 Timer removed = this.resubscribeTimers.remove(topic);
@@ -92,19 +106,20 @@ public class DelegatingMessageService implements MessageService, Network {
     /**
      * Handles a message by delegating it to any registered handlers.
      *
-     * @param instance message to handle
+     * @param networkMessage message to handle
      * @throws NotSubscribedException when there is no registered callback handler
      */
     @Override
-    public void handle(UUID subscriptionId, NetworkMessage<?> instance) throws NotSubscribedException {
-        String topic = instance.getTopic();
+    public void handle(UUID subscriptionId, NetworkMessage<?> networkMessage) throws NotSubscribedException {
+        String topic = networkMessage.getTopic();
         UUID activeSubscriptionId = subscriptionIds.get(topic);
         if (Objects.equals(activeSubscriptionId, subscriptionId)) {
-            LOG.debug("Handling message with topic {}, id {}, subscription {}", instance.getTopic(), instance.getMessageId(), subscriptionId);
-            Collection<MessageHandler<?>> handlers = Lists.newArrayList(this.topicHandlerIds.get(topic));
-            for (MessageHandler<?> handler : handlers) {
+            TypedMessage typedMessage = new TypedMessage(networkMessage);
+            LOG.debug("Handling message with topic {}, id {}, subscription {}", networkMessage.getTopic(), networkMessage.getMessageId(), subscriptionId);
+            Collection<TypedMessageHandler> handlers = Lists.newArrayList(this.topicHandlerIds.get(topic));
+            for (TypedMessageHandler handler : handlers) {
                 // TODO: handle in threads & catch exceptions
-                handler.handle(instance);
+                handler.handle(typedMessage);
             }
         } else {
             throw new NotSubscribedException(subscriptionId, topic, activeSubscriptionId);
@@ -121,6 +136,11 @@ public class DelegatingMessageService implements MessageService, Network {
         LOG.debug("Publishing with topic {}", topic);
         this.networkService.publish(networkMessage);
         return networkMessage.getMessageId();
+    }
+
+    @Override
+    public <T extends Serializable> UUID publishMessage(UUID topic, T content) {
+        return this.publishMessage(topic.toString(), content);
     }
 
     public <T extends Serializable> void publishCustom(NetworkMessage<T> message) {

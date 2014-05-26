@@ -1,6 +1,6 @@
 package bot.demo.consumer;
 
-import bot.demo.consumer.handlers.ProcessActionHandlerImpl;
+import bot.demo.consumer.handlers.ProcessActionHandler;
 import com.google.common.primitives.Ints;
 import machine.lib.message.DelegatingMessageService;
 import machine.lib.service.EmbeddedServer;
@@ -55,7 +55,7 @@ public class BotDemoConsumerServer implements LocalServer {
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        ProcessActionHandlerImpl processActionHandler = new ProcessActionHandlerImpl(serverId, delegatingMessageService);
+        ProcessActionHandler processActionHandler = new ProcessActionHandler(serverId, delegatingMessageService);
         processActionHandler.start();
 
     }

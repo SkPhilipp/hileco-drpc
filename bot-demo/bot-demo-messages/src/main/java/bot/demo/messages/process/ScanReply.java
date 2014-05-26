@@ -1,10 +1,10 @@
-package bot.demo.messages;
+package bot.demo.messages.process;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 /**
- * Expected reply to {@link Topics#SCAN}.
+ * Expected reply to {@link bot.demo.messages.Topic#PROCESS_SCAN}.
  */
 public class ScanReply implements Serializable {
 

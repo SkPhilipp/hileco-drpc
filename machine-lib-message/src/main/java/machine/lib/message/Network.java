@@ -7,11 +7,15 @@ import java.util.UUID;
 
 public interface Network {
 
-    public void beginListen(String topic, MessageHandler<?> messageHandler);
+    public void beginListen(String topic, TypedMessageHandler typedMessageHandler);
 
-    public void stopListen(String topic, MessageHandler<?> messageHandler);
+    public void stopListen(String topic, TypedMessageHandler typedMessageHandler);
+
+    public void stopListen(String topic);
 
     public <T extends Serializable> UUID publishMessage(String topic, T content);
+
+    public <T extends Serializable> UUID publishMessage(UUID topic, T content);
 
     public <T extends Serializable> void publishCustom(NetworkMessage<T> message);
 

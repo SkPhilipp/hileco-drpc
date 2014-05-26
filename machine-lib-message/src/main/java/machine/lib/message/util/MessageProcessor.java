@@ -1,9 +1,9 @@
 package machine.lib.message.util;
 
-import machine.message.api.entities.NetworkMessage;
+import machine.lib.message.TypedMessage;
 
 public interface MessageProcessor<RES> {
 
-    public void process(NetworkMessage<?> networkMessage, RES content);
+    public void process(TypedMessage typedMessage, RES content);
 
 }
