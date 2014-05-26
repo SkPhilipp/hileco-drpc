@@ -1,22 +1,18 @@
 package bot.demo.consumer;
 
-import bot.demo.messages.ScanReply;
-import bot.demo.messages.Topics;
+import bot.demo.consumer.handlers.ProcessActionHandlerImpl;
 import com.google.common.primitives.Ints;
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.MessageHandler;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.management.api.services.NetworkService;
 import machine.management.api.services.RemoteManagementService;
-import machine.message.api.entities.NetworkMessage;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.*;
 
 public class BotDemoConsumerServer implements LocalServer {
@@ -50,8 +46,8 @@ public class BotDemoConsumerServer implements LocalServer {
 
         RemoteManagementService remoteManagementService = JAXRSClientFactory.create(configuration.getBackboneUrl(), RemoteManagementService.class, PROVIDERS);
         String managementURL = remoteManagementService.getManagementURL();
-        final UUID serverId = remoteManagementService.getServerId();
-        final NetworkService networkService = JAXRSClientFactory.create(managementURL, NetworkService.class, PROVIDERS);
+        UUID serverId = remoteManagementService.getServerId();
+        NetworkService networkService = JAXRSClientFactory.create(managementURL, NetworkService.class, PROVIDERS);
         DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), networkService);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
@@ -59,14 +55,8 @@ public class BotDemoConsumerServer implements LocalServer {
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        delegatingMessageService.registerHandler(Topics.SCAN, new MessageHandler<Serializable>() {
-            @Override
-            public void handle(NetworkMessage<?> message) {
-                ScanReply scanReply = new ScanReply();
-                scanReply.setServerId(serverId);
-                delegatingMessageService.publish(Topics.SCAN_REPLY, scanReply);
-            }
-        });
+        ProcessActionHandlerImpl processActionHandler = new ProcessActionHandlerImpl(serverId, delegatingMessageService);
+        processActionHandler.start();
 
     }
 

@@ -46,6 +46,25 @@ public class Servers {
         thread.join();
     }
 
+    public void startConsumer(ManagementConfiguration managementConfiguration, Integer index) throws Exception {
+
+        BackboneConfiguration backboneConfiguration = new BackboneConfiguration();
+        backboneConfiguration.setConfigurationDir(String.format("/etc/backbone-test-%d", index));
+        backboneConfiguration.setDefaultHeartbeatPeriod(5000);
+        backboneConfiguration.setDefaultServerPort(BACKBONE_SERVER_PORT + index);
+        backboneConfiguration.setDefaultManagementUrl(String.format("http://127.0.0.1:%d", managementConfiguration.getServerPort()));
+        BackboneServer backboneServer = new BackboneServer(backboneConfiguration);
+
+        BotDemoConsumerConfiguration botDemoConsumerConfiguration = new BotDemoConsumerConfiguration();
+        botDemoConsumerConfiguration.setServerPort(BOT_DEMO_CONSUMER_SERVER_PORT + index);
+        botDemoConsumerConfiguration.setBackboneUrl(String.format("http://127.0.0.1:%d", backboneConfiguration.getDefaultServerPort()));
+        BotDemoConsumerServer botDemoConsumerServer = new BotDemoConsumerServer(botDemoConsumerConfiguration);
+
+        start(backboneServer);
+        start(botDemoConsumerServer);
+
+    }
+
     @Test
     public void startAll() throws Exception {
 
@@ -57,32 +76,23 @@ public class Servers {
         managementConfiguration.setServerPort(MANAGEMENT_SERVER_PORT);
         ManagementServer managementServer = new ManagementServer(managementConfiguration);
 
-        BackboneConfiguration backboneConfiguration = new BackboneConfiguration();
-        backboneConfiguration.setConfigurationDir("/etc/backbone-test-1");
-        backboneConfiguration.setDefaultHeartbeatPeriod(5000);
-        backboneConfiguration.setDefaultServerPort(BACKBONE_SERVER_PORT);
-        backboneConfiguration.setDefaultManagementUrl(String.format("http://127.0.0.1:%d", managementConfiguration.getServerPort()));
-        BackboneServer backboneServer = new BackboneServer(backboneConfiguration);
-
         HumanityConfiguration humanityConfiguration = new HumanityConfiguration();
         humanityConfiguration.setServerPort(HUMANITY_SERVER_PORT);
         HumanityServer humanityServer = new HumanityServer(humanityConfiguration);
 
-        BotDemoConsumerConfiguration botDemoConsumerConfiguration = new BotDemoConsumerConfiguration();
-        botDemoConsumerConfiguration.setServerPort(BOT_DEMO_CONSUMER_SERVER_PORT);
-        botDemoConsumerConfiguration.setBackboneUrl(String.format("http://127.0.0.1:%d", backboneConfiguration.getDefaultServerPort()));
-        BotDemoConsumerServer botDemoConsumerServer = new BotDemoConsumerServer(botDemoConsumerConfiguration);
-
         BotDemoMasterConfiguration botDemoMasterConfiguration = new BotDemoMasterConfiguration();
         botDemoMasterConfiguration.setServerPort(BOT_DEMO_MASTER_SERVER_PORT);
         botDemoMasterConfiguration.setManagementUrl(String.format("http://127.0.0.1:%d", managementConfiguration.getServerPort()));
+        botDemoMasterConfiguration.setHumanityUrl(String.format("http://127.0.0.1:%d", humanityConfiguration.getServerPort()));
         BotDemoMasterServer botDemoMasterServer = new BotDemoMasterServer(botDemoMasterConfiguration);
 
         start(managementServer);
-        start(backboneServer);
         start(humanityServer);
-        start(botDemoConsumerServer);
         start(botDemoMasterServer);
+
+        for (int index = 0; index < 5; index++) {
+            this.startConsumer(managementConfiguration, index);
+        }
 
         Thread.sleep(60000);
 

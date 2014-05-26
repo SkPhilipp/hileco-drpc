@@ -4,6 +4,7 @@ public class BotDemoMasterConfiguration {
 
     private Integer serverPort;
     private String managementUrl;
+    private String humanityUrl;
 
     public Integer getServerPort() {
         return serverPort;
@@ -19,6 +20,14 @@ public class BotDemoMasterConfiguration {
 
     public void setManagementUrl(String managementUrl) {
         this.managementUrl = managementUrl;
+    }
+
+    public String getHumanityUrl() {
+        return humanityUrl;
+    }
+
+    public void setHumanityUrl(String humanityUrl) {
+        this.humanityUrl = humanityUrl;
     }
 
 }

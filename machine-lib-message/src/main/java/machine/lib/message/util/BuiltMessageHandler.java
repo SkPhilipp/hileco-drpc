@@ -15,7 +15,7 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
     private Class<T> responseClass;
     private String topic;
     private DelegatingMessageService delegatingMessageService;
-    private List<MessageReceiver<T>> handlers;
+    private List<MessageProcessor<T>> handlers;
     private List<Runnable> finishListeners;
     private Integer limit;
 
@@ -28,7 +28,7 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
      * @param limit                    the maximum amount of messages the event handlers may receive, null indicates not used
      * @param timeoutMillis            the maximum time the event handlers may receive, null indicates not used
      */
-    public BuiltMessageHandler(Class<T> responseClass, final String topic, final DelegatingMessageService delegatingMessageService, List<MessageReceiver<T>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
+    public BuiltMessageHandler(Class<T> responseClass, final String topic, final DelegatingMessageService delegatingMessageService, List<MessageProcessor<T>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
         this.responseClass = responseClass;
         this.topic = topic;
         this.finishListeners = finishListeners;
@@ -62,9 +62,9 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
         }
         if (limit == null || limit >= 0) {
             T content = this.open(message, this.responseClass);
-            for (MessageReceiver<T> anyHandler : handlers) {
+            for (MessageProcessor<T> anyHandler : handlers) {
                 // TODO: handle in threads & catch exceptions
-                anyHandler.handle(message, content);
+                anyHandler.process(message, content);
             }
         }
         if (doFinish) {
@@ -80,7 +80,7 @@ public class BuiltMessageHandler<T extends Serializable> extends MessageHandler<
     public void finish() {
         if (!finished) {
             finished = true;
-            delegatingMessageService.removeHandler(topic, this);
+            delegatingMessageService.stopListen(topic, this);
             for (Runnable finishListener : finishListeners) {
                 // TODO: handle in threads & catch exceptions
                 finishListener.run();

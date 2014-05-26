@@ -3,6 +3,8 @@ package bot.demo.master;
 import bot.demo.messages.ScanReply;
 import bot.demo.messages.Topics;
 import com.google.common.primitives.Ints;
+import machine.humanity.api.domain.HarvesterStatus;
+import machine.humanity.api.services.GeneratorService;
 import machine.lib.message.DelegatingMessageService;
 import machine.lib.message.util.MessageHandlerBuilder;
 import machine.lib.service.EmbeddedServer;
@@ -49,22 +51,26 @@ public class BotDemoMasterServer implements LocalServer {
         NetworkService networkService = JAXRSClientFactory.create(configuration.getManagementUrl(), NetworkService.class, PROVIDERS);
         DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), networkService);
 
+        GeneratorService generatorService = JAXRSClientFactory.create(configuration.getHumanityUrl(), GeneratorService.class, PROVIDERS);
+        generatorService.harvest("g");
+
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        MessageHandlerBuilder<ScanReply> builder = new MessageHandlerBuilder<>(ScanReply.class, delegatingMessageService)
-                //.limit(1)
-                //.time(1000L)
-                .onReceive((NetworkMessage<?> networkMessage, ScanReply content) -> {
-                    LOG.info("Received a message via built handler {}", networkMessage.getTopic());
+        MessageHandlerBuilder<ScanReply> builder = new MessageHandlerBuilder<>(ScanReply.class, delegatingMessageService);
+        builder.onReceive((NetworkMessage<?> networkMessage, ScanReply content) -> {
+            LOG.info("Received a message via built handler {}", networkMessage.getTopic());
+            //builder.send(Topics.SCAN);
+            if (generatorService.status("g").equals(HarvesterStatus.HARVESTED)) {
+                List<String> generated = generatorService.generate("g", 10);
+                for (String entry : generated) {
+                    LOG.info(entry);
                 }
-                )
-                .onFinished(() -> {
-                    LOG.info("Finished");
-                })
-                .listen(Topics.SCAN_REPLY);
+                LOG.info("Received a message via built handler {}", networkMessage.getTopic());
+            }
+        }).listen(Topics.SCAN_REPLY);
 
         Timer timer = new Timer(true);
         timer.schedule(new TimerTask() {
@@ -72,7 +78,7 @@ public class BotDemoMasterServer implements LocalServer {
             public void run() {
                 builder.send(Topics.SCAN);
             }
-        }, 0, 20);
+        }, 0, 2000);
 
     }
 

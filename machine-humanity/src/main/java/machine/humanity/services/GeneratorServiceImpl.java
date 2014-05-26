@@ -29,6 +29,11 @@ public class GeneratorServiceImpl implements GeneratorService {
         return harvesterStatus == null ? HarvesterStatus.NONE : harvesterStatus;
     }
 
+    /**
+     *
+     * @param source a 4chan board name
+     * @return harvesting status
+     */
     @Override
     public HarvesterStatus harvest(final String source) {
         HarvesterStatus harvesterStatus = this.status(source);

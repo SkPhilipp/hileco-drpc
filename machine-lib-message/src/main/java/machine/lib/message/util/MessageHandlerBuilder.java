@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MessageHandlerBuilder<RES extends Serializable> {
 
-    private List<MessageReceiver<RES>> handlers;
+    private List<MessageProcessor<RES>> handlers;
     private List<Runnable> finishListeners;
     private Long timeout;
     private Integer limit;
@@ -38,7 +38,7 @@ public class MessageHandlerBuilder<RES extends Serializable> {
         return this;
     }
 
-    public MessageHandlerBuilder<RES> onReceive(MessageReceiver<RES> handler) {
+    public MessageHandlerBuilder<RES> onReceive(MessageProcessor<RES> handler) {
         this.handlers.add(handler);
         return this;
     }
@@ -47,8 +47,8 @@ public class MessageHandlerBuilder<RES extends Serializable> {
         NetworkMessage<REQ> networkMessage = new NetworkMessage<>(topic, content);
         String callbackTopic = networkMessage.getMessageId().toString();
         BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(responseClass, callbackTopic, delegatingMessageService, handlers, finishListeners, limit, timeout);
-        delegatingMessageService.registerHandler(callbackTopic, handler);
-        delegatingMessageService.publish(networkMessage);
+        delegatingMessageService.beginListen(callbackTopic, handler);
+        delegatingMessageService.publishCustom(networkMessage);
         return this;
     }
 
@@ -58,7 +58,7 @@ public class MessageHandlerBuilder<RES extends Serializable> {
 
     public <REQ extends Serializable> MessageHandlerBuilder<RES> send(final String topic, REQ content) {
         NetworkMessage<REQ> networkMessage = new NetworkMessage<>(topic, content);
-        delegatingMessageService.publish(networkMessage);
+        delegatingMessageService.publishCustom(networkMessage);
         return this;
     }
 
@@ -68,7 +68,7 @@ public class MessageHandlerBuilder<RES extends Serializable> {
 
     public MessageHandlerBuilder<RES> listen(final String topic) {
         final BuiltMessageHandler<RES> handler = new BuiltMessageHandler<>(responseClass, topic, delegatingMessageService, handlers, finishListeners, limit, timeout);
-        delegatingMessageService.registerHandler(topic, handler);
+        delegatingMessageService.beginListen(topic, handler);
         return this;
     }
 
