@@ -1,10 +1,10 @@
 package machine.humanity;
 
-import com.google.common.primitives.Ints;
 import machine.humanity.services.GeneratorServiceImpl;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
+import machine.lib.service.util.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,17 +21,10 @@ public class HumanityServer implements LocalServer {
     }
 
     public static void main(String[] args) throws EmbeddedServerStartException {
-
-        Integer serverPort = Ints.tryParse(System.getProperty("SERVER_PORT", "81"));
-
-        LOG.info("SERVER_PORT: {}", serverPort);
-
         HumanityConfiguration configuration = new HumanityConfiguration();
-        configuration.setServerPort(serverPort);
-
+        Config.set("SERVER_PORT", 81, configuration::setServerPort);
         HumanityServer humanityServer = new HumanityServer(configuration);
         humanityServer.start();
-
     }
 
     public void start() throws EmbeddedServerStartException {

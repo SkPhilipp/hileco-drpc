@@ -2,15 +2,14 @@ package bot.demo.master;
 
 import bot.demo.messages.Topic;
 import bot.demo.messages.process.ScanReply;
-import com.google.common.primitives.Ints;
 import machine.humanity.api.domain.HarvesterStatus;
 import machine.humanity.api.services.GeneratorService;
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.TypedMessage;
 import machine.lib.message.util.MessageHandlerBuilder;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
+import machine.lib.service.util.Config;
 import machine.management.api.services.NetworkService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
@@ -30,20 +29,13 @@ public class BotDemoMasterServer implements LocalServer {
     }
 
     public static void main(String[] args) throws Exception {
-
-        String MANAGEMENT_URL = System.getProperty("MANAGEMENT_URL", "http://localhost:80/");
-        Integer SERVER_PORT = Ints.tryParse(System.getProperty("SERVER_PORT", "8080"));
-
-        LOG.info("MANAGEMENT_URL: {}", MANAGEMENT_URL);
-        LOG.info("SERVER_PORT: {}", SERVER_PORT);
-
         BotDemoMasterConfiguration configuration = new BotDemoMasterConfiguration();
-        configuration.setManagementUrl(MANAGEMENT_URL);
-        configuration.setServerPort(SERVER_PORT);
-
+        Config.set("MANAGEMENT_URL", "http://localhost:80/", configuration::setManagementUrl);
+        Config.set("HUMANITY_URL", "http://localhost:80/", configuration::setHumanityUrl);
+        Config.set("HUMANITY_SOURCE", "v", configuration::setHumanitySource);
+        Config.set("SERVER_PORT", 8080, configuration::setServerPort);
         BotDemoMasterServer server = new BotDemoMasterServer(configuration);
         server.start();
-
     }
 
     public void start() throws EmbeddedServerStartException {
@@ -60,14 +52,13 @@ public class BotDemoMasterServer implements LocalServer {
         embeddedServer.start(services);
 
         MessageHandlerBuilder<ScanReply> builder = new MessageHandlerBuilder<>(ScanReply.class, delegatingMessageService);
-        builder.onReceive((TypedMessage typedMessage, ScanReply content) -> {
-            LOG.info("Received a message via built handler {}", typedMessage.getTopic());
+        builder.onReceive(message -> {
+            LOG.info("Received a message via built handler {}", message.getTopic());
             if (generatorService.status("g").equals(HarvesterStatus.HARVESTED)) {
                 List<String> generated = generatorService.generate("g", 10);
                 for (String entry : generated) {
                     LOG.info(entry);
                 }
-                LOG.info("Received a message via built handler {}", typedMessage.getTopic());
             }
         }).listen(Topic.PROCESS_SCAN_REPLY.toString());
 

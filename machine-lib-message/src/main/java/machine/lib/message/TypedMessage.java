@@ -9,7 +9,6 @@ import java.util.UUID;
 public class TypedMessage {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private NetworkMessage<?> networkMessage;
 
     public TypedMessage(NetworkMessage<?> networkMessage) {
@@ -26,6 +25,10 @@ public class TypedMessage {
 
     public <T extends Serializable> T getContent(Class<T> contentClass) {
         return OBJECT_MAPPER.convertValue(networkMessage.getContent(), contentClass);
+    }
+
+    public NetworkMessage<?> getNetworkMessage() {
+        return networkMessage;
     }
 
 }

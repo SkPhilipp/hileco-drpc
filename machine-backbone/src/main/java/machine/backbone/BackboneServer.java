@@ -1,8 +1,7 @@
 package machine.backbone;
 
-import com.google.common.primitives.Ints;
-import machine.backbone.local.LocalInstaller;
 import machine.backbone.local.LocalConfiguration;
+import machine.backbone.local.LocalInstaller;
 import machine.backbone.local.Management;
 import machine.backbone.processes.HeartbeatProcess;
 import machine.backbone.services.RemoteCommandServiceImpl;
@@ -10,15 +9,13 @@ import machine.backbone.services.RemoteManagementImpl;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import machine.lib.service.util.Config;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class BackboneServer implements LocalServer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BackboneServer.class);
     private final BackboneConfiguration configuration;
 
     public BackboneServer(BackboneConfiguration configuration) {
@@ -26,26 +23,13 @@ public class BackboneServer implements LocalServer {
     }
 
     public static void main(String[] args) throws EmbeddedServerStartException {
-
-        String configurationDir = System.getProperty("CONFIGURATION_DIR", "/etc/machine-backbone.conf.d");
-        String managementUrl = System.getProperty("MANAGEMENT_URL", "http://localhost:80/");
-        Integer serverPort = Ints.tryParse(System.getProperty("SERVER_PORT", "82"));
-        Integer heartbeatPeriod = Ints.tryParse(System.getProperty("HEARTBEAT_PERIOD", "10"));
-
-        LOG.info("CONFIGURATION_DIR: {}", configurationDir);
-        LOG.info("MANAGEMENT_URL: {}", managementUrl);
-        LOG.info("SERVER_PORT: {}", serverPort);
-        LOG.info("HEARTBEAT_PERIOD: {}", heartbeatPeriod);
-
         BackboneConfiguration backboneConfiguration = new BackboneConfiguration();
-        backboneConfiguration.setConfigurationDir(configurationDir);
-        backboneConfiguration.setDefaultManagementUrl(managementUrl);
-        backboneConfiguration.setDefaultServerPort(serverPort);
-        backboneConfiguration.setDefaultHeartbeatPeriod(heartbeatPeriod);
-
+        Config.set("CONFIGURATION_DIR", "/etc/machine-backbone.conf.d", backboneConfiguration::setConfigurationDir);
+        Config.set("MANAGEMENT_URL", "http://localhost:80/", backboneConfiguration::setDefaultManagementUrl);
+        Config.set("SERVER_PORT", 82, backboneConfiguration::setDefaultServerPort);
+        Config.set("HEARTBEAT_PERIOD", 10, backboneConfiguration::setDefaultHeartbeatPeriod);
         BackboneServer backboneServer = new BackboneServer(backboneConfiguration);
         backboneServer.start();
-
     }
 
     public void start() throws EmbeddedServerStartException {

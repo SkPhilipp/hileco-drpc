@@ -1,7 +1,10 @@
 package machine.lib.message.util;
 
-import machine.lib.message.DelegatingMessageService;
+import machine.lib.message.LoadedTypedMessage;
+import machine.lib.message.Network;
 import machine.lib.message.TypedMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,28 +14,29 @@ import java.util.function.Consumer;
 
 public class MessageHandler<T extends Serializable> implements Consumer<TypedMessage> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MessageHandler.class);
     private boolean finished = false;
-    private Class<T> responseClass;
+    private Class<T> messageClass;
     private String topic;
-    private DelegatingMessageService delegatingMessageService;
-    private List<MessageProcessor<T>> handlers;
+    private Network network;
+    private List<Consumer<LoadedTypedMessage<T>>> handlers;
     private List<Runnable> finishListeners;
     private Integer limit;
 
     /**
-     * @param responseClass            the response message's class type
-     * @param topic                    the topic to use for unregistering
-     * @param delegatingMessageService the delegating message service to use for unregistering
-     * @param handlers                 the message event handlers
-     * @param finishListeners          the finish event handlers
-     * @param limit                    the maximum amount of messages the event handlers may receive, null indicates not used
-     * @param timeoutMillis            the maximum time the event handlers may receive, null indicates not used
+     * @param messageClass    the message's class type
+     * @param topic           the topic to use for unregistering
+     * @param network         the network to stop listen
+     * @param handlers        the message event handlers
+     * @param finishListeners the finish event handlers
+     * @param limit           the maximum amount of messages the event handlers may receive, null indicates not used
+     * @param timeoutMillis   the maximum time the event handlers may receive, null indicates not used
      */
-    public MessageHandler(Class<T> responseClass, final String topic, final DelegatingMessageService delegatingMessageService, List<MessageProcessor<T>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
-        this.responseClass = responseClass;
+    public MessageHandler(Class<T> messageClass, final String topic, final Network network, List<Consumer<LoadedTypedMessage<T>>> handlers, List<Runnable> finishListeners, Integer limit, Long timeoutMillis) {
+        this.messageClass = messageClass;
         this.topic = topic;
         this.finishListeners = finishListeners;
-        this.delegatingMessageService = delegatingMessageService;
+        this.network = network;
         this.handlers = handlers;
         this.limit = limit;
         if (timeoutMillis != null) {
@@ -49,10 +53,10 @@ public class MessageHandler<T extends Serializable> implements Consumer<TypedMes
     /**
      * Notifies any item in {@link #handlers} that a message was received. Handles limiting.
      *
-     * @param message the message to process
+     * @param typedMessage the message to process
      */
     @Override
-    public void accept(TypedMessage message) {
+    public void accept(TypedMessage typedMessage) {
         boolean doFinish = false;
         if (limit != null && limit > 0) {
             limit--;
@@ -61,10 +65,14 @@ public class MessageHandler<T extends Serializable> implements Consumer<TypedMes
             }
         }
         if (limit == null || limit >= 0) {
-            for (MessageProcessor<T> anyHandler : handlers) {
-                // TODO: handle in threads & catch exceptions
-                anyHandler.process(message, message.getContent(this.responseClass));
-            }
+            LoadedTypedMessage<T> loadedTypedMessage = new LoadedTypedMessage<>(typedMessage.getNetworkMessage(), this.messageClass);
+            handlers.parallelStream().forEach((processor) -> {
+                try {
+                    processor.accept(loadedTypedMessage);
+                } catch (Exception e) {
+                    LOG.error("A processor erred while handling a message", e);
+                }
+            });
         }
         if (doFinish) {
             this.finish();
@@ -79,11 +87,14 @@ public class MessageHandler<T extends Serializable> implements Consumer<TypedMes
     public void finish() {
         if (!finished) {
             finished = true;
-            delegatingMessageService.stopListen(topic, this);
-            for (Runnable finishListener : finishListeners) {
-                // TODO: handle in threads & catch exceptions
-                finishListener.run();
-            }
+            network.stopListen(topic, this);
+            finishListeners.parallelStream().forEach((listener) -> {
+                try {
+                    listener.run();
+                } catch (Exception e) {
+                    LOG.error("A processor erred while handling a message", e);
+                }
+            });
         }
     }
 
