@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ProcessActionHandler {
+public class ProcessActionHandler implements AutoCloseable {
 
     private Map<String, UserActionHandler> userActionHandlers;
     private UUID processId;
@@ -28,7 +28,8 @@ public class ProcessActionHandler {
         this.network.beginListen(Topic.PROCESS_REGISTER.with(processId), this::register);
     }
 
-    public void stop() {
+    @Override
+    public void close() {
         this.network.stopListen(Topic.PROCESS_SCAN.toString());
         this.network.stopListen(Topic.PROCESS_LOGIN.with(processId));
         this.network.stopListen(Topic.PROCESS_LOGOUT.with(processId));
@@ -52,7 +53,7 @@ public class ProcessActionHandler {
         String username = logoutAction.getUsername();
         if (this.userActionHandlers.containsKey(username)) {
             UserActionHandler userActionHandler = this.userActionHandlers.get(username);
-            userActionHandler.stop();
+            userActionHandler.close();
             this.userActionHandlers.remove(username);
         }
     }

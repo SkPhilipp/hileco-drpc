@@ -4,9 +4,12 @@ import bot.demo.messages.Topic;
 import bot.demo.messages.user.*;
 import machine.lib.message.Network;
 import machine.lib.message.TypedMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class UserActionHandler {
+public class UserActionHandler implements AutoCloseable {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserActionHandler.class);
     private String username;
     private Network network;
 
@@ -23,7 +26,8 @@ public class UserActionHandler {
         this.network.beginListen(Topic.USER_TRADE.with(username), UserActionHandler.this::trade);
     }
 
-    public void stop() {
+    @Override
+    public void close() {
         this.network.stopListen(Topic.USER_CHAT.with(username));
         this.network.stopListen(Topic.USER_FARM.with(username));
         this.network.stopListen(Topic.USER_INVENTORIZE.with(username));
@@ -33,27 +37,26 @@ public class UserActionHandler {
 
     public void chat(TypedMessage message) {
         ChatAction action = message.getContent(ChatAction.class);
-        // TODO: implement
+        LOG.info("{}->{} chat \"{}\"", username, action.getTo(), action.getMessage());
     }
 
     public void farm(TypedMessage message) {
         FarmAction action = message.getContent(FarmAction.class);
-        // TODO: implement
+        LOG.info("{} farm {}", username, action.getWhat());
     }
 
     public void inventorize(TypedMessage message) {
         InventorizeAction action = message.getContent(InventorizeAction.class);
-        // TODO: implement
+        LOG.info("{} inventorize {}", username, action.getTradeables());
     }
 
     public void locate(TypedMessage message) {
-        LocateAction action = message.getContent(LocateAction.class);
-        // TODO: implement
+        LOG.info("{} locate", username);
     }
 
     public void trade(TypedMessage message) {
         TradeAction action = message.getContent(TradeAction.class);
-        // TODO: implement
+        LOG.info("{}->{} trade {}", username, action.getTo(), action.getTradeables());
     }
 
 }

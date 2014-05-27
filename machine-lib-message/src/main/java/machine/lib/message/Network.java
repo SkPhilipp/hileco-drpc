@@ -4,12 +4,13 @@ import machine.message.api.entities.NetworkMessage;
 
 import java.io.Serializable;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface Network {
 
-    public void beginListen(String topic, TypedMessageHandler typedMessageHandler);
+    public void beginListen(String topic, Consumer<TypedMessage> typedMessageHandler);
 
-    public void stopListen(String topic, TypedMessageHandler typedMessageHandler);
+    public void stopListen(String topic, Consumer<TypedMessage> typedMessageHandler);
 
     public void stopListen(String topic);
 

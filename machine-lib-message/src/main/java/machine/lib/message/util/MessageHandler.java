@@ -2,14 +2,14 @@ package machine.lib.message.util;
 
 import machine.lib.message.DelegatingMessageService;
 import machine.lib.message.TypedMessage;
-import machine.lib.message.TypedMessageHandler;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
-public class MessageHandler<T extends Serializable> implements TypedMessageHandler {
+public class MessageHandler<T extends Serializable> implements Consumer<TypedMessage> {
 
     private boolean finished = false;
     private Class<T> responseClass;
@@ -52,7 +52,7 @@ public class MessageHandler<T extends Serializable> implements TypedMessageHandl
      * @param message the message to process
      */
     @Override
-    public void handle(TypedMessage message) {
+    public void accept(TypedMessage message) {
         boolean doFinish = false;
         if (limit != null && limit > 0) {
             limit--;
