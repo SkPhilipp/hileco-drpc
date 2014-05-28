@@ -1,6 +1,6 @@
 package machine.lib.message.proxy;
 
-import machine.lib.message.TypedMessage;
+import machine.message.api.entities.NetworkMessage;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-public class RemotedListener implements Consumer<TypedMessage> {
+public class RemotedListener implements Consumer<NetworkMessage> {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(RemotedListener.class);
@@ -20,8 +20,8 @@ public class RemotedListener implements Consumer<TypedMessage> {
     }
 
     @Override
-    public void accept(TypedMessage message) {
-        MethodCallMessage call = message.getContent(MethodCallMessage.class);
+    public void accept(NetworkMessage message) {
+        MethodCallMessage call = OBJECT_MAPPER.convertValue(message.getContent(), MethodCallMessage.class);
         Method[] methods = proxied.getClass().getMethods();
         Method match = null;
         for (Method method : methods) {

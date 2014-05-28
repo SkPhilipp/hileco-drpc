@@ -1,7 +1,6 @@
 package bot.demo.master;
 
-import bot.demo.master.api.RemoteMasterImpl;
-import machine.humanity.api.services.GeneratorService;
+import bot.demo.master.api.MasterImpl;
 import machine.lib.message.DelegatingMessageService;
 import machine.lib.message.proxy.RemoteProxyBuilder;
 import machine.lib.service.EmbeddedServer;
@@ -42,17 +41,15 @@ public class BotDemoMasterServer implements LocalServer {
         DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), networkService);
         RemoteProxyBuilder remoteProxyBuilder = new RemoteProxyBuilder(delegatingMessageService);
 
-        String source = configuration.getHumanitySource();
-
-        GeneratorService generatorService = JAXRSClientFactory.create(configuration.getHumanityUrl(), GeneratorService.class, PROVIDERS);
-        generatorService.harvest(source);
+        // String source = configuration.getHumanitySource();
+        // GeneratorService generatorService = JAXRSClientFactory.create(configuration.getHumanityUrl(), GeneratorService.class, PROVIDERS);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        RemoteMasterImpl remoteMaster = new RemoteMasterImpl(remoteProxyBuilder);
+        MasterImpl remoteMaster = new MasterImpl(remoteProxyBuilder);
         remoteMaster.start();
 
     }

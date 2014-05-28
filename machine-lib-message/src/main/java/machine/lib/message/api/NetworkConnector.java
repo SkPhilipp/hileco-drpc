@@ -15,8 +15,8 @@ public interface NetworkConnector {
 
     public <T extends Remote, P> void listen(Class<T> iface, BoundRemote<P> remote, P binding);
 
-    public void endListen(Remote remote);
+    public <T extends Remote> void endListen(Class<T> iface, Remote remote);
 
-    public <P> void endListen(BoundRemote<P> remote, P binding);
+    public <T extends Remote, P> void endListen(Class<T> iface, BoundRemote<P> remote, P binding);
 
 }

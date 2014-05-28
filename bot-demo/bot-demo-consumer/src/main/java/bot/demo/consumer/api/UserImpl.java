@@ -6,13 +6,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class RemoteUserImpl implements RemoteUser, AutoCloseable {
+public class UserImpl implements RemoteUser, AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoteUserImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserImpl.class);
     private String username;
     private NetworkConnector networkConnector;
 
-    public RemoteUserImpl(String username, NetworkConnector networkConnector) {
+    public UserImpl(String username, NetworkConnector networkConnector) {
         this.username = username;
         this.networkConnector = networkConnector;
     }
@@ -23,7 +23,7 @@ public class RemoteUserImpl implements RemoteUser, AutoCloseable {
 
     @Override
     public void close() {
-        this.networkConnector.endListen(this, username);
+        this.networkConnector.endListen(RemoteUser.class, this, username);
     }
 
     @Override

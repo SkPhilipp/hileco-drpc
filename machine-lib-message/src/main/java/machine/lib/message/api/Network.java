@@ -1,6 +1,5 @@
 package machine.lib.message.api;
 
-import machine.lib.message.TypedMessage;
 import machine.message.api.entities.NetworkMessage;
 
 import java.io.Serializable;
@@ -9,9 +8,9 @@ import java.util.function.Consumer;
 
 public interface Network {
 
-    public Consumer<TypedMessage> beginListen(String topic, Consumer<TypedMessage> typedMessageHandler);
+    public Consumer<NetworkMessage> beginListen(String topic, Consumer<NetworkMessage> typedMessageHandler);
 
-    public void stopListen(String topic, Consumer<TypedMessage> typedMessageHandler);
+    public void stopListen(String topic, Consumer<NetworkMessage> typedMessageHandler);
 
     public void stopListen(String topic);
 

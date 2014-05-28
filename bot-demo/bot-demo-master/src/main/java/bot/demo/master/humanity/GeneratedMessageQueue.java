@@ -30,6 +30,7 @@ public class GeneratedMessageQueue implements AutoCloseable {
     }
 
     public void start() {
+        generatorService.harvest(generatorSource);
         scheduler.scheduleAtFixedRate(this::fillMessageQueue, 0, 10, TimeUnit.SECONDS);
     }
 

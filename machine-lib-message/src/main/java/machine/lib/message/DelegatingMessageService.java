@@ -27,7 +27,7 @@ public class DelegatingMessageService implements MessageService, Network {
     private final int port;
     private final NetworkService networkService;
     private final Map<String, UUID> subscriptionIds;
-    private final Multimap<String, Consumer<TypedMessage>> topicHandlerIds;
+    private final Multimap<String, Consumer<NetworkMessage>> topicHandlerIds;
     private final Map<String, Timer> resubscribeTimers;
 
     /**
@@ -46,11 +46,11 @@ public class DelegatingMessageService implements MessageService, Network {
      * Registers a handler for messages of a topic and ensures subscription to the topic until removed.
      *
      * @param topic               the message topic
-     * @param typedMessageHandler the message handler
+     * @param networkMessageHandler the message handler
      */
-    public Consumer<TypedMessage> beginListen(String topic, Consumer<TypedMessage> typedMessageHandler) {
+    public Consumer<NetworkMessage> beginListen(String topic, Consumer<NetworkMessage> networkMessageHandler) {
         boolean subscribed = this.topicHandlerIds.get(topic).size() > 0;
-        this.topicHandlerIds.put(topic, typedMessageHandler);
+        this.topicHandlerIds.put(topic, networkMessageHandler);
         if (!subscribed) {
             Subscription subscription = new Subscription();
             subscription.setPort(this.port);
@@ -69,7 +69,7 @@ public class DelegatingMessageService implements MessageService, Network {
             }, RESUBSCRIBE_PERIOD_MILLISECONDS, RESUBSCRIBE_PERIOD_MILLISECONDS);
             this.resubscribeTimers.put(topic, resubscribeTimer);
         }
-        return typedMessageHandler;
+        return networkMessageHandler;
     }
 
     /**
@@ -77,10 +77,10 @@ public class DelegatingMessageService implements MessageService, Network {
      * the internal resubscribe timer.
      *
      * @param topic               the topic of the registered id
-     * @param typedMessageHandler the message handler to remove
+     * @param networkMessageHandler the message handler to remove
      */
-    public void stopListen(String topic, Consumer<TypedMessage> typedMessageHandler) {
-        boolean changed = this.topicHandlerIds.remove(topic, typedMessageHandler);
+    public void stopListen(String topic, Consumer<NetworkMessage> networkMessageHandler) {
+        boolean changed = this.topicHandlerIds.remove(topic, networkMessageHandler);
         if (changed) {
             if (this.topicHandlerIds.get(topic).isEmpty()) {
                 UUID subscriptionId = this.subscriptionIds.remove(topic);
@@ -94,7 +94,7 @@ public class DelegatingMessageService implements MessageService, Network {
 
     @Override
     public void stopListen(String topic) {
-        Collection<Consumer<TypedMessage>> removedItems = this.topicHandlerIds.removeAll(topic);
+        Collection<Consumer<NetworkMessage>> removedItems = this.topicHandlerIds.removeAll(topic);
         if (!removedItems.isEmpty()) {
             if (this.topicHandlerIds.get(topic).isEmpty()) {
                 UUID subscriptionId = this.subscriptionIds.remove(topic);
@@ -117,11 +117,10 @@ public class DelegatingMessageService implements MessageService, Network {
         String topic = networkMessage.getTopic();
         UUID activeSubscriptionId = subscriptionIds.get(topic);
         if (Objects.equals(activeSubscriptionId, subscriptionId)) {
-            TypedMessage typedMessage = new TypedMessage(networkMessage);
             LOG.debug("Handling message with topic {}, id {}, subscription {}", networkMessage.getTopic(), networkMessage.getMessageId(), subscriptionId);
             Lists.newArrayList(this.topicHandlerIds.get(topic)).parallelStream().forEach((consumer) -> {
                 try {
-                    consumer.accept(typedMessage);
+                    consumer.accept(networkMessage);
                 } catch (Exception e) {
                     LOG.error("A handler erred while processing a message", e);
                 }
