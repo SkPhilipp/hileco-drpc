@@ -33,9 +33,9 @@ public class MasterServiceImpl implements MasterService, AutoCloseable {
 
     public MasterServiceImpl(NetworkConnector networkConnector) {
         this.networkConnector = networkConnector;
-        this.remoteConsumer = this.networkConnector.remote(ConsumerService.class);
-        this.remoteUserFunction = this.networkConnector.remoteBound(RemoteUser.class);
-        this.remoteProcessFunction = this.networkConnector.remoteBound(RemoteProcess.class);
+        this.remoteConsumer = this.networkConnector.remoteService(ConsumerService.class);
+        this.remoteUserFunction = this.networkConnector.remoteObject(RemoteUser.class);
+        this.remoteProcessFunction = this.networkConnector.remoteObject(RemoteProcess.class);
         this.processCache = CacheBuilder.newBuilder().expireAfterAccess(SCAN_RATE * 2, TimeUnit.SECONDS).build();
         this.userCache = CacheBuilder.newBuilder().expireAfterAccess(SCAN_RATE * 2, TimeUnit.SECONDS).build();
         this.scheduler = Executors.newSingleThreadScheduledExecutor();

@@ -19,7 +19,7 @@ public class RemoteProxyBuilder implements NetworkConnector {
     }
 
     @SuppressWarnings("unchecked")
-    public <P, T extends NetworkObject<P>> Function<P, T> remoteBound(Class<T> proxyable) {
+    public <P, T extends NetworkObject<P>> Function<P, T> remoteObject(Class<T> proxyable) {
         return binding -> {
             RemotedInvocationHandler invocationHandler = new RemotedInvocationHandler(network, proxyable, binding);
             return (T) Proxy.newProxyInstance(classLoader, new Class[]{proxyable}, invocationHandler);
@@ -27,26 +27,30 @@ public class RemoteProxyBuilder implements NetworkConnector {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends NetworkService> T remote(Class<T> proxyable) {
+    public <T extends NetworkService> T remoteService(Class<T> proxyable) {
         RemotedInvocationHandler invocationHandler = new RemotedInvocationHandler(network, proxyable);
         return (T) Proxy.newProxyInstance(classLoader, new Class[]{proxyable}, invocationHandler);
     }
 
-    public <T extends NetworkService> void listen(Class<T> iface, NetworkService networkService) {
+    public <T extends NetworkService> void listen(Class<T> iface, T networkService) {
         this.network.beginListen(RemoteTopics.getTopic(iface), new RemotedListener(networkService));
     }
 
-    public <T extends NetworkObject, P> void listen(Class<T> iface, NetworkObject<P> remote, P binding) {
-        this.network.beginListen(RemoteTopics.getTopic(iface, binding), new RemotedListener(remote));
+    public <T extends NetworkObject<P>, P> void listen(Class<T> iface, T networkObject, P binding) {
+        this.network.beginListen(RemoteTopics.getTopic(iface, binding), new RemotedListener(networkObject));
     }
 
     public <T extends NetworkService> void endListen(Class<T> iface, NetworkService networkService) {
         // TODO: implement
     }
 
-    public <T extends NetworkObject, P> void endListen(Class<T> iface, NetworkObject<P> remote, P binding) {
+    public <T extends NetworkObject, P> void endListen(Class<T> iface, NetworkObject<P> networkObject, P binding) {
         // TODO: implement
     }
 
+    @Override
+    public Network getNetwork() {
+        return network;
+    }
 
 }

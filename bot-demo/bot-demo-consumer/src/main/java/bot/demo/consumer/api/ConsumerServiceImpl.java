@@ -20,7 +20,7 @@ public class ConsumerServiceImpl implements ConsumerService, RemoteProcess, Auto
     public ConsumerServiceImpl(UUID processId, NetworkConnector networkConnector) {
         this.processId = processId;
         this.networkConnector = networkConnector;
-        this.remoteMaster = this.networkConnector.remote(MasterService.class);
+        this.remoteMaster = this.networkConnector.remoteService(MasterService.class);
         this.localUsers = new HashMap<>();
     }
 
