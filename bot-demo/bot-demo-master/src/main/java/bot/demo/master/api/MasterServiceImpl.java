@@ -47,12 +47,27 @@ public class MasterServiceImpl implements MasterService, AutoCloseable {
     public void start() {
         networkConnector.listen(MasterService.class, this);
         scheduler.scheduleAtFixedRate(remoteConsumer::notifyScan, 0, SCAN_RATE, TimeUnit.SECONDS);
-        scheduler.scheduleAtFixedRate(() -> LOG.debug("Stats - Processes: {}, Users: {}", processCache.size(), userCache.size()), 1, SCAN_RATE, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> LOG.info("Stats - Processes: {}, Users: {}", processCache.size(), userCache.size()), 1, SCAN_RATE, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::distributeTasks, 3, SCAN_RATE, TimeUnit.SECONDS);
     }
 
     @Override
     public void close() {
         networkConnector.endListen(MasterService.class, this);
+    }
+
+    public void distributeTasks(){
+        processCache.asMap().forEach((UUID id, LiveProcess process) -> {
+            if(process.getSlots() > 0){
+                String randomUsername = UUID.randomUUID().toString();
+                String randomPassword = UUID.randomUUID().toString();
+                process.getRemoteProcess().doLogin(randomUsername, randomPassword);
+            }
+        });
+        userCache.asMap().forEach((String username, LiveUser user) -> {
+            RemoteUser remoteUser = user.getRemoteUser();
+            remoteUser.doChat("world", "hello");
+        });
     }
 
     @Override
