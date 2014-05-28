@@ -19,6 +19,8 @@ import java.util.function.Consumer;
 
 /**
  * An implementation of {@link machine.lib.message.api.Network} and {@link MessageService}.
+ *
+ * This implementation pools handlers' subscriptions, and keeps track of subscription ids.
  */
 public class DelegatingMessageService implements MessageService, Network {
 
@@ -42,12 +44,6 @@ public class DelegatingMessageService implements MessageService, Network {
         this.resubscribeTimers = new HashMap<>();
     }
 
-    /**
-     * Registers a handler for messages of a topic and ensures subscription to the topic until removed.
-     *
-     * @param topic                 the message topic
-     * @param networkMessageHandler the message handler
-     */
     public Consumer<NetworkMessage> beginListen(String topic, Consumer<NetworkMessage> networkMessageHandler) {
         boolean subscribed = this.topicHandlerIds.get(topic).size() > 0;
         this.topicHandlerIds.put(topic, networkMessageHandler);
@@ -72,13 +68,6 @@ public class DelegatingMessageService implements MessageService, Network {
         return networkMessageHandler;
     }
 
-    /**
-     * Removes a handler of messages, and if this is the last handler for that topic it will unsubscribe and cancel
-     * the internal resubscribe timer.
-     *
-     * @param topic                 the topic of the registered id
-     * @param networkMessageHandler the message handler to remove
-     */
     public void stopListen(String topic, Consumer<NetworkMessage> networkMessageHandler) {
         boolean changed = this.topicHandlerIds.remove(topic, networkMessageHandler);
         if (changed) {
@@ -130,11 +119,6 @@ public class DelegatingMessageService implements MessageService, Network {
         }
     }
 
-    /**
-     * @param topic   the message topic
-     * @param content the message content
-     * @return published message id
-     */
     public <T extends Serializable> UUID publishMessage(String topic, T content) {
         NetworkMessage<T> networkMessage = new NetworkMessage<>(topic, content);
         LOG.debug("Publishing with topic {}", topic);
