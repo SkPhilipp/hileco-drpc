@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -98,7 +99,11 @@ public class NetworkServiceImpl extends AbstractQueryableModelService<Subscripti
                         } else {
                             LOG.debug("Sent message with topic {} subscription {} to {}.", networkMessage.getTopic(), subscriptionId, target);
                         }
-                    } catch (Throwable e) {
+                    }
+                    catch (ConnectException e){
+                        LOG.warn("Unable to connect to subscribed receiver {}", target);
+                    }
+                    catch (Throwable e) {
                         LOG.warn("Erred while sending to a subscribed receiver", e);
                     }
                 });
