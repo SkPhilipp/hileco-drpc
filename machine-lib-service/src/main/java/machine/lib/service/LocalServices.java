@@ -1,15 +1,11 @@
 package machine.lib.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
 public class LocalServices extends Application {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LocalServices.class);
     private static ThreadLocal<Set<Object>> inheritableLocalServices = new InheritableThreadLocal<>();
 
     /**
