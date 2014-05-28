@@ -1,6 +1,6 @@
 package bot.demo.consumer;
 
-import bot.demo.consumer.api.ConsumerImpl;
+import bot.demo.consumer.api.ConsumerServiceImpl;
 import machine.lib.message.DelegatingMessageService;
 import machine.lib.message.proxy.RemoteProxyBuilder;
 import machine.lib.service.EmbeddedServer;
@@ -45,7 +45,7 @@ public class BotDemoConsumerServer implements LocalServer {
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        ConsumerImpl consumerImpl = new ConsumerImpl(serverId, remoteProxyBuilder);
+        ConsumerServiceImpl consumerImpl = new ConsumerServiceImpl(serverId, remoteProxyBuilder);
         consumerImpl.start();
 
     }

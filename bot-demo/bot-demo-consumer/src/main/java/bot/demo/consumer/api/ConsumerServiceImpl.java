@@ -1,6 +1,6 @@
 package bot.demo.consumer.api;
 
-import bot.demo.master.api.RemoteMaster;
+import bot.demo.master.api.MasterService;
 import machine.lib.message.api.NetworkConnector;
 
 import java.util.HashMap;
@@ -8,30 +8,30 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class ConsumerImpl implements RemoteConsumer, RemoteProcess, AutoCloseable {
+public class ConsumerServiceImpl implements ConsumerService, RemoteProcess, AutoCloseable {
 
     private static final Integer INITIAL_SLOTS_SIZE = 5;
 
     private final NetworkConnector networkConnector;
-    private final RemoteMaster remoteMaster;
+    private final MasterService remoteMaster;
     private final UUID processId;
     private final Map<String, UserImpl> localUsers;
 
-    public ConsumerImpl(UUID processId, NetworkConnector networkConnector) {
+    public ConsumerServiceImpl(UUID processId, NetworkConnector networkConnector) {
         this.processId = processId;
         this.networkConnector = networkConnector;
-        this.remoteMaster = this.networkConnector.remote(RemoteMaster.class);
+        this.remoteMaster = this.networkConnector.remote(MasterService.class);
         this.localUsers = new HashMap<>();
     }
 
     public void start() {
-        this.networkConnector.listen(RemoteConsumer.class, this);
+        this.networkConnector.listen(ConsumerService.class, this);
         this.networkConnector.listen(RemoteProcess.class, this, processId);
     }
 
     @Override
     public void close() throws Exception {
-        this.networkConnector.endListen(RemoteConsumer.class, this);
+        this.networkConnector.endListen(ConsumerService.class, this);
         this.networkConnector.endListen(RemoteProcess.class, this, processId);
     }
 

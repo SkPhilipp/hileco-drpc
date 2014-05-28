@@ -2,10 +2,10 @@ package machine.lib.message.proxy;
 
 import java.io.Serializable;
 
-public class MethodCallMessage implements Serializable {
+public class InvokeMessage implements Serializable {
 
     private String method;
-    private Object[] args;
+    private Object[] arguments;
 
     public String getMethod() {
         return method;
@@ -15,12 +15,12 @@ public class MethodCallMessage implements Serializable {
         this.method = method;
     }
 
-    public Object[] getArgs() {
-        return args;
+    public Object[] getArguments() {
+        return arguments;
     }
 
-    public void setArgs(Object[] args) {
-        this.args = args;
+    public void setArguments(Object[] arguments) {
+        this.arguments = arguments;
     }
 
 }

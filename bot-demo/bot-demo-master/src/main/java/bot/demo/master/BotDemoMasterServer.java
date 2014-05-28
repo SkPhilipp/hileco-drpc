@@ -1,6 +1,6 @@
 package bot.demo.master;
 
-import bot.demo.master.api.MasterImpl;
+import bot.demo.master.api.MasterServiceImpl;
 import machine.lib.message.DelegatingMessageService;
 import machine.lib.message.proxy.RemoteProxyBuilder;
 import machine.lib.service.EmbeddedServer;
@@ -49,7 +49,7 @@ public class BotDemoMasterServer implements LocalServer {
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        MasterImpl remoteMaster = new MasterImpl(remoteProxyBuilder);
+        MasterServiceImpl remoteMaster = new MasterServiceImpl(remoteProxyBuilder);
         remoteMaster.start();
 
     }

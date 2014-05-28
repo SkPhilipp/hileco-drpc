@@ -1,6 +1,6 @@
 package bot.demo.master.api;
 
-import bot.demo.consumer.api.RemoteConsumer;
+import bot.demo.consumer.api.ConsumerService;
 import bot.demo.consumer.api.RemoteProcess;
 import bot.demo.consumer.api.RemoteUser;
 import bot.demo.master.api.live.LiveProcess;
@@ -19,21 +19,21 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class MasterImpl implements RemoteMaster, AutoCloseable {
+public class MasterServiceImpl implements MasterService, AutoCloseable {
 
-    public static final int SCAN_RATE = 10;
-    private static final Logger LOG = LoggerFactory.getLogger(MasterImpl.class);
+    private static final int SCAN_RATE = 10;
+    private static final Logger LOG = LoggerFactory.getLogger(MasterServiceImpl.class);
     private final ScheduledExecutorService scheduler;
     private final Cache<UUID, LiveProcess> processCache;
     private final Cache<String, LiveUser> userCache;
     private final Function<UUID, RemoteProcess> remoteProcessFunction;
     private final Function<String, RemoteUser> remoteUserFunction;
-    private final RemoteConsumer remoteConsumer;
+    private final ConsumerService remoteConsumer;
     private final NetworkConnector networkConnector;
 
-    public MasterImpl(NetworkConnector networkConnector) {
+    public MasterServiceImpl(NetworkConnector networkConnector) {
         this.networkConnector = networkConnector;
-        this.remoteConsumer = this.networkConnector.remote(RemoteConsumer.class);
+        this.remoteConsumer = this.networkConnector.remote(ConsumerService.class);
         this.remoteUserFunction = this.networkConnector.remoteBound(RemoteUser.class);
         this.remoteProcessFunction = this.networkConnector.remoteBound(RemoteProcess.class);
         this.processCache = CacheBuilder.newBuilder().expireAfterAccess(SCAN_RATE * 2, TimeUnit.SECONDS).build();
@@ -42,17 +42,17 @@ public class MasterImpl implements RemoteMaster, AutoCloseable {
     }
 
     /**
-     * Publishes this {@link RemoteMaster} implementation on the network, initiates scanning.
+     * Publishes this {@link MasterService} implementation on the network, initiates scanning.
      */
     public void start() {
-        networkConnector.listen(RemoteMaster.class, this);
+        networkConnector.listen(MasterService.class, this);
         scheduler.scheduleAtFixedRate(remoteConsumer::notifyScan, 0, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(() -> LOG.debug("Stats - Processes: {}, Users: {}", processCache.size(), userCache.size()), 1, SCAN_RATE, TimeUnit.SECONDS);
     }
 
     @Override
     public void close() {
-        networkConnector.endListen(RemoteMaster.class, this);
+        networkConnector.endListen(MasterService.class, this);
     }
 
     @Override

@@ -45,7 +45,7 @@ public class DelegatingMessageService implements MessageService, Network {
     /**
      * Registers a handler for messages of a topic and ensures subscription to the topic until removed.
      *
-     * @param topic               the message topic
+     * @param topic                 the message topic
      * @param networkMessageHandler the message handler
      */
     public Consumer<NetworkMessage> beginListen(String topic, Consumer<NetworkMessage> networkMessageHandler) {
@@ -76,7 +76,7 @@ public class DelegatingMessageService implements MessageService, Network {
      * Removes a handler of messages, and if this is the last handler for that topic it will unsubscribe and cancel
      * the internal resubscribe timer.
      *
-     * @param topic               the topic of the registered id
+     * @param topic                 the topic of the registered id
      * @param networkMessageHandler the message handler to remove
      */
     public void stopListen(String topic, Consumer<NetworkMessage> networkMessageHandler) {

@@ -1,10 +1,10 @@
 package bot.demo.consumer.api;
 
-import machine.lib.message.proxy.BoundRemote;
+import machine.lib.message.api.NetworkObject;
 
 import java.util.List;
 
-public interface RemoteUser extends BoundRemote<String> {
+public interface RemoteUser extends NetworkObject<String> {
 
     public void doChat(String receiver, String message);
 

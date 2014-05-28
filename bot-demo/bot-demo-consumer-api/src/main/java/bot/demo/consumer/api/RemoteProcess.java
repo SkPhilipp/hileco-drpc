@@ -1,10 +1,10 @@
 package bot.demo.consumer.api;
 
-import machine.lib.message.proxy.BoundRemote;
+import machine.lib.message.api.NetworkObject;
 
 import java.util.UUID;
 
-public interface RemoteProcess extends BoundRemote<UUID> {
+public interface RemoteProcess extends NetworkObject<UUID> {
 
     public void doLogin(String username, String password);
 

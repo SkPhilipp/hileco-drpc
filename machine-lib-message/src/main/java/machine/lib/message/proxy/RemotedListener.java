@@ -21,7 +21,7 @@ public class RemotedListener implements Consumer<NetworkMessage> {
 
     @Override
     public void accept(NetworkMessage message) {
-        MethodCallMessage call = OBJECT_MAPPER.convertValue(message.getContent(), MethodCallMessage.class);
+        InvokeMessage call = OBJECT_MAPPER.convertValue(message.getContent(), InvokeMessage.class);
         Method[] methods = proxied.getClass().getMethods();
         Method match = null;
         for (Method method : methods) {
@@ -33,7 +33,7 @@ public class RemotedListener implements Consumer<NetworkMessage> {
         if (match != null) {
             Class<?>[] parameterTypes = match.getParameterTypes();
             Object[] convertedArgs = new Object[parameterTypes.length];
-            Object[] originalArgs = call.getArgs();
+            Object[] originalArgs = call.getArguments();
             for (int i = 0; i < parameterTypes.length; i++) {
                 Object converted = OBJECT_MAPPER.convertValue(originalArgs[i], parameterTypes[i]);
                 convertedArgs[i] = converted;
@@ -41,10 +41,10 @@ public class RemotedListener implements Consumer<NetworkMessage> {
             try {
                 match.invoke(this.proxied, convertedArgs);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                LOG.error("Unable to process a call ( erred ) \"{}:{}({})\"", proxied.getClass(), call.getMethod(), call.getArgs(), e);
+                LOG.error("Unable to process a call ( erred ) \"{}:{}({})\"", proxied.getClass(), call.getMethod(), call.getArguments(), e);
             }
         } else {
-            LOG.error("Unable to process a call ( no match ) \"{}:{}({})\"", proxied.getClass(), call.getMethod(), call.getArgs(), new Exception());
+            LOG.error("Unable to process a call ( no match ) \"{}:{}({})\"", proxied.getClass(), call.getMethod(), call.getArguments(), new Exception());
         }
     }
 
