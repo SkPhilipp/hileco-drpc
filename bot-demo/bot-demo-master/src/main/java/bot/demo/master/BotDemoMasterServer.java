@@ -1,11 +1,9 @@
 package bot.demo.master;
 
-import bot.demo.messages.Topic;
-import bot.demo.messages.process.ScanReply;
-import machine.humanity.api.domain.HarvesterStatus;
+import bot.demo.master.api.RemoteMasterImpl;
 import machine.humanity.api.services.GeneratorService;
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.util.MessageHandlerBuilder;
+import machine.lib.message.proxy.RemoteProxyBuilder;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
@@ -13,15 +11,15 @@ import machine.lib.service.util.Config;
 import machine.management.api.services.NetworkService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BotDemoMasterServer implements LocalServer {
 
     private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
-    private static final Logger LOG = LoggerFactory.getLogger(BotDemoMasterServer.class);
     private final BotDemoMasterConfiguration configuration;
 
     public BotDemoMasterServer(BotDemoMasterConfiguration configuration) throws EmbeddedServerStartException {
@@ -42,33 +40,20 @@ public class BotDemoMasterServer implements LocalServer {
 
         NetworkService networkService = JAXRSClientFactory.create(configuration.getManagementUrl(), NetworkService.class, PROVIDERS);
         DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), networkService);
+        RemoteProxyBuilder remoteProxyBuilder = new RemoteProxyBuilder(delegatingMessageService);
+
+        String source = configuration.getHumanitySource();
 
         GeneratorService generatorService = JAXRSClientFactory.create(configuration.getHumanityUrl(), GeneratorService.class, PROVIDERS);
-        generatorService.harvest("g");
+        generatorService.harvest(source);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        MessageHandlerBuilder<ScanReply> builder = new MessageHandlerBuilder<>(ScanReply.class, delegatingMessageService);
-        builder.onReceive(message -> {
-            LOG.info("Received a message via built handler {}", message.getTopic());
-            if (generatorService.status("g").equals(HarvesterStatus.HARVESTED)) {
-                List<String> generated = generatorService.generate("g", 10);
-                for (String entry : generated) {
-                    LOG.info(entry);
-                }
-            }
-        }).listen(Topic.PROCESS_SCAN_REPLY.toString());
-
-        Timer timer = new Timer(true);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                builder.send(Topic.PROCESS_SCAN.toString());
-            }
-        }, 0, 2000);
+        RemoteMasterImpl remoteMaster = new RemoteMasterImpl(remoteProxyBuilder);
+        remoteMaster.start();
 
     }
 

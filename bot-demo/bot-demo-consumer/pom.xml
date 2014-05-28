@@ -24,17 +24,22 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
+            <artifactId>bot-demo-consumer-api</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>machine</groupId>
+            <artifactId>bot-demo-master-api</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>machine</groupId>
             <artifactId>machine-lib-service</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>
             <groupId>machine</groupId>
             <artifactId>machine-lib-message</artifactId>
-            <version>${machine.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>bot-demo-messages</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>

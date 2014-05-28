@@ -12,7 +12,8 @@
     <artifactId>bot-demo</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>bot-demo-messages</module>
+        <module>bot-demo-master-api</module>
+        <module>bot-demo-consumer-api</module>
         <module>bot-demo-master</module>
         <module>bot-demo-consumer</module>
     </modules>

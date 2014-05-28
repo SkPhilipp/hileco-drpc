@@ -84,6 +84,7 @@ public class Servers {
         botDemoMasterConfiguration.setServerPort(BOT_DEMO_MASTER_SERVER_PORT);
         botDemoMasterConfiguration.setManagementUrl(String.format("http://127.0.0.1:%d", managementConfiguration.getServerPort()));
         botDemoMasterConfiguration.setHumanityUrl(String.format("http://127.0.0.1:%d", humanityConfiguration.getServerPort()));
+        botDemoMasterConfiguration.setHumanitySource("v");
         BotDemoMasterServer botDemoMasterServer = new BotDemoMasterServer(botDemoMasterConfiguration);
 
         start(managementServer);

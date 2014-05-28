@@ -1,7 +1,9 @@
 package bot.demo.consumer;
 
-import bot.demo.consumer.handlers.ProcessActionHandler;
+import bot.demo.consumer.api.RemoteConsumerImpl;
+import bot.demo.consumer.api.RemoteProcessImpl;
 import machine.lib.message.DelegatingMessageService;
+import machine.lib.message.proxy.RemoteProxyBuilder;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
@@ -37,14 +39,18 @@ public class BotDemoConsumerServer implements LocalServer {
         UUID serverId = remoteManagementService.getServerId();
         NetworkService networkService = JAXRSClientFactory.create(managementURL, NetworkService.class, PROVIDERS);
         DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), networkService);
+        RemoteProxyBuilder remoteProxyBuilder = new RemoteProxyBuilder(delegatingMessageService);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        ProcessActionHandler processActionHandler = new ProcessActionHandler(serverId, delegatingMessageService);
-        processActionHandler.start();
+        RemoteProcessImpl remoteProcessImpl = new RemoteProcessImpl(serverId, remoteProxyBuilder);
+        remoteProcessImpl.start();
+
+        RemoteConsumerImpl remoteConsumerImpl = new RemoteConsumerImpl(serverId, remoteProxyBuilder);
+        remoteConsumerImpl.start();
 
     }
 

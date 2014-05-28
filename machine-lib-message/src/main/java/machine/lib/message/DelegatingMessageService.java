@@ -3,6 +3,7 @@ package machine.lib.message;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import machine.lib.message.api.Network;
 import machine.management.api.entities.Subscription;
 import machine.management.api.services.NetworkService;
 import machine.message.api.entities.NetworkMessage;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
 
 
 /**
- * An implementation of {@link Network} and {@link MessageService}.
+ * An implementation of {@link machine.lib.message.api.Network} and {@link MessageService}.
  */
 public class DelegatingMessageService implements MessageService, Network {
 
@@ -47,7 +48,7 @@ public class DelegatingMessageService implements MessageService, Network {
      * @param topic               the message topic
      * @param typedMessageHandler the message handler
      */
-    public void beginListen(String topic, Consumer<TypedMessage> typedMessageHandler) {
+    public Consumer<TypedMessage> beginListen(String topic, Consumer<TypedMessage> typedMessageHandler) {
         boolean subscribed = this.topicHandlerIds.get(topic).size() > 0;
         this.topicHandlerIds.put(topic, typedMessageHandler);
         if (!subscribed) {
@@ -68,6 +69,7 @@ public class DelegatingMessageService implements MessageService, Network {
             }, RESUBSCRIBE_PERIOD_MILLISECONDS, RESUBSCRIBE_PERIOD_MILLISECONDS);
             this.resubscribeTimers.put(topic, resubscribeTimer);
         }
+        return typedMessageHandler;
     }
 
     /**
@@ -135,15 +137,10 @@ public class DelegatingMessageService implements MessageService, Network {
      * @return published message id
      */
     public <T extends Serializable> UUID publishMessage(String topic, T content) {
-        NetworkMessage<?> networkMessage = new NetworkMessage<>(topic, content);
+        NetworkMessage<T> networkMessage = new NetworkMessage<>(topic, content);
         LOG.debug("Publishing with topic {}", topic);
         this.networkService.publish(networkMessage);
         return networkMessage.getMessageId();
-    }
-
-    @Override
-    public <T extends Serializable> UUID publishMessage(UUID topic, T content) {
-        return this.publishMessage(topic.toString(), content);
     }
 
     public <T extends Serializable> void publishCustom(NetworkMessage<T> message) {

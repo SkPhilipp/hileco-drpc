@@ -1,7 +1,7 @@
 package machine.lib.message.util;
 
 import machine.lib.message.LoadedTypedMessage;
-import machine.lib.message.Network;
+import machine.lib.message.api.Network;
 import machine.message.api.entities.NetworkMessage;
 
 import java.io.Serializable;
