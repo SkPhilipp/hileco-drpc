@@ -1,10 +1,10 @@
 package machine.lib.service.util;
 
-import com.google.common.primitives.Ints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Config {
 
@@ -16,8 +16,9 @@ public class Config {
         consumer.accept(value);
     }
 
-    public static void set(String propertyName, Integer defaultValue, Consumer<Integer> consumer) {
-        Integer value = Ints.tryParse(System.getProperty(propertyName, Integer.toString(defaultValue)));
+    public static <T> void set(String propertyName, T defaultValue, Consumer<T> consumer, Function<String, T> parser) {
+        String propertyValue = System.getProperty(propertyName);
+        T value = propertyValue == null ? defaultValue : parser.apply(propertyValue);
         LOG.info("{}: {}", propertyName, value);
         consumer.accept(value);
     }

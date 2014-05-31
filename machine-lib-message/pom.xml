@@ -14,12 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-message-api</artifactId>
-            <version>${machine.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-management-api</artifactId>
+            <artifactId>machine-router-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>

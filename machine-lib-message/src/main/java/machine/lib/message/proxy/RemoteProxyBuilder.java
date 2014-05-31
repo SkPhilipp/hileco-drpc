@@ -40,17 +40,12 @@ public class RemoteProxyBuilder implements NetworkConnector {
         this.network.beginListen(RemoteTopics.getTopic(iface, binding), new RemotedListener(networkObject));
     }
 
-    public <T extends NetworkService> void endListen(Class<T> iface, NetworkService networkService) {
+    public <T extends NetworkService> void stopListen(Class<T> iface, NetworkService networkService) {
         // TODO: implement
     }
 
-    public <T extends NetworkObject, P> void endListen(Class<T> iface, NetworkObject<P> networkObject, P binding) {
+    public <T extends NetworkObject, P> void stopListen(Class<T> iface, NetworkObject<P> networkObject, P binding) {
         // TODO: implement
-    }
-
-    @Override
-    public Network getNetwork() {
-        return network;
     }
 
 }

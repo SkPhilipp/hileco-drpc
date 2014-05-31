@@ -1,8 +1,7 @@
 package machine.lib.message.api;
 
-import machine.message.api.entities.NetworkMessage;
+import machine.router.api.entities.NetworkMessage;
 
-import java.io.Serializable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -34,21 +33,11 @@ public interface Network {
     public void stopListen(String topic);
 
     /**
-     * Publishes a message onto the network.
+     * Publishes a message onto the network. If it does not have an id assigned this will assign a random id.
      *
-     * @param topic the topic of the message
-     * @param content the content of the message
-     * @param <T> the type of message content
+     * @param message the message to publish
      * @return the message id
      */
-    public <T extends Serializable> UUID publishMessage(String topic, T content);
-
-    /**
-     * Publishes a predefined message onto the network.
-     *
-     * @param message the message itself
-     * @param <T> the type of message content
-     */
-    public <T extends Serializable> void publishCustom(NetworkMessage<T> message);
+    public UUID publishMessage(NetworkMessage message);
 
 }

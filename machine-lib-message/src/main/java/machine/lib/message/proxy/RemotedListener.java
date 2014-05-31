@@ -1,6 +1,6 @@
 package machine.lib.message.proxy;
 
-import machine.message.api.entities.NetworkMessage;
+import machine.router.api.entities.NetworkMessage;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +21,10 @@ public class RemotedListener implements Consumer<NetworkMessage> {
 
     @Override
     public void accept(NetworkMessage message) {
-        InvokeMessage call = OBJECT_MAPPER.convertValue(message.getContent(), InvokeMessage.class);
         Method[] methods = proxied.getClass().getMethods();
         Method match = null;
         for (Method method : methods) {
-            if (method.getName().equals(call.getMethod())) {
+            if (method.getName().equals(message.getMethod())) {
                 match = method;
                 break;
             }
@@ -33,7 +32,7 @@ public class RemotedListener implements Consumer<NetworkMessage> {
         if (match != null) {
             Class<?>[] parameterTypes = match.getParameterTypes();
             Object[] convertedArgs = new Object[parameterTypes.length];
-            Object[] originalArgs = call.getArguments();
+            Object[] originalArgs = message.getArguments();
             for (int i = 0; i < parameterTypes.length; i++) {
                 Object converted = OBJECT_MAPPER.convertValue(originalArgs[i], parameterTypes[i]);
                 convertedArgs[i] = converted;
@@ -41,10 +40,10 @@ public class RemotedListener implements Consumer<NetworkMessage> {
             try {
                 match.invoke(this.proxied, convertedArgs);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                LOG.error("Unable to process a call ( erred ) \"{}:{}({})\"", proxied.getClass(), call.getMethod(), call.getArguments(), e);
+                LOG.error("Unable to process a call ( erred ) \"{}:{}({})\"", proxied.getClass(), message.getMethod(), message.getArguments(), e);
             }
         } else {
-            LOG.error("Unable to process a call ( no match ) \"{}:{}({})\"", proxied.getClass(), call.getMethod(), call.getArguments(), new Exception());
+            LOG.error("Unable to process a call ( no match ) \"{}:{}({})\"", proxied.getClass(), message.getMethod(), message.getArguments(), new Exception());
         }
     }
 

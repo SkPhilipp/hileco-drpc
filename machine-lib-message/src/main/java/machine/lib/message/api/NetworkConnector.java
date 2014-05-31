@@ -63,7 +63,7 @@ public interface NetworkConnector {
      * @param networkService an implementation of the given interface
      * @param <T> the networkservice interface type
      */
-    public <T extends NetworkService> void endListen(Class<T> iface, NetworkService networkService);
+    public <T extends NetworkService> void stopListen(Class<T> iface, NetworkService networkService);
 
     /**
      * Ends listening for all iface-defined method invocation messages on the given networkObject and binding combination.
@@ -74,11 +74,6 @@ public interface NetworkConnector {
      * @param <T> network object type
      * @param <P> network object identifier type
      */
-    public <T extends NetworkObject, P> void endListen(Class<T> iface, NetworkObject<P> networkObject, P binding);
-
-    /**
-     * @return the network this connector is active on
-     */
-    public Network getNetwork();
+    public <T extends NetworkObject, P> void stopListen(Class<T> iface, NetworkObject<P> networkObject, P binding);
 
 }

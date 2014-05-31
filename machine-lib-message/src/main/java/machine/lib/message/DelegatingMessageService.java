@@ -4,41 +4,40 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import machine.lib.message.api.Network;
-import machine.management.api.entities.Subscription;
-import machine.management.api.services.NetworkService;
-import machine.message.api.entities.NetworkMessage;
-import machine.message.api.exceptions.NotSubscribedException;
-import machine.message.api.services.MessageService;
+import machine.router.api.entities.NetworkMessage;
+import machine.router.api.entities.Subscription;
+import machine.router.api.exceptions.NotSubscribedException;
+import machine.router.api.services.MessageService;
+import machine.router.api.services.RouterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 
 
 /**
  * An implementation of {@link machine.lib.message.api.Network} and {@link MessageService}.
- *
+ * <p/>
  * This implementation pools handlers' subscriptions, and keeps track of subscription ids.
  */
 public class DelegatingMessageService implements MessageService, Network {
 
     private static final Logger LOG = LoggerFactory.getLogger(DelegatingMessageService.class);
-    private static final int RESUBSCRIBE_PERIOD_MILLISECONDS = (int) (NetworkService.DEFAULT_SUBSCRIPTION_EXPIRE_TIME * 0.9 * 60000);
+    private static final int RESUBSCRIBE_PERIOD_MILLISECONDS = (int) (RouterService.DEFAULT_SUBSCRIPTION_EXPIRE_TIME * 0.9 * 60000);
     private final int port;
-    private final NetworkService networkService;
+    private final RouterService routerService;
     private final Map<String, UUID> subscriptionIds;
     private final Multimap<String, Consumer<NetworkMessage>> topicHandlerIds;
     private final Map<String, Timer> resubscribeTimers;
 
     /**
      * @param localPort      port over which this service is made available
-     * @param networkService networkservice on which to subscribe and publish messages over
+     * @param routerService networkservice on which to subscribe and publish messages over
      */
-    public DelegatingMessageService(Integer localPort, NetworkService networkService) {
+    public DelegatingMessageService(Integer localPort, RouterService routerService) {
         this.port = localPort;
-        this.networkService = networkService;
+        this.routerService = routerService;
         this.topicHandlerIds = ArrayListMultimap.create();
         this.subscriptionIds = new HashMap<>();
         this.resubscribeTimers = new HashMap<>();
@@ -51,7 +50,7 @@ public class DelegatingMessageService implements MessageService, Network {
             Subscription subscription = new Subscription();
             subscription.setPort(this.port);
             subscription.setTopic(topic);
-            Subscription saved = this.networkService.save(subscription);
+            Subscription saved = this.routerService.save(subscription);
             final UUID savedId = saved.getId();
             this.subscriptionIds.put(topic, savedId);
             LOG.debug("Saved subscription {} to topic {}", savedId, topic);
@@ -60,7 +59,7 @@ public class DelegatingMessageService implements MessageService, Network {
                 @Override
                 public void run() {
                     LOG.trace("Extending subscription {} to topic {}", savedId, topic);
-                    DelegatingMessageService.this.networkService.extend(savedId);
+                    DelegatingMessageService.this.routerService.extend(savedId);
                 }
             }, RESUBSCRIBE_PERIOD_MILLISECONDS, RESUBSCRIBE_PERIOD_MILLISECONDS);
             this.resubscribeTimers.put(topic, resubscribeTimer);
@@ -76,7 +75,7 @@ public class DelegatingMessageService implements MessageService, Network {
                 Timer removed = this.resubscribeTimers.remove(topic);
                 removed.cancel();
                 LOG.debug("Removing subscription {}", subscriptionId);
-                this.networkService.delete(subscriptionId);
+                this.routerService.delete(subscriptionId);
             }
         }
     }
@@ -90,7 +89,7 @@ public class DelegatingMessageService implements MessageService, Network {
                 Timer removed = this.resubscribeTimers.remove(topic);
                 removed.cancel();
                 LOG.debug("Removing subscription {}", subscriptionId);
-                this.networkService.delete(subscriptionId);
+                this.routerService.delete(subscriptionId);
             }
         }
     }
@@ -102,7 +101,7 @@ public class DelegatingMessageService implements MessageService, Network {
      * @throws NotSubscribedException when there is no registered callback handler
      */
     @Override
-    public void handle(UUID subscriptionId, NetworkMessage<?> networkMessage) throws NotSubscribedException {
+    public void handle(UUID subscriptionId, NetworkMessage networkMessage) throws NotSubscribedException {
         String topic = networkMessage.getTopic();
         UUID activeSubscriptionId = subscriptionIds.get(topic);
         if (Objects.equals(activeSubscriptionId, subscriptionId)) {
@@ -119,15 +118,13 @@ public class DelegatingMessageService implements MessageService, Network {
         }
     }
 
-    public <T extends Serializable> UUID publishMessage(String topic, T content) {
-        NetworkMessage<T> networkMessage = new NetworkMessage<>(topic, content);
-        LOG.debug("Publishing with topic {}", topic);
-        this.networkService.publish(networkMessage);
+    public UUID publishMessage(NetworkMessage networkMessage) {
+        if (networkMessage.getMessageId() == null) {
+            networkMessage.setMessageId(UUID.randomUUID());
+        }
+        LOG.debug("Publishing with topic {}", networkMessage.getTopic());
+        this.routerService.publish(networkMessage);
         return networkMessage.getMessageId();
-    }
-
-    public <T extends Serializable> void publishCustom(NetworkMessage<T> message) {
-        this.networkService.publish(message);
     }
 
 }

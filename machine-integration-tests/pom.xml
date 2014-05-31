@@ -14,25 +14,13 @@
     <dependencies>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-message-api</artifactId>
+            <artifactId>machine-router-api</artifactId>
             <version>${machine.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-management-api</artifactId>
-            <version>${machine.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-humanity-api</artifactId>
-            <version>${machine.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-backbone-api</artifactId>
+            <artifactId>machine-lib-humanity</artifactId>
             <version>${machine.version}</version>
             <scope>test</scope>
         </dependency>
@@ -44,19 +32,7 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>machine-management</artifactId>
-            <version>${machine.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-humanity</artifactId>
-            <version>${machine.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>machine-backbone</artifactId>
+            <artifactId>machine-router</artifactId>
             <version>${machine.version}</version>
             <scope>test</scope>
         </dependency>
