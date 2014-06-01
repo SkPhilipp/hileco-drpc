@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>machine-integration-test</artifactId>
+    <artifactId>machine-integration-tests</artifactId>
 
     <dependencies>
         <dependency>

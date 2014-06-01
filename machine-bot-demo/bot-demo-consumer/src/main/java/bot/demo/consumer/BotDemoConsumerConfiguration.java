@@ -7,7 +7,6 @@ public class BotDemoConsumerConfiguration {
     private Integer serverPort;
     private UUID serverId;
     private String routerUrl;
-    private String configurationDir;
 
     public Integer getServerPort() {
         return serverPort;
@@ -31,14 +30,6 @@ public class BotDemoConsumerConfiguration {
 
     public void setRouterURL(String routerUrl) {
         this.routerUrl = routerUrl;
-    }
-
-    public String getConfigurationDir() {
-        return configurationDir;
-    }
-
-    public void setConfigurationDir(String configurationDir) {
-        this.configurationDir = configurationDir;
     }
 
 }

@@ -11,9 +11,6 @@
         <property name="hibernate.connection.pool_size">30</property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
-        <mapping class="machine.router.api.entities.Definition"/>
-        <mapping class="machine.router.api.entities.Server"/>
-        <mapping class="machine.router.api.entities.Task"/>
         <mapping class="machine.router.api.entities.Subscription"/>
     </session-factory>
 </hibernate-configuration>

@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
+
 /**
  * Starts up all management services locally, using bot-demo-* as samples.
  */
@@ -37,9 +39,9 @@ public class Servers {
 
     public void startConsumer(RouterConfiguration routerConfiguration, Integer index) throws Exception {
         BotDemoConsumerConfiguration botDemoConsumerConfiguration = new BotDemoConsumerConfiguration();
-        botDemoConsumerConfiguration.setConfigurationDir(String.format("/etc/backbone-test-%d", index));
         botDemoConsumerConfiguration.setServerPort(BOT_DEMO_CONSUMER_SERVER_PORT + index);
         botDemoConsumerConfiguration.setRouterURL(String.format("http://127.0.0.1:%d", routerConfiguration.getServerPort()));
+        botDemoConsumerConfiguration.setServerId(UUID.randomUUID());
         BotDemoConsumerServer botDemoConsumerServer = new BotDemoConsumerServer(botDemoConsumerConfiguration);
         start(botDemoConsumerServer);
     }
