@@ -1,7 +1,7 @@
 package bot.demo.master.humanity;
 
 import machine.humanity.generating.ngram.NGramSentenceGenerator;
-import machine.humanity.harvesting.HarvesterStatus;
+import machine.humanity.harvesting.fourchan.HarvesterStatus;
 import machine.humanity.harvesting.fourchan.FourchanBoardHarvester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
