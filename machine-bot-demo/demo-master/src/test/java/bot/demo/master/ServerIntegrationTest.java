@@ -1,9 +1,7 @@
-package machine.integration.tests;
+package bot.demo.master;
 
 import bot.demo.consumer.BotDemoConsumerConfiguration;
 import bot.demo.consumer.BotDemoConsumerServer;
-import bot.demo.master.BotDemoMasterConfiguration;
-import bot.demo.master.BotDemoMasterServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.router.RouterServer;
@@ -17,9 +15,9 @@ import java.util.UUID;
 /**
  * Starts up all management services locally, using bot-demo-* as samples.
  */
-public class Servers {
+public class ServerIntegrationTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Servers.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServerIntegrationTest.class);
 
     public static final int MANAGEMENT_SERVER_PORT = 8000;
     public static final int BOT_DEMO_CONSUMER_SERVER_PORT = 8300;

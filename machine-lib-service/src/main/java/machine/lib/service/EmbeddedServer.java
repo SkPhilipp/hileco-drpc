@@ -30,9 +30,9 @@ public class EmbeddedServer {
      */
     public void start(Set<Object> services) throws EmbeddedServerStartException {
         try {
-            Server server = new Server(port);
-            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            context.setContextPath(CONTEXT_PATH);
+            // servlet context handler for services
+            ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+            servletContextHandler.setContextPath(CONTEXT_PATH);
             LocalServices.add(new JacksonJaxbJsonProvider(Annotations.JACKSON));
             LocalServices.add(new ExceptionHandler());
             for (Object service : services) {
@@ -40,8 +40,9 @@ public class EmbeddedServer {
             }
             ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
             servletHolder.setInitParameter(JAVAX_WS_RS_APPLICATION, LocalServices.class.getName());
-            context.addServlet(servletHolder, PATH_SPEC);
-            server.setHandler(context);
+            servletContextHandler.addServlet(servletHolder, PATH_SPEC);
+            Server server = new Server(port);
+            server.setHandler(servletContextHandler);
             server.start();
         } catch (Exception e) {
             throw new EmbeddedServerStartException(e);

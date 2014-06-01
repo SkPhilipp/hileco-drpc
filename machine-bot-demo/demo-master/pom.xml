@@ -46,6 +46,40 @@
             <artifactId>machine-lib-message</artifactId>
             <version>${machine.version}</version>
         </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>machine</groupId>
+            <artifactId>machine-router</artifactId>
+            <version>${machine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>machine</groupId>
+            <artifactId>bot-demo-master</artifactId>
+            <version>${machine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>machine</groupId>
+            <artifactId>bot-demo-consumer</artifactId>
+            <version>${machine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
