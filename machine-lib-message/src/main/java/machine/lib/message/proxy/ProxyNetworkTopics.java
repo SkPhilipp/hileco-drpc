@@ -1,6 +1,6 @@
 package machine.lib.message.proxy;
 
-public class RemoteTopics {
+public class ProxyNetworkTopics {
 
     public static String getTopic(Class<?> remoteClass) {
         return remoteClass.getName();

@@ -10,19 +10,18 @@ public class NetworkMessage implements Serializable {
 
     private UUID messageId;
     private String topic;
-    private String method;
-    private Object[] arguments;
+    private Object content;
 
     /**
      * Creates the message with a given topic and content, and randomly assigns a messageId.
      *
      * @param topic value for {@link #topic}
+     * @param content value for {@link #content}
      */
-    public NetworkMessage(String topic, String method, Object[] arguments) {
-        this.method = method;
-        this.arguments = arguments;
+    public NetworkMessage(String topic, Object content) {
         this.messageId = UUID.randomUUID();
         this.topic = topic;
+        this.content = content;
     }
 
     public NetworkMessage() {
@@ -44,20 +43,12 @@ public class NetworkMessage implements Serializable {
         this.topic = topic;
     }
 
-    public String getMethod() {
-        return method;
+    public Object getContent() {
+        return content;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public Object[] getArguments() {
-        return arguments;
-    }
-
-    public void setArguments(Object[] arguments) {
-        this.arguments = arguments;
+    public void setContent(Object content) {
+        this.content = content;
     }
 
 }

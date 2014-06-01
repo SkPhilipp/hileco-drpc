@@ -1,11 +1,11 @@
 package bot.demo.master.api;
 
-import machine.lib.message.api.NetworkService;
+import machine.lib.message.api.InvokeableService;
 
 import java.util.Collection;
 import java.util.UUID;
 
-public interface MasterService extends NetworkService {
+public interface MasterService extends InvokeableService {
 
     public void completedLogin(UUID processId, String username);
 

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bot-demo-consumer-api</artifactId>
+    <artifactId>demo-consumer-api</artifactId>
 
     <dependencies>
         <dependency>

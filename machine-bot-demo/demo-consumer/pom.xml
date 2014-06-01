@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bot-demo-consumer</artifactId>
+    <artifactId>demo-consumer</artifactId>
 
     <dependencies>
         <dependency>
@@ -19,12 +19,12 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>bot-demo-consumer-api</artifactId>
+            <artifactId>demo-consumer-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>bot-demo-master-api</artifactId>
+            <artifactId>demo-master-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>

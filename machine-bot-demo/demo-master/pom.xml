@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bot-demo-master</artifactId>
+    <artifactId>demo-master</artifactId>
 
     <dependencies>
         <dependency>
@@ -28,12 +28,12 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>bot-demo-consumer-api</artifactId>
+            <artifactId>demo-consumer-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>bot-demo-master-api</artifactId>
+            <artifactId>demo-master-api</artifactId>
             <version>${machine.version}</version>
         </dependency>
         <dependency>
@@ -46,6 +46,10 @@
             <artifactId>machine-lib-message</artifactId>
             <version>${machine.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
         <!-- test dependencies -->
         <dependency>
             <groupId>machine</groupId>
@@ -55,13 +59,7 @@
         </dependency>
         <dependency>
             <groupId>machine</groupId>
-            <artifactId>bot-demo-master</artifactId>
-            <version>${machine.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>machine</groupId>
-            <artifactId>bot-demo-consumer</artifactId>
+            <artifactId>demo-consumer</artifactId>
             <version>${machine.version}</version>
             <scope>test</scope>
         </dependency>
@@ -73,11 +71,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

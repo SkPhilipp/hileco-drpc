@@ -1,10 +1,10 @@
 package bot.demo.consumer.api;
 
-import machine.lib.message.api.NetworkObject;
+import machine.lib.message.api.InvokeableObject;
 
 import java.util.UUID;
 
-public interface RemoteProcess extends NetworkObject<UUID> {
+public interface RemoteProcess extends InvokeableObject<UUID> {
 
     public void doLogin(String username, String password);
 

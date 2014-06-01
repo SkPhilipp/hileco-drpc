@@ -1,5 +1,6 @@
 package bot.demo.master.api;
 
+
 import bot.demo.consumer.api.ConsumerService;
 import bot.demo.consumer.api.RemoteProcess;
 import bot.demo.consumer.api.RemoteUser;
@@ -8,6 +9,7 @@ import bot.demo.master.api.live.LiveUser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import machine.lib.message.api.NetworkConnector;
+import machine.lib.message.api.Networked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +28,9 @@ public class MasterServiceImpl implements MasterService, AutoCloseable {
     private final ScheduledExecutorService scheduler;
     private final Cache<UUID, LiveProcess> processCache;
     private final Cache<String, LiveUser> userCache;
-    private final Function<UUID, RemoteProcess> remoteProcessFunction;
-    private final Function<String, RemoteUser> remoteUserFunction;
-    private final ConsumerService remoteConsumer;
+    private final Function<UUID, Networked<RemoteProcess>> remoteProcessFunction;
+    private final Function<String, Networked<RemoteUser>> remoteUserFunction;
+    private final Networked<ConsumerService> remoteConsumer;
     private final NetworkConnector networkConnector;
 
     public MasterServiceImpl(NetworkConnector networkConnector) {
@@ -46,7 +48,7 @@ public class MasterServiceImpl implements MasterService, AutoCloseable {
      */
     public void start() {
         networkConnector.listen(MasterService.class, this);
-        scheduler.scheduleAtFixedRate(remoteConsumer::notifyScan, 0, SCAN_RATE, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(remoteConsumer.getImplementation()::notifyScan, 0, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(() -> LOG.info("Stats - Processes: {}, Users: {}", processCache.size(), userCache.size()), 1, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(this::distributeTasks, 3, SCAN_RATE, TimeUnit.SECONDS);
     }
@@ -75,7 +77,7 @@ public class MasterServiceImpl implements MasterService, AutoCloseable {
         try {
             LOG.debug("completed login, processId = {}, username = {}", processId, username);
             userCache.get(username, () -> {
-                RemoteUser remoteUser = remoteUserFunction.apply(username);
+                RemoteUser remoteUser = remoteUserFunction.apply(username).getImplementation();
                 return new LiveUser(username, remoteUser);
             });
         } catch (ExecutionException e) {
@@ -94,7 +96,7 @@ public class MasterServiceImpl implements MasterService, AutoCloseable {
         try {
             LOG.debug("completed register, processId = {}, username = {}, password = {}", processId, username, password);
             userCache.get(username, () -> {
-                RemoteUser remoteUser = remoteUserFunction.apply(username);
+                RemoteUser remoteUser = remoteUserFunction.apply(username).getImplementation();
                 return new LiveUser(username, remoteUser);
             });
         } catch (ExecutionException e) {
@@ -107,12 +109,12 @@ public class MasterServiceImpl implements MasterService, AutoCloseable {
         try {
             LOG.debug("completed process scan, processId = {}, slots = {}, usernames = {}", processId, slots, usernames);
             processCache.get(processId, () -> {
-                RemoteProcess remoteUser = remoteProcessFunction.apply(processId);
+                RemoteProcess remoteUser = remoteProcessFunction.apply(processId).getImplementation();
                 return new LiveProcess(processId, remoteUser, slots);
             });
             for (String username : usernames) {
                 userCache.get(username, () -> {
-                    RemoteUser remoteUser = remoteUserFunction.apply(username);
+                    RemoteUser remoteUser = remoteUserFunction.apply(username).getImplementation();
                     return new LiveUser(username, remoteUser);
                 });
             }

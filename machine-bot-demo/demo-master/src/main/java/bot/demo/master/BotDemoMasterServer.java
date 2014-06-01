@@ -3,7 +3,6 @@ package bot.demo.master;
 import bot.demo.master.api.MasterServiceImpl;
 import com.google.common.primitives.Ints;
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.proxy.RemoteProxyBuilder;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
@@ -39,14 +38,13 @@ public class BotDemoMasterServer implements LocalServer {
 
         RouterService routerService = JAXRSClientFactory.create(configuration.getManagementUrl(), RouterService.class, PROVIDERS);
         DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), routerService);
-        RemoteProxyBuilder remoteProxyBuilder = new RemoteProxyBuilder(delegatingMessageService);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        MasterServiceImpl remoteMaster = new MasterServiceImpl(remoteProxyBuilder);
+        MasterServiceImpl remoteMaster = new MasterServiceImpl(delegatingMessageService);
         remoteMaster.start();
 
     }

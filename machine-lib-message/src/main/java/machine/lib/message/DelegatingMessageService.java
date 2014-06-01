@@ -3,7 +3,12 @@ package machine.lib.message;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import machine.lib.message.api.Network;
+import machine.lib.message.api.*;
+import machine.lib.message.api.util.ObjectConverter;
+import machine.lib.message.proxy.ProxyNetworked;
+import machine.lib.message.proxy.ProxyNetworkListener;
+import machine.lib.message.proxy.ProxyNetworkTopics;
+import machine.lib.message.proxy.util.JacksonObjectConverter;
 import machine.router.api.entities.NetworkMessage;
 import machine.router.api.entities.Subscription;
 import machine.router.api.exceptions.NotSubscribedException;
@@ -14,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 /**
@@ -21,8 +27,9 @@ import java.util.function.Consumer;
  * <p/>
  * This implementation pools handlers' subscriptions, and keeps track of subscription ids.
  */
-public class DelegatingMessageService implements MessageService, Network {
+public class DelegatingMessageService implements MessageService, Network, NetworkConnector {
 
+    private static final ObjectConverter OBJECT_CONVERTER = new JacksonObjectConverter();
     private static final Logger LOG = LoggerFactory.getLogger(DelegatingMessageService.class);
     private static final int RESUBSCRIBE_PERIOD_MILLISECONDS = (int) (RouterService.DEFAULT_SUBSCRIPTION_EXPIRE_TIME * 0.9 * 60000);
     private final int port;
@@ -32,7 +39,7 @@ public class DelegatingMessageService implements MessageService, Network {
     private final Map<String, Timer> resubscribeTimers;
 
     /**
-     * @param localPort      port over which this service is made available
+     * @param localPort     port over which this service is made available
      * @param routerService networkservice on which to subscribe and publish messages over
      */
     public DelegatingMessageService(Integer localPort, RouterService routerService) {
@@ -125,6 +132,32 @@ public class DelegatingMessageService implements MessageService, Network {
         LOG.debug("Publishing with topic {}", networkMessage.getTopic());
         this.routerService.publish(networkMessage);
         return networkMessage.getMessageId();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <P, T extends InvokeableObject<P>> Function<P, Networked<T>> remoteObject(Class<T> proxyable) {
+        return binding -> new ProxyNetworked<>(this, proxyable, binding, OBJECT_CONVERTER);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends InvokeableService> Networked<T> remoteService(Class<T> proxyable) {
+        return new ProxyNetworked<>(this, proxyable, null, OBJECT_CONVERTER);
+    }
+
+    public <T extends InvokeableService> void listen(Class<T> iface, T networkService) {
+        this.beginListen(ProxyNetworkTopics.getTopic(iface), new ProxyNetworkListener(this, networkService, OBJECT_CONVERTER));
+    }
+
+    public <T extends InvokeableObject<P>, P> void listen(Class<T> iface, T networkObject, P binding) {
+        this.beginListen(ProxyNetworkTopics.getTopic(iface, binding), new ProxyNetworkListener(this, networkObject, OBJECT_CONVERTER));
+    }
+
+    public <T extends InvokeableService> void stopListen(Class<T> iface, T networkService) {
+        // TODO: implement
+    }
+
+    public <T extends InvokeableObject<P>, P> void stopListen(Class<T> iface, T networkObject, P binding) {
+        // TODO: implement
     }
 
 }

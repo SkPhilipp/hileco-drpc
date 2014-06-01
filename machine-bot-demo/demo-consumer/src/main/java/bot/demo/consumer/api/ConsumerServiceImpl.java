@@ -2,18 +2,20 @@ package bot.demo.consumer.api;
 
 import bot.demo.master.api.MasterService;
 import machine.lib.message.api.NetworkConnector;
+import machine.lib.message.api.Networked;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+// TODO: convert from remoteMaster with global messages to report-callback style interface
 public class ConsumerServiceImpl implements ConsumerService, RemoteProcess, AutoCloseable {
 
     private static final Integer MAXIMUM_USERS_PER_CONSUMER = 5;
 
     private final NetworkConnector networkConnector;
-    private final MasterService remoteMaster;
+    private final Networked<MasterService> remoteMaster;
     private final UUID processId;
     private final Map<String, UserImpl> localUsers;
 
@@ -38,7 +40,7 @@ public class ConsumerServiceImpl implements ConsumerService, RemoteProcess, Auto
     @Override
     public void notifyScan() {
         Set<String> usernames = localUsers.keySet();
-        this.remoteMaster.completedScan(processId, MAXIMUM_USERS_PER_CONSUMER - localUsers.size(), usernames);
+        this.remoteMaster.getImplementation().completedScan(processId, MAXIMUM_USERS_PER_CONSUMER - localUsers.size(), usernames);
     }
 
     @Override
@@ -47,7 +49,7 @@ public class ConsumerServiceImpl implements ConsumerService, RemoteProcess, Auto
             UserImpl userImpl = new UserImpl(username, networkConnector);
             userImpl.start();
             this.localUsers.remove(username);
-            this.remoteMaster.completedLogin(this.processId, username);
+            this.remoteMaster.getImplementation().completedLogin(this.processId, username);
         }
     }
 
@@ -57,7 +59,7 @@ public class ConsumerServiceImpl implements ConsumerService, RemoteProcess, Auto
             UserImpl userImpl = this.localUsers.get(username);
             userImpl.close();
             this.localUsers.remove(username);
-            this.remoteMaster.completedLogout(this.processId, username);
+            this.remoteMaster.getImplementation().completedLogout(this.processId, username);
         }
     }
 
@@ -68,7 +70,7 @@ public class ConsumerServiceImpl implements ConsumerService, RemoteProcess, Auto
         UserImpl userImpl = new UserImpl(username, this.networkConnector);
         userImpl.start();
         this.localUsers.put(username, userImpl);
-        this.remoteMaster.completedRegister(this.processId, username, password);
+        this.remoteMaster.getImplementation().completedRegister(this.processId, username, password);
     }
 
 }

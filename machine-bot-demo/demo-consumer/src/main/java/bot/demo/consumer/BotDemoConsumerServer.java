@@ -3,7 +3,6 @@ package bot.demo.consumer;
 import bot.demo.consumer.api.ConsumerServiceImpl;
 import com.google.common.primitives.Ints;
 import machine.lib.message.DelegatingMessageService;
-import machine.lib.message.proxy.RemoteProxyBuilder;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
@@ -37,14 +36,13 @@ public class BotDemoConsumerServer implements LocalServer {
         String managementURL = configuration.getRouterURL();
         RouterService routerService = JAXRSClientFactory.create(managementURL, RouterService.class, PROVIDERS);
         DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), routerService);
-        RemoteProxyBuilder remoteProxyBuilder = new RemoteProxyBuilder(delegatingMessageService);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(delegatingMessageService);
         embeddedServer.start(services);
 
-        ConsumerServiceImpl consumerImpl = new ConsumerServiceImpl(configuration.getServerId(), remoteProxyBuilder);
+        ConsumerServiceImpl consumerImpl = new ConsumerServiceImpl(configuration.getServerId(), delegatingMessageService);
         consumerImpl.start();
 
     }

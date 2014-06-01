@@ -1,10 +1,10 @@
 package bot.demo.consumer.api;
 
-import machine.lib.message.api.NetworkObject;
+import machine.lib.message.api.InvokeableObject;
 
 import java.util.List;
 
-public interface RemoteUser extends NetworkObject<String> {
+public interface RemoteUser extends InvokeableObject<String> {
 
     public void doChat(String receiver, String message);
 

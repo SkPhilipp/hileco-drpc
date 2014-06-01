@@ -6,5 +6,5 @@ package machine.lib.message.api;
  *
  * @param <T> type of object identifier, {@link T#toString()} is used to build the object's topic.
  */
-public interface NetworkObject<T> {
+public interface InvokeableObject<T> extends Invokeable {
 }

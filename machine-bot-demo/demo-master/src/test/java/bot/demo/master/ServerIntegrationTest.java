@@ -4,8 +4,9 @@ import bot.demo.consumer.BotDemoConsumerConfiguration;
 import bot.demo.consumer.BotDemoConsumerServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
-import machine.router.RouterServer;
 import machine.router.RouterConfiguration;
+import machine.router.RouterServer;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import java.util.UUID;
 /**
  * Starts up all management services locally, using bot-demo-* as samples.
  */
+@Ignore
 public class ServerIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServerIntegrationTest.class);

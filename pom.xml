@@ -16,7 +16,6 @@
         <module>machine-lib-humanity</module>
         <module>machine-router</module>
         <module>machine-bot-demo</module>
-        <module>machine-bot-tribot</module>
     </modules>
 
     <properties>
