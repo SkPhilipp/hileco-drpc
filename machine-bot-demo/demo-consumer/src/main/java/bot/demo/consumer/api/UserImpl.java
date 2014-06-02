@@ -1,6 +1,6 @@
 package bot.demo.consumer.api;
 
-import machine.lib.message.api.NetworkConnector;
+import machine.drcp.core.api.NetworkConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

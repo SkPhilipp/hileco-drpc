@@ -1,6 +1,6 @@
 package bot.demo.consumer.api;
 
-import machine.lib.message.api.InvokeableObject;
+import machine.drcp.core.api.InvokeableObject;
 
 import java.util.UUID;
 

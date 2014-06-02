@@ -1,8 +1,8 @@
 package bot.demo.consumer.api;
 
 import bot.demo.master.api.MasterService;
-import machine.lib.message.api.NetworkConnector;
-import machine.lib.message.api.Networked;
+import machine.drcp.core.api.NetworkConnector;
+import machine.drcp.core.api.Networked;
 
 import java.util.HashMap;
 import java.util.Map;

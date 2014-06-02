@@ -2,10 +2,10 @@ package machine.router.services;
 
 import com.google.common.base.Preconditions;
 import machine.router.dao.SubscriptionDAO;
-import machine.router.api.entities.NetworkMessage;
-import machine.router.api.entities.Subscription;
-import machine.router.api.services.MessageService;
-import machine.router.api.services.RouterService;
+import machine.drcp.core.api.entities.NetworkMessage;
+import machine.drcp.core.api.entities.Subscription;
+import machine.drcp.core.routing.services.MessageService;
+import machine.drcp.core.routing.services.RouterService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;

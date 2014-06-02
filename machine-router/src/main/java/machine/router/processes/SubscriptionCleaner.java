@@ -1,7 +1,7 @@
 package machine.router.processes;
 
 import machine.router.dao.SubscriptionDAO;
-import machine.router.api.entities.Subscription;
+import machine.drcp.core.api.entities.Subscription;
 import org.hibernate.criterion.Restrictions;
 
 import java.util.Calendar;

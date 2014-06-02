@@ -7,7 +7,7 @@ import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.lib.service.util.Config;
-import machine.router.api.services.RouterService;
+import machine.drcp.core.routing.services.RouterService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 

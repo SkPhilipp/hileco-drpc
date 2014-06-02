@@ -8,8 +8,8 @@ import bot.demo.master.api.live.LiveProcess;
 import bot.demo.master.api.live.LiveUser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import machine.lib.message.api.NetworkConnector;
-import machine.lib.message.api.Networked;
+import machine.drcp.core.api.NetworkConnector;
+import machine.drcp.core.api.Networked;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

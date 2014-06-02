@@ -1,6 +1,6 @@
 package bot.demo.consumer.api;
 
-import machine.lib.message.api.InvokeableService;
+import machine.drcp.core.api.InvokeableService;
 
 public interface ConsumerService extends InvokeableService {
 

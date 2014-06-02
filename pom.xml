@@ -10,9 +10,8 @@
     <version>3.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>machine-router-api</module>
+        <module>machine-lib-drcp</module>
         <module>machine-lib-service</module>
-        <module>machine-lib-message</module>
         <module>machine-lib-humanity</module>
         <module>machine-router</module>
         <module>machine-bot-demo</module>

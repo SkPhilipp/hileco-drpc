@@ -1,6 +1,6 @@
 package bot.demo.master.api;
 
-import machine.lib.message.api.InvokeableService;
+import machine.drcp.core.api.InvokeableService;
 
 import java.util.Collection;
 import java.util.UUID;

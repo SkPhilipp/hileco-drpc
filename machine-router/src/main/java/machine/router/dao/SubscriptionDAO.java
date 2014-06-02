@@ -1,6 +1,6 @@
 package machine.router.dao;
 
-import machine.router.api.entities.Subscription;
+import machine.drcp.core.api.entities.Subscription;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
