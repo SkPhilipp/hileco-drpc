@@ -10,10 +10,10 @@
     <version>3.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>machine-lib-drcp</module>
         <module>machine-lib-service</module>
         <module>machine-lib-humanity</module>
-        <module>machine-router</module>
+        <module>lib-drcp-core</module>
+        <module>lib-drcp-http</module>
         <module>machine-bot-demo</module>
     </modules>
 
