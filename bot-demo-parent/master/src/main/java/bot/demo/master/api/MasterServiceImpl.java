@@ -1,15 +1,17 @@
 package bot.demo.master.api;
 
 
-import bot.demo.consumer.api.ConsumerService;
-import bot.demo.consumer.api.RemoteProcess;
-import bot.demo.consumer.api.RemoteUser;
-import bot.demo.master.api.live.LiveProcess;
-import bot.demo.master.api.live.LiveUser;
+import bot.demo.consumer.live.GlobalConsumer;
+import bot.demo.consumer.live.LiveProcess;
+import bot.demo.consumer.live.LiveUser;
+import bot.demo.consumer.live.descriptors.ProcessDescriptor;
+import bot.demo.master.api.live.RemoteLiveProcess;
+import bot.demo.master.api.live.RemoteLiveUser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import machine.drcp.core.api.NetworkConnector;
-import machine.drcp.core.api.Networked;
+import machine.drcp.core.api.Client;
+import machine.drcp.core.api.Connector;
+import machine.drcp.core.api.util.SilentCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,104 +21,75 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
-public class MasterServiceImpl implements MasterService, AutoCloseable {
+public class MasterServiceImpl {
 
     private static final int SCAN_RATE = 10;
     private static final Logger LOG = LoggerFactory.getLogger(MasterServiceImpl.class);
     private final ScheduledExecutorService scheduler;
-    private final Cache<UUID, LiveProcess> processCache;
-    private final Cache<String, LiveUser> userCache;
-    private final Function<UUID, Networked<RemoteProcess>> remoteProcessFunction;
-    private final Function<String, Networked<RemoteUser>> remoteUserFunction;
-    private final Networked<ConsumerService> remoteConsumer;
-    private final NetworkConnector networkConnector;
+    private final Cache<UUID, RemoteLiveProcess> processCache;
+    private final Cache<String, RemoteLiveUser> userCache;
+    private SilentCloseable openScan;
+    private Connector<GlobalConsumer, ?> globalConsumerConnector;
+    private Connector<LiveProcess, UUID> processConnector;
+    private Connector<LiveUser, String> userConnector;
 
-    public MasterServiceImpl(NetworkConnector networkConnector) {
-        this.networkConnector = networkConnector;
-        this.remoteConsumer = this.networkConnector.remoteService(ConsumerService.class);
-        this.remoteUserFunction = this.networkConnector.remoteObject(RemoteUser.class);
-        this.remoteProcessFunction = this.networkConnector.remoteObject(RemoteProcess.class);
+    public MasterServiceImpl(Client client) {
+        this.openScan = null;
         this.processCache = CacheBuilder.newBuilder().expireAfterAccess(SCAN_RATE * 2, TimeUnit.SECONDS).build();
         this.userCache = CacheBuilder.newBuilder().expireAfterAccess(SCAN_RATE * 2, TimeUnit.SECONDS).build();
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
+        this.globalConsumerConnector = client.connector(GlobalConsumer.class);
+        this.processConnector = client.connector(LiveProcess.class);
+        this.userConnector = client.connector(LiveUser.class);
     }
 
-    /**
-     * Publishes this {@link MasterService} implementation on the network, initiates scanning.
-     */
     public void start() {
-        networkConnector.listen(MasterService.class, this);
-        scheduler.scheduleAtFixedRate(remoteConsumer.getImplementation()::notifyScan, 0, SCAN_RATE, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> {
+            if (openScan != null) {
+                openScan.close();
+            }
+            openScan = globalConsumerConnector.drpc(GlobalConsumer::scan, this::completedScan);
+        }, 0, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(() -> LOG.info("Stats - Processes: {}, Users: {}", processCache.size(), userCache.size()), 1, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(this::distributeTasks, 3, SCAN_RATE, TimeUnit.SECONDS);
     }
 
-    @Override
     public void close() {
-        networkConnector.stopListen(MasterService.class, this);
+        if (openScan != null) {
+            openScan.close();
+        }
+        scheduler.shutdown();
     }
 
-    public void distributeTasks(){
-        processCache.asMap().forEach((UUID id, LiveProcess process) -> {
-            if(process.getSlots() > 0){
-                String randomUsername = UUID.randomUUID().toString();
-                String randomPassword = UUID.randomUUID().toString();
-                process.getRemoteProcess().doLogin(randomUsername, randomPassword);
+    public void distributeTasks() {
+        processCache.asMap().forEach((UUID id, RemoteLiveProcess process) -> {
+            if (process.getSlots() > 0) {
+                String username = UUID.randomUUID().toString();
+                String password = UUID.randomUUID().toString();
+                process.getLive().login(username, password);
+                LOG.debug("completed login, processId = {}, username = {}", id, username);
+                try {
+                    userCache.get(username, () -> new RemoteLiveUser(username, userConnector.connect(username)));
+                } catch (ExecutionException ignored) {
+                }
+
             }
         });
-        userCache.asMap().forEach((String username, LiveUser user) -> {
-            RemoteUser remoteUser = user.getRemoteUser();
-            remoteUser.doChat("world", "hello");
+        userCache.asMap().forEach((String username, RemoteLiveUser user) -> {
+            user.getLive().chat("world", "hello");
         });
     }
 
-    @Override
-    public void completedLogin(UUID processId, String username) {
-        try {
-            LOG.debug("completed login, processId = {}, username = {}", processId, username);
-            userCache.get(username, () -> {
-                RemoteUser remoteUser = remoteUserFunction.apply(username).getImplementation();
-                return new LiveUser(username, remoteUser);
-            });
-        } catch (ExecutionException e) {
-            LOG.error("Erred while creating a RemoteUser object", e);
-        }
-    }
-
-    @Override
-    public void completedLogout(UUID processId, String username) {
-        LOG.debug("completed logout, processId = {}, username = {}", processId, username);
-        userCache.invalidate(username);
-    }
-
-    @Override
-    public void completedRegister(UUID processId, String username, String password) {
-        try {
-            LOG.debug("completed register, processId = {}, username = {}, password = {}", processId, username, password);
-            userCache.get(username, () -> {
-                RemoteUser remoteUser = remoteUserFunction.apply(username).getImplementation();
-                return new LiveUser(username, remoteUser);
-            });
-        } catch (ExecutionException e) {
-            LOG.error("Erred while creating a RemoteUser object", e);
-        }
-    }
-
-    @Override
-    public void completedScan(UUID processId, Integer slots, Collection<String> usernames) {
+    public void completedScan(ProcessDescriptor processDescriptor) {
+        UUID processId = processDescriptor.getProcessId();
+        Integer slots = processDescriptor.getSlots();
+        Collection<String> usernames = processDescriptor.getUsernames();
         try {
             LOG.debug("completed process scan, processId = {}, slots = {}, usernames = {}", processId, slots, usernames);
-            processCache.get(processId, () -> {
-                RemoteProcess remoteUser = remoteProcessFunction.apply(processId).getImplementation();
-                return new LiveProcess(processId, remoteUser, slots);
-            });
+            processCache.get(processId, () -> new RemoteLiveProcess(processId, processConnector.connect(processId), slots));
             for (String username : usernames) {
-                userCache.get(username, () -> {
-                    RemoteUser remoteUser = remoteUserFunction.apply(username).getImplementation();
-                    return new LiveUser(username, remoteUser);
-                });
+                userCache.get(username, () -> new RemoteLiveUser(username, userConnector.connect(username)));
             }
         } catch (ExecutionException e) {
             LOG.error("Erred while creating a RemoteProcess object", e);

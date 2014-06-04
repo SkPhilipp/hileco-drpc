@@ -1,5 +1,7 @@
 package machine.drcp.core.api;
 
+import machine.drcp.core.api.util.SilentCloseable;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -23,6 +25,6 @@ public interface Connector<T, P> {
      * @param <R>      the response type
      * @return the closeable useable to end listening for responses
      */
-    public <R> AutoCloseable drpc(Function<T, R> invoker, Consumer<R> consumer);
+    public <R> SilentCloseable drpc(Function<T, R> invoker, Consumer<R> consumer);
 
 }

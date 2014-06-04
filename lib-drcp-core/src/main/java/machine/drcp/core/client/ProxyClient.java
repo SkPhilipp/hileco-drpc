@@ -11,6 +11,7 @@ import machine.drcp.core.api.models.Message;
 import machine.drcp.core.api.models.Subscription;
 import machine.drcp.core.api.services.MessageService;
 import machine.drcp.core.api.services.RouterService;
+import machine.drcp.core.api.util.SilentCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public class ProxyClient implements MessageService, Client {
     }
 
     @Override
-    public AutoCloseable listen(String topic, Consumer<Message<?>> consumer) {
+    public SilentCloseable listen(String topic, Consumer<Message<?>> consumer) {
         boolean subscribed = this.topicHandlerIds.get(topic).size() > 0;
         this.topicHandlerIds.put(topic, consumer);
         if (!subscribed) {
@@ -92,7 +93,7 @@ public class ProxyClient implements MessageService, Client {
         String topic = message.getTopic();
         UUID activeSubscriptionId = subscriptionIds.get(topic);
         if (Objects.equals(activeSubscriptionId, subscriptionId)) {
-            LOG.debug("Handling message with topic {}, id {}, subscription {}", message.getTopic(), message.getMessageId(), subscriptionId);
+            LOG.debug("Handling message with topic {}, id {}, subscription {}", message.getTopic(), message.getId(), subscriptionId);
             Lists.newArrayList(this.topicHandlerIds.get(topic)).parallelStream().forEach((consumer) -> {
                 try {
                     consumer.accept(message);
@@ -107,12 +108,12 @@ public class ProxyClient implements MessageService, Client {
 
     @Override
     public UUID publish(Message<?> message) {
-        if (message.getMessageId() == null) {
-            message.setMessageId(UUID.randomUUID());
+        if (message.getId() == null) {
+            message.setId(UUID.randomUUID());
         }
         LOG.debug("Publishing with topic {}", message.getTopic());
         this.routerService.publish(message);
-        return message.getMessageId();
+        return message.getId();
     }
 
     @Override
@@ -121,8 +122,15 @@ public class ProxyClient implements MessageService, Client {
     }
 
     @Override
-    public <T, P> AutoCloseable listen(Class<T> iface, T implementation, P identifier) {
+    public <T, P> SilentCloseable listen(Class<T> iface, T implementation, P identifier) {
         String topic = this.topic(iface, identifier);
+        ProxyMessageConsumer proxyMessageConsumer = new ProxyMessageConsumer(this, implementation, objectConverter);
+        return this.listen(topic, proxyMessageConsumer);
+    }
+
+    @Override
+    public <T> SilentCloseable listen(Class<T> iface, T implementation) {
+        String topic = this.topic(iface);
         ProxyMessageConsumer proxyMessageConsumer = new ProxyMessageConsumer(this, implementation, objectConverter);
         return this.listen(topic, proxyMessageConsumer);
     }

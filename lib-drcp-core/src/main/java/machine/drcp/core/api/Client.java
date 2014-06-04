@@ -1,5 +1,7 @@
 package machine.drcp.core.api;
 
+import machine.drcp.core.api.util.SilentCloseable;
+
 /**
  * An object-oriented client to the DRCP router, providing low level messages and .
  */
@@ -50,6 +52,17 @@ public interface Client extends MessageClient {
      * @param <P>            network object identifier type
      * @return the closeable useable to revert the process of this call
      */
-    public <T, P> AutoCloseable listen(Class<T> iface, T implementation, P identifier);
+    public <T, P> SilentCloseable listen(Class<T> iface, T implementation, P identifier);
+
+    /**
+     * Publishes the given implementation onto the network by listening on its class topic.
+     * Only methods delcared on the given iface will be handled.
+     *
+     * @param iface          any RPC compliant interface
+     * @param implementation an implementation of the given interface
+     * @param <T>            network object type
+     * @return the closeable useable to revert the process of this call
+     */
+    public <T> SilentCloseable listen(Class<T> iface, T implementation);
 
 }

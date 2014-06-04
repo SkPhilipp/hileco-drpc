@@ -93,7 +93,7 @@ public class Router implements JaxrsRouterService {
                 });
             }
         } catch (IOException e) {
-            LOG.error("Unable to serialize a networkmessage, with id {} and topic {}", message.getMessageId(), message.getTopic());
+            LOG.error("Unable to serialize a networkmessage, with id {} and topic {}", message.getId(), message.getTopic());
         }
     }
 

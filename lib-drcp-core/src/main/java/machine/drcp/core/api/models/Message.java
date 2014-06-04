@@ -8,18 +8,18 @@ import java.util.UUID;
  */
 public class Message<T> implements Serializable {
 
-    private UUID messageId;
+    private UUID id;
     private String topic;
     private T content;
 
     /**
-     * Creates the message with a given topic and content, and randomly assigns a messageId.
+     * Creates the message with a given topic and content, and randomly assigns an id.
      *
      * @param topic   value for {@link #topic}
      * @param content value for {@link #content}
      */
     public Message(String topic, T content) {
-        this.messageId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.topic = topic;
         this.content = content;
     }
@@ -27,12 +27,12 @@ public class Message<T> implements Serializable {
     public Message() {
     }
 
-    public UUID getMessageId() {
-        return messageId;
+    public UUID getId() {
+        return id;
     }
 
-    public void setMessageId(UUID messageId) {
-        this.messageId = messageId;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getTopic() {

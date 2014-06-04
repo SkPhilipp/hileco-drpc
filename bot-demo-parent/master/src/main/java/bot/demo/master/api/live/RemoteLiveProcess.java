@@ -1,18 +1,18 @@
 package bot.demo.master.api.live;
 
-import bot.demo.consumer.api.RemoteProcess;
+import bot.demo.consumer.live.LiveProcess;
 
 import java.util.UUID;
 
-public class LiveProcess {
+public class RemoteLiveProcess {
 
     private final UUID id;
-    private final RemoteProcess remoteProcess;
+    private final LiveProcess liveProcess;
     private Integer slots;
 
-    public LiveProcess(UUID id, RemoteProcess remoteProcess, Integer slots) {
+    public RemoteLiveProcess(UUID id, LiveProcess liveProcess, Integer slots) {
         this.id = id;
-        this.remoteProcess = remoteProcess;
+        this.liveProcess = liveProcess;
         this.slots = slots;
     }
 
@@ -20,8 +20,8 @@ public class LiveProcess {
         return id;
     }
 
-    public RemoteProcess getRemoteProcess() {
-        return remoteProcess;
+    public LiveProcess getLive() {
+        return liveProcess;
     }
 
     public Integer getSlots() {

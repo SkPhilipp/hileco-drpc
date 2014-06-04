@@ -1,16 +1,16 @@
 package machine.drcp.core.api.models;
 
 /**
- * An RPC description, containing a method reference and arguments to be passed to it.
+ * An RPC description, containing a method reference and params to be passed to it.
  */
 public class RPC {
 
     private String method;
-    private Object[] arguments;
+    private Object[] params;
 
-    public RPC(String method, Object[] arguments) {
+    public RPC(String method, Object[] params) {
         this.method = method;
-        this.arguments = arguments;
+        this.params = params;
     }
 
     public RPC() {
@@ -24,12 +24,12 @@ public class RPC {
         this.method = method;
     }
 
-    public Object[] getArguments() {
-        return arguments;
+    public Object[] getParams() {
+        return params;
     }
 
-    public void setArguments(Object[] arguments) {
-        this.arguments = arguments;
+    public void setParams(Object[] params) {
+        this.params = params;
     }
 
 }

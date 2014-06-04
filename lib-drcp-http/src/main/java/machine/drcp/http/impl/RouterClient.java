@@ -34,7 +34,7 @@ public class RouterClient implements JaxrsMessageService {
         this.proxyClient.handle(subscriptionId, instance);
     }
 
-    public ProxyClient getProxyClient() {
+    public ProxyClient getClient() {
         return this.proxyClient;
     }
 

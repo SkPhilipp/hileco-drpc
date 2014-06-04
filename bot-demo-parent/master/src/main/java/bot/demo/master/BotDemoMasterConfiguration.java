@@ -3,7 +3,7 @@ package bot.demo.master;
 public class BotDemoMasterConfiguration {
 
     private Integer serverPort;
-    private String managementUrl;
+    private String routerUrl;
     private String humanitySource;
 
     public Integer getServerPort() {
@@ -14,12 +14,12 @@ public class BotDemoMasterConfiguration {
         this.serverPort = serverPort;
     }
 
-    public String getManagementUrl() {
-        return managementUrl;
+    public String getRouterUrl() {
+        return routerUrl;
     }
 
-    public void setManagementUrl(String managementUrl) {
-        this.managementUrl = managementUrl;
+    public void setRouterUrl(String routerUrl) {
+        this.routerUrl = routerUrl;
     }
 
     public String getHumanitySource() {

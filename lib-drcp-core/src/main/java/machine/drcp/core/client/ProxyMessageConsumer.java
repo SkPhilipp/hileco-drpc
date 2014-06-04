@@ -46,7 +46,7 @@ public class ProxyMessageConsumer implements Consumer<Message<?>> {
         if (match != null) {
             Class<?>[] parameterTypes = match.getParameterTypes();
             Object[] convertedArgs = new Object[parameterTypes.length];
-            Object[] originalArgs = invocationMessage.getArguments();
+            Object[] originalArgs = invocationMessage.getParams();
             for (int i = 0; i < parameterTypes.length; i++) {
                 Object converted = objectConverter.convert(originalArgs[i], parameterTypes[i]);
                 convertedArgs[i] = converted;
@@ -54,16 +54,16 @@ public class ProxyMessageConsumer implements Consumer<Message<?>> {
             try {
                 if (!match.getReturnType().equals(Void.TYPE)) {
                     Object result = match.invoke(this.receiver, convertedArgs);
-                    Message<?> reportMessage = new Message<>(message.getMessageId().toString(), result);
+                    Message<?> reportMessage = new Message<>(message.getId().toString(), result);
                     client.publish(reportMessage);
                 } else {
                     match.invoke(this.receiver, convertedArgs);
                 }
             } catch (IllegalAccessException | InvocationTargetException e) {
-                LOG.error("Unable to process a call ( erred ) \"{}:{}({})\"", receiver.getClass(), invocationMessage.getMethod(), invocationMessage.getArguments(), e);
+                LOG.error("Unable to process a call ( erred ) \"{}:{}({})\"", receiver.getClass(), invocationMessage.getMethod(), invocationMessage.getParams(), e);
             }
         } else {
-            LOG.error("Unable to process a call ( no match ) \"{}:{}({})\"", receiver.getClass(), invocationMessage.getMethod(), invocationMessage.getArguments(), new Exception());
+            LOG.error("Unable to process a call ( no match ) \"{}:{}({})\"", receiver.getClass(), invocationMessage.getMethod(), invocationMessage.getParams(), new Exception());
         }
     }
 

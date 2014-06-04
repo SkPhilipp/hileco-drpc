@@ -1,14 +1,13 @@
 package bot.demo.consumer;
 
-import bot.demo.consumer.api.ConsumerServiceImpl;
+import bot.demo.consumer.live.Process;
 import com.google.common.primitives.Ints;
-import machine.lib.message.DelegatingMessageService;
+import machine.drcp.http.api.models.HTTPSubscription;
+import machine.drcp.http.impl.RouterClient;
 import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.lib.service.util.Config;
-import machine.drcp.core.api.services.RouterService;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
 import java.util.*;
@@ -34,15 +33,18 @@ public class BotDemoConsumerServer implements LocalServer {
     public void start() throws EmbeddedServerStartException {
 
         String managementURL = configuration.getRouterURL();
-        RouterService routerService = JAXRSClientFactory.create(managementURL, RouterService.class, PROVIDERS);
-        DelegatingMessageService delegatingMessageService = new DelegatingMessageService(configuration.getServerPort(), routerService);
+        RouterClient RouterClient = new RouterClient(() -> {
+            HTTPSubscription subscription = new HTTPSubscription();
+            subscription.setPort(configuration.getServerPort());
+            return subscription;
+        }, managementURL);
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
-        services.add(delegatingMessageService);
+        services.add(RouterClient);
         embeddedServer.start(services);
 
-        ConsumerServiceImpl consumerImpl = new ConsumerServiceImpl(configuration.getServerId(), delegatingMessageService);
+        Process consumerImpl = new bot.demo.consumer.live.Process(configuration.getServerId(), RouterClient.getClient());
         consumerImpl.start();
 
     }

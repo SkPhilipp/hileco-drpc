@@ -1,4 +1,4 @@
-package bot.demo.consumer.api;
+package bot.demo.consumer.live;
 
 import java.util.List;
 

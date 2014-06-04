@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 public class FileConfig {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final String PROPERTY_MANAGEMENT_URL = "management-url.json";
+    private static final String PROPERTY_ROUTER_URL = "router-url.json";
     private final String basePath;
 
     public FileConfig(String basePath) {
@@ -67,12 +67,12 @@ public class FileConfig {
         }
     }
 
-    public String getManagementURL() {
-        return readFromFile(PROPERTY_MANAGEMENT_URL, String.class);
+    public String getRouterURL() {
+        return readFromFile(PROPERTY_ROUTER_URL, String.class);
     }
 
-    public void setManagementURL(String managementURL) {
-        writeToFile(PROPERTY_MANAGEMENT_URL, managementURL);
+    public void setRouterURL(String routerURL) {
+        writeToFile(PROPERTY_ROUTER_URL, routerURL);
     }
 
 }

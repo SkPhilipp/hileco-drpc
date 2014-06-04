@@ -1,4 +1,4 @@
-package bot.demo.consumer.api.descriptors;
+package bot.demo.consumer.live.descriptors;
 
 import java.util.Collection;
 import java.util.UUID;

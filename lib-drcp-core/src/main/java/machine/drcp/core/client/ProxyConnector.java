@@ -4,6 +4,7 @@ import machine.drcp.core.api.Client;
 import machine.drcp.core.api.Connector;
 import machine.drcp.core.api.models.Message;
 import machine.drcp.core.api.models.RPC;
+import machine.drcp.core.api.util.SilentCloseable;
 
 import java.lang.reflect.Proxy;
 import java.util.UUID;
@@ -34,19 +35,20 @@ public class ProxyConnector<T, P> implements Connector<T, P> {
             network.publish(message);
             // TODO: return `converted` via a future
             if (!method.getReturnType().equals(Void.TYPE)) {
-                network.listen(message.getMessageId().toString(), received -> {
+                network.listen(message.getId().toString(), received -> {
                     Object converted = objectConverter.convert(received.getContent(), method.getReturnType());
                 });
             }
             return null;
         });
+
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <R> AutoCloseable drpc(Function<T, R> invoker, Consumer<R> consumer) {
+    public <R> SilentCloseable drpc(Function<T, R> invoker, Consumer<R> consumer) {
         AtomicReference<UUID> sentMessageId = new AtomicReference<>();
-        AtomicReference<AutoCloseable> closeableListener = new AtomicReference<>();
+        AtomicReference<SilentCloseable> closeableListener = new AtomicReference<>();
         ClassLoader classLoader = this.getClass().getClassLoader();
         T distributingProxy = (T) Proxy.newProxyInstance(classLoader, new Class[]{type}, (proxy, method, args) -> {
             if (sentMessageId.get() != null) {
@@ -54,12 +56,12 @@ public class ProxyConnector<T, P> implements Connector<T, P> {
                 String topic = this.network.topic(type);
                 Message<RPC> message = new Message<>(topic, rpc);
                 network.publish(message);
-                AutoCloseable closeable = network.listen(message.getMessageId().toString(), received -> {
+                SilentCloseable closeable = network.listen(message.getId().toString(), received -> {
                     R converted = (R) objectConverter.convert(received.getContent(), method.getReturnType());
                     consumer.accept(converted);
                 });
                 network.publish(message);
-                sentMessageId.set(message.getMessageId());
+                sentMessageId.set(message.getId());
                 closeableListener.set(closeable);
                 return null;
             } else {
