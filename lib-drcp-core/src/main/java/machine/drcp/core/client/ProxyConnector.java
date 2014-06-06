@@ -47,11 +47,11 @@ public class ProxyConnector<T, P> implements Connector<T, P> {
     @SuppressWarnings("unchecked")
     @Override
     public <R> SilentCloseable drpc(Function<T, R> invoker, Consumer<R> consumer) {
-        AtomicReference<UUID> sentMessageId = new AtomicReference<>();
+        AtomicReference<UUID> sentMessageId = new AtomicReference<>(null);
         AtomicReference<SilentCloseable> closeableListener = new AtomicReference<>();
         ClassLoader classLoader = this.getClass().getClassLoader();
         T distributingProxy = (T) Proxy.newProxyInstance(classLoader, new Class[]{type}, (proxy, method, args) -> {
-            if (sentMessageId.get() != null) {
+            if (sentMessageId.get() == null) {
                 RPC rpc = new RPC(method.getName(), args);
                 String topic = this.network.topic(type);
                 Message<RPC> message = new Message<>(topic, rpc);

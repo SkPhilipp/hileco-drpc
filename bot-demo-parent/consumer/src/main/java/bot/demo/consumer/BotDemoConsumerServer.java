@@ -32,18 +32,18 @@ public class BotDemoConsumerServer implements LocalServer {
 
     public void start() throws EmbeddedServerStartException {
 
-        String managementURL = configuration.getRouterURL();
-        RouterClient RouterClient = new RouterClient(() -> {
+        String routerURL = configuration.getRouterURL();
+        RouterClient routerClient = new RouterClient(routerURL, () -> {
             HTTPSubscription subscription = new HTTPSubscription();
             subscription.setPort(configuration.getServerPort());
             return subscription;
-        }, managementURL);
+        });
 
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
-        services.add(RouterClient);
+        services.add(routerClient);
         embeddedServer.start(services);
-        Process consumerImpl = new Process(configuration.getServerId(), RouterClient.getClient());
+        Process consumerImpl = new Process(configuration.getServerId(), routerClient.getClient());
         consumerImpl.start();
 
     }

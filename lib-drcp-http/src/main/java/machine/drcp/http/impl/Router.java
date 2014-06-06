@@ -63,6 +63,7 @@ public class Router implements JaxrsRouterService {
 
     @Override
     public void publish(Message message) {
+        LOG.debug("Publishing a message of topic {} and id {}", message.getTopic(), message.getId());
         Preconditions.checkArgument(message.getTopic() != null, "Topic must not be empty");
         Collection<HTTPSubscription> httpSubscriptions = subscriptionStore.withTopic(message.getTopic());
         try {
@@ -109,8 +110,15 @@ public class Router implements JaxrsRouterService {
         Preconditions.checkArgument(instance.getHost() == null, "Clients are not permitted to provide the IP-address themselves.");
         Preconditions.checkNotNull(instance.getTopic(), "Clients must provide a topic.");
         Preconditions.checkNotNull(instance.getPort(), "Clients must provide a port.");
-        String clientIpAddress = this.request.getRemoteAddr();
-        instance.setHost(clientIpAddress);
+        try {
+
+            String clientIpAddress = this.request.getRemoteAddr();
+            instance.setHost(clientIpAddress);
+        } catch(RuntimeException e) {
+            // to handle the case where the contextual request proxy is not available, we catch runtime exceptions
+            // the request is not available when Router is also be invoked via a local client Java call, in which case the host would be localhos
+            instance.setHost("localhost");
+        }
         instance.setId(UUID.randomUUID());
         return subscriptionStore.save(instance);
     }
@@ -118,10 +126,6 @@ public class Router implements JaxrsRouterService {
     @Override
     public void delete(UUID id) {
         subscriptionStore.delete(id);
-    }
-
-    public void setRequest(HttpServletRequest request) {
-        this.request = request;
     }
 
 }

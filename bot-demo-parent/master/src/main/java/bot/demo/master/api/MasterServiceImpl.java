@@ -49,7 +49,11 @@ public class MasterServiceImpl {
             if (openScan != null) {
                 openScan.close();
             }
-            openScan = globalConsumerConnector.drpc(GlobalConsumer::scan, this::completedScan);
+            try {
+                openScan = globalConsumerConnector.drpc(GlobalConsumer::scan, this::completedScan);
+            } catch (Exception e) {
+                LOG.error("Error!", e);
+            }
         }, 0, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(() -> LOG.info("Stats - Processes: {}, Users: {}", processCache.size(), userCache.size()), 1, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(this::distributeTasks, 3, SCAN_RATE, TimeUnit.SECONDS);
