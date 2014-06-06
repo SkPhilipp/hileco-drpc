@@ -49,6 +49,7 @@ public class ProxyClient implements MessageService, Client {
         this.resubscribeTimers = new HashMap<>();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public SilentCloseable listen(String topic, Consumer<Message<?>> consumer) {
         boolean subscribed = this.topicHandlerIds.get(topic).size() > 0;
@@ -56,8 +57,7 @@ public class ProxyClient implements MessageService, Client {
         if (!subscribed) {
             Subscription subscription = subscriptionSupplier.get();
             subscription.setTopic(topic);
-            Subscription saved = this.routerService.save(subscription);
-            final UUID savedId = saved.getId();
+            final UUID savedId = this.routerService.save(subscription).getId();
             this.subscriptionIds.put(topic, savedId);
             LOG.debug("Saved subscription {} to topic {}", savedId, topic);
             Timer resubscribeTimer = new Timer(true);

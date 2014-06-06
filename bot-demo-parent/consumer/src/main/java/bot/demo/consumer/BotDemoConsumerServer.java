@@ -8,13 +8,13 @@ import machine.lib.service.EmbeddedServer;
 import machine.lib.service.LocalServer;
 import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.lib.service.util.Config;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class BotDemoConsumerServer implements LocalServer {
 
-    private static final List<?> PROVIDERS = Collections.singletonList(new JacksonJsonProvider());
     private final BotDemoConsumerConfiguration configuration;
 
     public BotDemoConsumerServer(BotDemoConsumerConfiguration configuration) {
@@ -43,8 +43,7 @@ public class BotDemoConsumerServer implements LocalServer {
         Set<Object> services = new HashSet<>();
         services.add(RouterClient);
         embeddedServer.start(services);
-
-        Process consumerImpl = new bot.demo.consumer.live.Process(configuration.getServerId(), RouterClient.getClient());
+        Process consumerImpl = new Process(configuration.getServerId(), RouterClient.getClient());
         consumerImpl.start();
 
     }

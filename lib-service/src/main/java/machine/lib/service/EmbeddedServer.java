@@ -4,6 +4,8 @@ import machine.lib.service.exceptions.EmbeddedServerStartException;
 import machine.lib.service.exceptions.ExceptionHandler;
 import org.codehaus.jackson.jaxrs.Annotations;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -33,11 +35,11 @@ public class EmbeddedServer {
             // servlet context handler for services
             ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
             servletContextHandler.setContextPath(CONTEXT_PATH);
-            LocalServices.add(new JacksonJaxbJsonProvider(Annotations.JACKSON));
+
+            JacksonJsonProvider jsonProvider = new JacksonJaxbJsonProvider(Annotations.JACKSON).configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            LocalServices.add(jsonProvider);
             LocalServices.add(new ExceptionHandler());
-            for (Object service : services) {
-                LocalServices.add(service);
-            }
+            services.forEach(LocalServices::add);
             ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
             servletHolder.setInitParameter(JAVAX_WS_RS_APPLICATION, LocalServices.class.getName());
             servletContextHandler.addServlet(servletHolder, PATH_SPEC);

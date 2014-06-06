@@ -2,7 +2,6 @@ package machine.drcp.http.impl;
 
 import com.google.common.base.Preconditions;
 import machine.drcp.core.api.models.Message;
-import machine.drcp.core.api.services.RouterService;
 import machine.drcp.http.api.JaxrsMessageService;
 import machine.drcp.http.api.JaxrsRouterService;
 import machine.drcp.http.api.models.HTTPSubscription;
@@ -23,9 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -101,10 +98,6 @@ public class Router implements JaxrsRouterService {
     public void extend(UUID id) {
         HTTPSubscription subscription = subscriptionStore.read(id);
         if (subscription != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MINUTE, RouterService.DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS);
-            Date date = calendar.getTime();
-            subscription.setExpires(date);
             this.save(subscription);
         } else {
             LOG.warn("An attempt was made by a client to extend a subscription with id {}, but no subscription was found for it.", id);
@@ -118,12 +111,7 @@ public class Router implements JaxrsRouterService {
         Preconditions.checkNotNull(instance.getPort(), "Clients must provide a port.");
         String clientIpAddress = this.request.getRemoteAddr();
         instance.setHost(clientIpAddress);
-        if (instance.getExpires() == null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MINUTE, RouterService.DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS);
-            Date date = calendar.getTime();
-            instance.setExpires(date);
-        }
+        instance.setId(UUID.randomUUID());
         return subscriptionStore.save(instance);
     }
 

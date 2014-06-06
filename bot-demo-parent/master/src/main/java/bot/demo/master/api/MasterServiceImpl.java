@@ -55,13 +55,6 @@ public class MasterServiceImpl {
         scheduler.scheduleAtFixedRate(this::distributeTasks, 3, SCAN_RATE, TimeUnit.SECONDS);
     }
 
-    public void close() {
-        if (openScan != null) {
-            openScan.close();
-        }
-        scheduler.shutdown();
-    }
-
     public void distributeTasks() {
         processCache.asMap().forEach((UUID id, RemoteLiveProcess process) -> {
             if (process.getSlots() > 0) {
@@ -76,9 +69,7 @@ public class MasterServiceImpl {
 
             }
         });
-        userCache.asMap().forEach((String username, RemoteLiveUser user) -> {
-            user.getLive().chat("world", "hello");
-        });
+        userCache.asMap().values().forEach((RemoteLiveUser user) -> user.getLive().chat("world", "hello"));
     }
 
     public void completedScan(ProcessDescriptor processDescriptor) {
