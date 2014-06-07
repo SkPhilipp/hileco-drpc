@@ -1,6 +1,5 @@
 package bot.demo.master.api;
 
-
 import bot.demo.consumer.live.GlobalConsumer;
 import bot.demo.consumer.live.LiveProcess;
 import bot.demo.consumer.live.LiveUser;
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MasterServiceImpl {
 
-    private static final int SCAN_RATE = 10;
+    private static final int SCAN_RATE = 2;
     private static final Logger LOG = LoggerFactory.getLogger(MasterServiceImpl.class);
     private final ScheduledExecutorService scheduler;
     private final Cache<UUID, RemoteLiveProcess> processCache;
@@ -64,8 +63,8 @@ public class MasterServiceImpl {
             if (process.getSlots() > 0) {
                 String username = UUID.randomUUID().toString();
                 String password = UUID.randomUUID().toString();
-                process.getLive().login(username, password);
-                LOG.debug("completed login, processId = {}, username = {}", id, username);
+                boolean result = process.getLive().login(username, password);
+                LOG.debug("completed login, processId = {}, username = {} is {}", id, username, result);
                 try {
                     userCache.get(username, () -> new RemoteLiveUser(username, userConnector.connect(username)));
                 } catch (ExecutionException ignored) {
@@ -73,7 +72,7 @@ public class MasterServiceImpl {
 
             }
         });
-        userCache.asMap().values().forEach((RemoteLiveUser user) -> user.getLive().chat("world", "hello"));
+        userCache.asMap().values().forEach(user -> user.getLive().chat("world", "hello"));
     }
 
     public void completedScan(ProcessDescriptor processDescriptor) {

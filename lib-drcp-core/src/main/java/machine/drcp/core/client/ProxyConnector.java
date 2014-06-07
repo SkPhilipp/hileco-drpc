@@ -8,6 +8,8 @@ import machine.drcp.core.api.util.SilentCloseable;
 
 import java.lang.reflect.Proxy;
 import java.util.UUID;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -33,15 +35,20 @@ public class ProxyConnector<T, P> implements Connector<T, P> {
             String topic = this.network.topic(type, identifier);
             Message<RPC> message = new Message<>(topic, rpc);
             network.publish(message);
-            // TODO: return `converted` via a future
+            SynchronousQueue<Object> synchronousQueue = new SynchronousQueue<>(true);
             if (!method.getReturnType().equals(Void.TYPE)) {
-                network.listen(message.getId().toString(), received -> {
+                SilentCloseable listener = network.listen(message.getId().toString(), received -> {
                     Object converted = objectConverter.convert(received.getContent(), method.getReturnType());
+                    synchronousQueue.add(converted);
                 });
+                Object result = synchronousQueue.poll(60, TimeUnit.SECONDS);
+                listener.close();
+                return result;
             }
-            return null;
+            else{
+                return null;
+            }
         });
-
     }
 
     @SuppressWarnings("unchecked")

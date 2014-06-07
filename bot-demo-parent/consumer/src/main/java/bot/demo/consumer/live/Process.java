@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-// TODO: convert from remoteMaster with global messages to report-callback style interface
 public class Process extends Listener implements GlobalConsumer, LiveProcess {
 
     private static final Integer MAXIMUM_USERS_PER_CONSUMER = 5;
@@ -42,23 +41,25 @@ public class Process extends Listener implements GlobalConsumer, LiveProcess {
     }
 
     @Override
-    public void login(String username, String password) {
-        if (!this.localUsers.containsKey(username) && this.localUsers.size() < MAXIMUM_USERS_PER_CONSUMER) {
+    public boolean login(String username, String password) {
+        boolean canLogin = !this.localUsers.containsKey(username) && this.localUsers.size() < MAXIMUM_USERS_PER_CONSUMER;
+        if (canLogin) {
             User user = new User(username, password, client);
             user.start();
             this.localUsers.put(username, user);
         }
-        // TODO: Add status code as result
+        return canLogin;
     }
 
     @Override
-    public void logout(String username) {
-        if (this.localUsers.containsKey(username)) {
+    public boolean logout(String username) {
+        boolean canLogout = this.localUsers.containsKey(username);
+        if (canLogout) {
             User user = this.localUsers.get(username);
             user.close();
             this.localUsers.remove(username);
         }
-        // TODO: Add status code as result
+        return canLogout;
     }
 
     @Override
@@ -68,7 +69,6 @@ public class Process extends Listener implements GlobalConsumer, LiveProcess {
         User user = new User(username, password, this.client);
         user.start();
         this.localUsers.put(username, user);
-        // TODO: Add notification utilities as with promises to report back before call is completed
         UserDescriptor userDescriptor = new UserDescriptor();
         userDescriptor.setUsername(username);
         userDescriptor.setPassword(password);

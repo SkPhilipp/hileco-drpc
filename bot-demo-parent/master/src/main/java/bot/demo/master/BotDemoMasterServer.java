@@ -33,7 +33,7 @@ public class BotDemoMasterServer implements LocalServer {
 
         Router router = new Router();
 
-        RouterClient RouterClient = new RouterClient(router, () -> {
+        RouterClient routerClient = new RouterClient(router, () -> {
             HTTPSubscription subscription = new HTTPSubscription();
             subscription.setPort(configuration.getServerPort());
             return subscription;
@@ -42,10 +42,10 @@ public class BotDemoMasterServer implements LocalServer {
         EmbeddedServer embeddedServer = new EmbeddedServer(configuration.getServerPort());
         Set<Object> services = new HashSet<>();
         services.add(router);
-        services.add(RouterClient);
+        services.add(routerClient);
         embeddedServer.start(services);
 
-        MasterServiceImpl remoteMaster = new MasterServiceImpl(RouterClient.getClient());
+        MasterServiceImpl remoteMaster = new MasterServiceImpl(routerClient.getClient());
         remoteMaster.start();
 
     }

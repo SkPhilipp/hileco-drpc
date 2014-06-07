@@ -3,7 +3,7 @@ package machine.drcp.core.client;
 /**
  * Object converter, useable to convert incoming data to the correct type.
  *
- * TODO: Using this, is a slight hit on performance - nothing compared to network overhead though, but it would be better to not have to require a converter at all.
+ * TODO: Ideally the JSON would be converted to the correct data type by streaming {@link machine.drcp.core.api.models.RPC#params}
  */
 public interface ObjectConverter {
 

@@ -4,9 +4,9 @@ import bot.demo.consumer.live.descriptors.UserDescriptor;
 
 public interface LiveProcess {
 
-    public void login(String username, String password);
+    public boolean login(String username, String password);
 
-    public void logout(String username);
+    public boolean logout(String username);
 
     public UserDescriptor register();
 
