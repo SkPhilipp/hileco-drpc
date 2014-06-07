@@ -48,11 +48,7 @@ public class MasterServiceImpl {
             if (openScan != null) {
                 openScan.close();
             }
-            try {
-                openScan = globalConsumerConnector.drpc(GlobalConsumer::scan, this::completedScan);
-            } catch (Exception e) {
-                LOG.error("Error!", e);
-            }
+            openScan = globalConsumerConnector.drpc(GlobalConsumer::scan, this::completedScan);
         }, 0, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(() -> LOG.info("Stats - Processes: {}, Users: {}", processCache.size(), userCache.size()), 1, SCAN_RATE, TimeUnit.SECONDS);
         scheduler.scheduleAtFixedRate(this::distributeTasks, 3, SCAN_RATE, TimeUnit.SECONDS);
@@ -64,10 +60,11 @@ public class MasterServiceImpl {
                 String username = UUID.randomUUID().toString();
                 String password = UUID.randomUUID().toString();
                 boolean result = process.getLive().login(username, password);
-                LOG.debug("completed login, processId = {}, username = {} is {}", id, username, result);
-                try {
-                    userCache.get(username, () -> new RemoteLiveUser(username, userConnector.connect(username)));
-                } catch (ExecutionException ignored) {
+                if (result) {
+                    try {
+                        userCache.get(username, () -> new RemoteLiveUser(username, userConnector.connect(username)));
+                    } catch (ExecutionException ignored) {
+                    }
                 }
 
             }

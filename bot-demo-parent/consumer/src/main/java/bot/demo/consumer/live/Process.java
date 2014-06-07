@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class Process extends Listener implements GlobalConsumer, LiveProcess {
 
-    private static final Integer MAXIMUM_USERS_PER_CONSUMER = 5;
+    private static final Integer MAXIMUM_USERS_PER_CONSUMER = 1;
 
     private final Client client;
     private final UUID processId;
