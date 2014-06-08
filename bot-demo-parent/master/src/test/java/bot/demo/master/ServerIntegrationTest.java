@@ -50,7 +50,7 @@ public class ServerIntegrationTest {
 
         BotDemoMasterConfiguration botDemoMasterConfiguration = new BotDemoMasterConfiguration();
         botDemoMasterConfiguration.setServerPort(BOT_DEMO_MASTER_SERVER_PORT);
-        botDemoMasterConfiguration.setHumanitySource("v");
+        botDemoMasterConfiguration.setHumanitySource("b");
         BotDemoMasterServer botDemoMasterServer = new BotDemoMasterServer(botDemoMasterConfiguration);
 
         start(botDemoMasterServer);

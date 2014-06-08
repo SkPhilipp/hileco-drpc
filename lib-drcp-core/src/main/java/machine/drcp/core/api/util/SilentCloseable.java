@@ -3,6 +3,7 @@ package machine.drcp.core.api.util;
 /**
  * {@link java.lang.AutoCloseable}, that never throws an exception.
  */
+@FunctionalInterface
 public interface SilentCloseable extends AutoCloseable {
 
     public static SilentCloseable many(SilentCloseable... closeables) {

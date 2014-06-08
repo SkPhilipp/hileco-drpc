@@ -5,6 +5,7 @@ import machine.drcp.core.api.exceptions.NotSubscribedException;
 
 import java.util.UUID;
 
+@FunctionalInterface
 public interface MessageService {
 
     /**

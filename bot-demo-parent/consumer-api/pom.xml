@@ -11,4 +11,12 @@
 
     <artifactId>consumer-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>machine</groupId>
+            <artifactId>lib-drcp-core</artifactId>
+            <version>${machine.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>

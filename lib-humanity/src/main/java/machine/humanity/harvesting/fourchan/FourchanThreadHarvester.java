@@ -51,7 +51,7 @@ public class FourchanThreadHarvester implements Runnable {
                     String comment = post.get("com").asText();
                     comment = REMOVE_IMPLYIN.matcher(comment).replaceAll("");
                     comment = REMOVE_SPECIAL.matcher(comment).replaceAll("");
-                    comment = REMOVE_HTML.matcher(comment).replaceAll("");
+                    comment = REMOVE_HTML.matcher(comment).replaceAll(" ");
                     trainable.accept(comment);
                 }
             }

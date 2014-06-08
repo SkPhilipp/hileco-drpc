@@ -45,7 +45,7 @@ public class BotDemoMasterServer implements LocalServer {
         services.add(routerClient);
         embeddedServer.start(services);
 
-        MasterServiceImpl remoteMaster = new MasterServiceImpl(routerClient.getClient());
+        MasterServiceImpl remoteMaster = new MasterServiceImpl(routerClient.getClient(), configuration.getHumanitySource());
         remoteMaster.start();
 
     }
