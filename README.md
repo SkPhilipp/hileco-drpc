@@ -3,7 +3,7 @@
 This library lets you make distributed DRPC calls and get results back, with plain Java.
 
 - Requires Java 8.
-- Internally RPC go over HTTP, routers & handlers implement JAX-RS interfaces.
+- Internally RPC go over HTTP, routers & handlers implement [JAX-RS](http://en.wikipedia.org/wiki/Java_API_for_RESTful_Web_Services) interfaces.
 - Internally RPC are in JSON format, almost exactly like [JSON-RPC](http://en.wikipedia.org/wiki/JSON-RPC).
 - RPC and distributed RPC calls can be made with standard Java, using service Java interfaces.
 
