@@ -62,5 +62,7 @@ With this client you can make distributed calls, with regular interfaces, and ni
 
 And targeted calls
 
+```java
     CalculatorService specialCalculatorWithId123 = remoteObjectConnector.connect(123);
     specialCalculatorWithId123.calculate(1,2);
+```
