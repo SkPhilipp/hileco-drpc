@@ -23,11 +23,6 @@
         </dependency>
         <dependency>
             <groupId>hileco-drpc</groupId>
-            <artifactId>hileco-lib-humanity</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>hileco-drpc</groupId>
             <artifactId>hileco-lib-service</artifactId>
             <version>${parent.version}</version>
         </dependency>

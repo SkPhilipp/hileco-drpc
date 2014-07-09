@@ -1,11 +1,11 @@
 package com.hileco.drpc.test.client;
 
 import com.hileco.drpc.test.client.api.MasterServiceImpl;
-import machine.drcp.http.api.models.HTTPSubscription;
-import machine.drcp.http.impl.Router;
-import machine.drcp.http.impl.RouterClient;
-import machine.lib.service.EmbeddedServer;
-import machine.lib.service.exceptions.EmbeddedServerStartException;
+import com.hileco.drcp.http.api.models.HTTPSubscription;
+import com.hileco.drcp.http.impl.Router;
+import com.hileco.drcp.http.impl.RouterClient;
+import com.hileco.lib.service.EmbeddedServer;
+import com.hileco.lib.service.exceptions.EmbeddedServerStartException;
 
 import java.util.HashSet;
 import java.util.Set;

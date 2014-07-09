@@ -12,7 +12,6 @@
     <modules>
         <module>hileco-lib-proxy</module>
         <module>hileco-lib-service</module>
-        <module>hileco-lib-humanity</module>
         <module>hileco-drpc-core</module>
         <module>hileco-drpc-http</module>
         <module>hileco-drpc-test-parent</module>

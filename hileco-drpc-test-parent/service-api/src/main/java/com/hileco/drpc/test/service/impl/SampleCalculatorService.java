@@ -1,6 +1,6 @@
 package com.hileco.drpc.test.service.impl;
 
-import machine.drcp.core.api.annotations.RPCTimeout;
+import com.hileco.drcp.core.api.annotations.RPCTimeout;
 
 public interface SampleCalculatorService {
 
