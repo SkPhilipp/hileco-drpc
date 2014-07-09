@@ -1,4 +1,4 @@
-package machine.humanity.harvesting.fourchan;
+package com.hileco.humanity.fourchan;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;

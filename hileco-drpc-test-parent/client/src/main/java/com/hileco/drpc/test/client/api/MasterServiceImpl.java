@@ -28,6 +28,7 @@ public class MasterServiceImpl {
 
     public void distributeTasks() {
         this.globalConsumerConnector.drpc((d) -> d.calculate(1, 2), (r) -> LOG.info("Obtained a result: {}", r));
+        this.globalConsumerConnector.drpc(d -> d.calculate(1, 2),r -> LOG.info("Obtained a result: {}", r));
     }
 
 }

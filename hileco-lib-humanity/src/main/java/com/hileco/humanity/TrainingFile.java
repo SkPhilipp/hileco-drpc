@@ -1,4 +1,4 @@
-package machine.humanity;
+package com.hileco.humanity;
 
 import com.google.common.base.Charsets;
 import org.slf4j.Logger;

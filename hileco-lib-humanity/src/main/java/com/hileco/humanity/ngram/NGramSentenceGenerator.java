@@ -1,4 +1,4 @@
-package machine.humanity.generating.ngram;
+package com.hileco.humanity.ngram;
 
 import com.google.common.base.Joiner;
 

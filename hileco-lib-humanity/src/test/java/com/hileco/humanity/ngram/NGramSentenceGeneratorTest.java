@@ -1,4 +1,4 @@
-package machine.humanity.generating.ngram;
+package com.hileco.humanity.ngram;
 
 import org.junit.Assert;
 import org.junit.Test;

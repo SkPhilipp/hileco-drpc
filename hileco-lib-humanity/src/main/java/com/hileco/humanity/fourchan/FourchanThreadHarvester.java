@@ -1,4 +1,4 @@
-package machine.humanity.harvesting.fourchan;
+package com.hileco.humanity.fourchan;
 
 import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;

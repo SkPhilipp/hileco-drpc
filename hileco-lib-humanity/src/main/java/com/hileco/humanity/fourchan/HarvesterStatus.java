@@ -1,4 +1,4 @@
-package machine.humanity.harvesting.fourchan;
+package com.hileco.humanity.fourchan;
 
 public enum HarvesterStatus {
 

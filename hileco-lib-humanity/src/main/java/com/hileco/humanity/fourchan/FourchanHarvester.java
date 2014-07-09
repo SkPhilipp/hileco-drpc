@@ -1,6 +1,6 @@
-package machine.humanity.harvesting.fourchan;
+package com.hileco.humanity.fourchan;
 
-import machine.humanity.generating.ngram.NGramSentenceGenerator;
+import com.hileco.humanity.ngram.NGramSentenceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
