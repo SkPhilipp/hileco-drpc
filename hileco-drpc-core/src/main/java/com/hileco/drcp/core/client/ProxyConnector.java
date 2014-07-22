@@ -72,31 +72,38 @@ public class ProxyConnector<T, P> implements Connector<T, P> {
         });
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <R> SilentCloseable drpc(Consumer<T> invoker, Consumer<R> consumer) {
+    public Invocation buildInvocation(Consumer<T> invoker) {
         List<Invocation> invocations = invocationExtractor.extractLimitedUsingFunction(type, invoker, 1);
         if (invocations.size() == 1) {
-            Invocation invocation = invocations.get(0);
-            // rpc message constructing, listen on callback id
-            RPC rpc = new RPC(invocation.getMethod().getName(), invocation.getArguments());
-            String topic = this.network.topic(type);
-            Message<RPC> message = new Message<>(topic, rpc);
-            SilentCloseable closeable = network.listen(message.getId().toString(), received -> {
-                R converted = (R) objectConverter.convert(received.getContent(), invocation.getMethod().getReturnType());
-                consumer.accept(converted);
-            });
-            // annotation processing
-            RPCTimeout timeout = invocation.getMethod().getAnnotation(RPCTimeout.class);
-            if (timeout != null) {
-                closeable = expirer.schedule(closeable, timeout.value(), timeout.unit());
-            }
-            // publish the message
-            network.publish(message);
-            return closeable;
+            return invocations.get(0);
         } else {
             throw new IllegalArgumentException("The given function did not immediately call any method on the drpc proxy");
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <R> SilentCloseable drpc(Consumer<T> invoker, Consumer<R> consumer) {
+        // construct rpc message, and listen on callback id
+        Invocation invocation = this.buildInvocation(invoker);
+        RPC rpc = new RPC(invocation.getName(), invocation.getArguments());
+        String topic = this.network.topic(type);
+        Message<RPC> message = new Message<>(topic, rpc);
+        SilentCloseable closeable = network.listen(message.getId().toString(), received -> {
+            R converted = (R) objectConverter.convert(received.getContent(), invocation.getMethod().getReturnType());
+            consumer.accept(converted);
+        });
+        // annotation processing
+        // TODO: RPC annotations should have their own meta-annotations and be scanned for, instead of being hardcoded here
+        // TODO: RPC annotations should have some sort of aop-esque system to hook into, instead of being hardcoded here
+        RPCTimeout timeout = invocation.getMethod().getAnnotation(RPCTimeout.class);
+        if (timeout != null) {
+            closeable = expirer.schedule(closeable, timeout.value(), timeout.unit());
+        }
+        // publish the message
+        network.publish(message);
+        return closeable;
+
     }
 
 }

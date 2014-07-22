@@ -21,6 +21,10 @@ public class Invocation {
         return method;
     }
 
+    public String getName() {
+        return method.getName();
+    }
+
     public Object[] getArguments() {
         return arguments;
     }
