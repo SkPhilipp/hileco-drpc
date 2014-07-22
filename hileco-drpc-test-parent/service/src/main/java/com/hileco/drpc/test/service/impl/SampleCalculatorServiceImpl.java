@@ -1,10 +1,9 @@
 package com.hileco.drpc.test.service.impl;
 
 import com.hileco.drcp.core.api.Client;
-import com.hileco.drcp.core.api.util.Listener;
 import com.hileco.drcp.core.api.util.SilentCloseable;
 
-public class SampleCalculatorServiceImpl extends Listener implements SampleCalculatorService {
+public class SampleCalculatorServiceImpl implements SampleCalculatorService {
 
     private final Client client;
 
@@ -12,8 +11,7 @@ public class SampleCalculatorServiceImpl extends Listener implements SampleCalcu
         this.client = client;
     }
 
-    @Override
-    protected SilentCloseable listen() {
+    public SilentCloseable listen() {
         return this.client.listen(SampleCalculatorService.class, this);
     }
 

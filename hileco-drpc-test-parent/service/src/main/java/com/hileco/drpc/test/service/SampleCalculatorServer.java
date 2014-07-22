@@ -24,7 +24,7 @@ public class SampleCalculatorServer {
         services.add(routerClient);
         embeddedServer.start(services);
         SampleCalculatorServiceImpl consumerImpl = new SampleCalculatorServiceImpl( routerClient.getClient());
-        consumerImpl.start();
+        consumerImpl.listen();
 
     }
 
