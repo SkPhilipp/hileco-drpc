@@ -4,7 +4,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * Utility for simplifying extracting method invocation information.
@@ -19,12 +19,12 @@ public class InvocationExtractor {
      * The list may change even after being returned by this method.
      *
      * @param interfaceType type to proxy
-     * @param invoker       function to make calls
+     * @param invoker       consumer which should make calls on the proxy it'll be given
      * @param predicate     predicate to verify if an invocation may be added to the list
      * @return invocation list
      */
     @SuppressWarnings("unchecked")
-    public <T> List<Invocation> extractUsingFunction(Class<T> interfaceType, Function<T, ?> invoker, BiPredicate<List<Invocation>, Invocation> predicate) {
+    public <T> List<Invocation> extractUsingFunction(Class<T> interfaceType, Consumer<T> invoker, BiPredicate<List<Invocation>, Invocation> predicate) {
 
         List<Invocation> invocations = new ArrayList<>();
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -39,7 +39,7 @@ public class InvocationExtractor {
 
         });
 
-        invoker.apply(listeningProxy);
+        invoker.accept(listeningProxy);
 
         return invocations;
 
@@ -51,11 +51,11 @@ public class InvocationExtractor {
      * The list may change even after being returned by this method.
      *
      * @param interfaceType   type to proxy
-     * @param invoker         function to make calls
+     * @param invoker         consumer which should make calls on the proxy it'll be given
      * @param invocationLimit maximum amount of invocations to allow
      * @return invocation list
      */
-    public <T> List<Invocation> extractLimitedUsingFunction(Class<T> interfaceType, Function<T, ?> invoker, int invocationLimit) {
+    public <T> List<Invocation> extractLimitedUsingFunction(Class<T> interfaceType, Consumer<T> invoker, int invocationLimit) {
         return this.extractUsingFunction(interfaceType, invoker, (list, current) -> list.size() < invocationLimit);
     }
 
