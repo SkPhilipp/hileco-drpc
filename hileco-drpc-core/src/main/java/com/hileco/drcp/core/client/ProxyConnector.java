@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class ProxyConnector<T, P> implements Connector<T, P> {
 
@@ -75,7 +74,7 @@ public class ProxyConnector<T, P> implements Connector<T, P> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <R> SilentCloseable drpc(Function<T, R> invoker, Consumer<R> consumer) {
+    public <R> SilentCloseable drpc(Consumer<T> invoker, Consumer<R> consumer) {
         List<Invocation> invocations = invocationExtractor.extractLimitedUsingFunction(type, invoker, 1);
         if (invocations.size() == 1) {
             Invocation invocation = invocations.get(0);
