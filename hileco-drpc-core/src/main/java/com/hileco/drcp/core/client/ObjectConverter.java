@@ -2,11 +2,18 @@ package com.hileco.drcp.core.client;
 
 /**
  * Object converter, useable to convert incoming data to the correct type.
- *
- * TODO: Ideally the JSON would be converted to the correct data type by streaming {@link com.hileco.drcp.core.api.models.RPC#params}
  */
 public interface ObjectConverter {
 
+    /**
+     * An ObjectConverter which returns the source object as the given target class, does not perform any converting.
+     */
+    public static final ObjectConverter RAW = new ObjectConverter() {
+            @Override
+            public <R> R convert(Object source, Class<R> target) throws IllegalArgumentException {
+                return (R) source;
+            }
+        };
     /**
      * Safely converts any object to any other type.
      *

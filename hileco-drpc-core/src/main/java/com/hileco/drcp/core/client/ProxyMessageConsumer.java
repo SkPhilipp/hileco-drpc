@@ -1,6 +1,6 @@
 package com.hileco.drcp.core.client;
 
-import com.hileco.drcp.core.api.Client;
+import com.hileco.drcp.core.api.MessageClient;
 import com.hileco.drcp.core.api.models.Message;
 import com.hileco.drcp.core.api.models.RPC;
 import org.slf4j.Logger;
@@ -16,11 +16,11 @@ import java.util.function.Consumer;
 public class ProxyMessageConsumer implements Consumer<Message<?>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProxyMessageConsumer.class);
-    private Client client;
+    private MessageClient client;
     private Object receiver;
     private ObjectConverter objectConverter;
 
-    public ProxyMessageConsumer(Client client, Object receiver, ObjectConverter objectConverter) {
+    public ProxyMessageConsumer(MessageClient client, Object receiver, ObjectConverter objectConverter) {
         this.client = client;
         this.receiver = receiver;
         this.objectConverter = objectConverter;

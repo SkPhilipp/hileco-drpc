@@ -1,11 +1,23 @@
 package com.hileco.drcp.core.api;
 
+import com.hileco.drcp.core.api.models.Message;
 import com.hileco.drcp.core.api.util.SilentCloseable;
+
+import java.util.function.Consumer;
 
 /**
  * An object-oriented client to the DRCP router, providing low level messages and .
  */
 public interface Client extends MessageClient {
+
+    /**
+     * Begins listening on the given topic, any messages received on it will be delegated to the given consumer.
+     *
+     * @param topic    topic to listen on
+     * @param consumer handler to accept messages
+     * @return the closeable useable to revert the process of this call
+     */
+    public SilentCloseable listen(String topic, Consumer<Message<?>> consumer);
 
     /**
      * Constructs a topic for an interface without an identifier.
