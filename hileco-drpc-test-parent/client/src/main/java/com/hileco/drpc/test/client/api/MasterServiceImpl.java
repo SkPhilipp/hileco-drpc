@@ -1,8 +1,8 @@
 package com.hileco.drpc.test.client.api;
 
 import com.hileco.drpc.test.service.impl.SampleCalculatorService;
-import com.hileco.drcp.core.api.Client;
-import com.hileco.drcp.core.api.Connector;
+import com.hileco.drpc.core.spec.Client;
+import com.hileco.drpc.core.spec.Connector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

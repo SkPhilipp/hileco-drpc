@@ -1,9 +1,9 @@
 package com.hileco.drpc.test.client;
 
 import com.hileco.drpc.test.client.api.MasterServiceImpl;
-import com.hileco.drcp.http.api.models.HTTPSubscription;
-import com.hileco.drcp.http.impl.Router;
-import com.hileco.drcp.http.impl.RouterClient;
+import com.hileco.drcp.todo.api.models.HTTPSubscription;
+import com.hileco.drcp.todo.Router;
+import com.hileco.drcp.todo.RouterClient;
 import com.hileco.lib.service.EmbeddedServer;
 import com.hileco.lib.service.exceptions.EmbeddedServerStartException;
 

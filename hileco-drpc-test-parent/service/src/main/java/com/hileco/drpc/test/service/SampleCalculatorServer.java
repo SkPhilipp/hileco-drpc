@@ -1,8 +1,8 @@
 package com.hileco.drpc.test.service;
 
 import com.hileco.drpc.test.service.impl.SampleCalculatorServiceImpl;
-import com.hileco.drcp.http.api.models.HTTPSubscription;
-import com.hileco.drcp.http.impl.RouterClient;
+import com.hileco.drcp.todo.api.models.HTTPSubscription;
+import com.hileco.drcp.todo.RouterClient;
 import com.hileco.lib.service.EmbeddedServer;
 import com.hileco.lib.service.exceptions.EmbeddedServerStartException;
 

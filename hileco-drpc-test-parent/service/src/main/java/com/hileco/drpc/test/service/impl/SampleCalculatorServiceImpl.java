@@ -1,7 +1,7 @@
 package com.hileco.drpc.test.service.impl;
 
-import com.hileco.drcp.core.api.Client;
-import com.hileco.drcp.core.api.util.SilentCloseable;
+import com.hileco.drpc.core.spec.Client;
+import com.hileco.drpc.core.util.SilentCloseable;
 
 public class SampleCalculatorServiceImpl implements SampleCalculatorService {
 
