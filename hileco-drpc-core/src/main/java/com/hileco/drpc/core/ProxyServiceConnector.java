@@ -42,7 +42,7 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
         String topic = this.serviceHost.topic(type);
         Metadata metadata = new Metadata(null, topic, invocation.getName());
         metadata.setExpectResponse(!invocation.getMethod().getReturnType().equals(Void.TYPE));
-        this.serviceHost.publish(metadata, invocation.getArguments());
+        this.serviceHost.send(metadata, invocation.getArguments());
 
         return this.serviceHost.bind(metadata.getId(), (callbackMetadata, content) -> {
             R result = (R) this.argumentsStreamer.deserializeFrom(content, new Class[]{invocation.getMethod().getReturnType()})[0];
@@ -61,7 +61,7 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
 
             Metadata metadata = new Metadata(null, topic, method.getName());
             metadata.setExpectResponse(!method.getReturnType().equals(Void.TYPE));
-            this.serviceHost.publish(metadata, arguments);
+            this.serviceHost.send(metadata, arguments);
 
             Object[] results = new Object[]{null};
 

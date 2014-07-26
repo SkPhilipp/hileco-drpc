@@ -14,6 +14,6 @@ public interface MessageSender {
      * @param metadata the message's metadata to publish
      * @param content the content to publish
      */
-    public void publish(Metadata metadata, Object content);
+    public void send(Metadata metadata, Object[] content);
 
 }

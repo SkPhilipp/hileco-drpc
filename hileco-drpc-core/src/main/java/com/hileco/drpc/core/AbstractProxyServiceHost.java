@@ -1,6 +1,9 @@
 package com.hileco.drpc.core;
 
-import com.hileco.drpc.core.spec.*;
+import com.hileco.drpc.core.spec.MessageReceiver;
+import com.hileco.drpc.core.spec.Metadata;
+import com.hileco.drpc.core.spec.ServiceConnector;
+import com.hileco.drpc.core.spec.ServiceHost;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.util.SilentCloseable;
 
@@ -10,25 +13,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementation of all {@link ServiceHost}, instantiates {@link ProxyMessageReceiver}s to handle messages.
+ * Partial implementation of {@link ServiceHost}, instantiates {@link ProxyMessageReceiver}s to handle messages.
  *
  * @author Philipp Gayret
  */
-public class ProxyServiceHost implements ServiceHost, MessageReceiver {
+public abstract class AbstractProxyServiceHost implements ServiceHost, MessageReceiver {
 
     private Map<String, MessageReceiver> consumerMap;
     private ArgumentsStreamer argumentsStreamer;
-    private MessageSender messageSender;
 
     /**
      * @param argumentsStreamer streamer to use to create message consumers for services with
-     * @param messageSender     client to send procedure results to as callbacks
      */
-    protected ProxyServiceHost(ArgumentsStreamer argumentsStreamer, MessageSender messageSender) {
+    public AbstractProxyServiceHost(ArgumentsStreamer argumentsStreamer) {
         this.argumentsStreamer = argumentsStreamer;
-        this.messageSender = messageSender;
         this.consumerMap = new HashMap<>();
     }
+
 
     @Override
     public String topic(Class<?> iface) {
@@ -48,14 +49,14 @@ public class ProxyServiceHost implements ServiceHost, MessageReceiver {
     @Override
     public <T> SilentCloseable bind(Class<T> iface, T implementation) {
         String topic = this.topic(iface);
-        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this.messageSender, implementation);
+        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this, implementation);
         return this.bind(topic, consumer);
     }
 
     @Override
     public <T> SilentCloseable bind(Class<T> iface, T implementation, String identifier) {
         String topic = this.topic(iface, identifier);
-        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this.messageSender, implementation);
+        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this, implementation);
         return this.bind(topic, consumer);
     }
 
@@ -78,11 +79,6 @@ public class ProxyServiceHost implements ServiceHost, MessageReceiver {
         } else {
             throw new IllegalArgumentException("No procedure registered for topic " + metadata.getTopic());
         }
-    }
-
-    @Override
-    public void publish(Metadata metadata, Object content) {
-        this.messageSender.publish(metadata, content);
     }
 
 }

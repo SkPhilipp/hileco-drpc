@@ -11,15 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Allows a {@link com.hileco.drpc.core.spec.MessageReceiver} to be accessed as an {@link HttpServlet}.
+ * Allows a {@link MessageReceiver} to be accessed as an {@link HttpServlet}.
  *
  * @author Philipp Gayret
  */
-public class IncomingMessageConsumerServletAdapter extends HttpServlet {
+public class MessageReceiverServletAdapter extends HttpServlet {
 
     private MessageReceiver messageReceiver;
 
-    public IncomingMessageConsumerServletAdapter(MessageReceiver messageReceiver) {
+    public MessageReceiverServletAdapter(MessageReceiver messageReceiver) {
         this.messageReceiver = messageReceiver;
     }
 

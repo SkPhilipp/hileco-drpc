@@ -2,8 +2,8 @@ package com.hileco.drpc.core;
 
 import com.hileco.drpc.core.spec.MessageReceiver;
 import com.hileco.drpc.core.spec.MessageSender;
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.spec.Metadata;
+import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class ProxyMessageReceiver implements MessageReceiver {
                     if (!match.getReturnType().equals(Void.TYPE)) {
                         Object result = match.invoke(this.receiver, convertedArgs);
                         Metadata callbackMeta = new Metadata(null, metadata.getId());
-                        client.publish(callbackMeta, result);
+                        client.send(callbackMeta, new Object[]{result});
                     } else {
                         match.invoke(this.receiver, convertedArgs);
                     }
