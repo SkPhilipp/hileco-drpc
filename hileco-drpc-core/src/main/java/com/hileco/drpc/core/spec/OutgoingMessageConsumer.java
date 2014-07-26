@@ -6,7 +6,7 @@ package com.hileco.drpc.core.spec;
  * @author Philipp Gayret
  */
 @FunctionalInterface
-public interface MessageClient {
+public interface OutgoingMessageConsumer {
 
     /**
      * Publishes a message onto the network. If the metadata does not have its id assigned, this sets the id field of the given metadata.

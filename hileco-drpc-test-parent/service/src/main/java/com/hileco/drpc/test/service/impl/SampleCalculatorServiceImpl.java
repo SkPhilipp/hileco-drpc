@@ -1,18 +1,18 @@
 package com.hileco.drpc.test.service.impl;
 
-import com.hileco.drpc.core.spec.Client;
+import com.hileco.drpc.core.spec.ServiceHost;
 import com.hileco.drpc.core.util.SilentCloseable;
 
 public class SampleCalculatorServiceImpl implements SampleCalculatorService {
 
-    private final Client client;
+    private final ServiceHost serviceHost;
 
-    public SampleCalculatorServiceImpl(Client client) {
-        this.client = client;
+    public SampleCalculatorServiceImpl(ServiceHost serviceHost) {
+        this.serviceHost = serviceHost;
     }
 
     public SilentCloseable listen() {
-        return this.client.listen(SampleCalculatorService.class, this);
+        return this.serviceHost.bind(SampleCalculatorService.class, this);
     }
 
     @Override

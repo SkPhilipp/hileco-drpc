@@ -1,7 +1,8 @@
-package com.hileco.drpc.http;
+package com.hileco.drpc.http.servlet;
 
 import com.hileco.drpc.core.spec.IncomingMessageConsumer;
 import com.hileco.drpc.core.spec.Metadata;
+import com.hileco.drpc.http.HeaderUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,19 +15,17 @@ import java.io.IOException;
  *
  * @author Philipp Gayret
  */
-public class MessageConsumerServletAdapter extends HttpServlet {
+public class IncomingMessageConsumerServletAdapter extends HttpServlet {
 
-    private HeaderUtils headerUtils;
     private IncomingMessageConsumer incomingMessageConsumer;
 
-    public MessageConsumerServletAdapter(IncomingMessageConsumer incomingMessageConsumer) {
+    public IncomingMessageConsumerServletAdapter(IncomingMessageConsumer incomingMessageConsumer) {
         this.incomingMessageConsumer = incomingMessageConsumer;
-        this.headerUtils = new HeaderUtils();
     }
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Metadata metadata = this.headerUtils.fromHeaders(req::getHeader);
+        Metadata metadata = HeaderUtils.fromHeaders(req::getHeader);
         this.incomingMessageConsumer.accept(metadata, req.getInputStream());
         resp.setStatus(HttpServletResponse.SC_ACCEPTED);
     }

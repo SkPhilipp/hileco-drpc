@@ -12,11 +12,16 @@ import java.util.function.Function;
  */
 public class HeaderUtils {
 
-    public static final String HDRPC_HEADER_META_ID = "META_ID";
-    public static final String HDRPC_HEADER_META_TYPE = "META_TYPE";
-    public static final String HDRPC_HEADER_META_REPLY_TO = "META_REPLY_TO";
-    public static final String HDRPC_HEADER_META_SERVICE = "META_SERVICE";
-    public static final String HDRPC_HEADER_META_OPERATION = "META_OPERATION";
+    // Message metadata header names
+    public static final String HDRPC_HEADER_META_ID = "H-Id";
+    public static final String HDRPC_HEADER_META_TYPE = "H-Type";
+    public static final String HDRPC_HEADER_META_REPLY_TO = "H-ReplyTo";
+    public static final String HDRPC_HEADER_META_SERVICE = "H-Service";
+    public static final String HDRPC_HEADER_META_OPERATION = "H-Operation";
+    public static final String HDRPC_HEADER_META_EXPECTING_RESPONSE = "H-Respond";
+
+    // Router subscription header names
+    public static final Object HDRPC_HEADER_SUBSCRIPTION_ID = "H-Subscription";
 
     /**
      * Constructs a {@link com.hileco.drpc.core.spec.Metadata} object out of transport headers.
@@ -24,17 +29,24 @@ public class HeaderUtils {
      * @param headerFunction request with headers set properly
      * @return parsed metadata
      */
-    public Metadata fromHeaders(Function<String, String> headerFunction) {
+    public static Metadata fromHeaders(Function<String, String> headerFunction) {
         Metadata.Type type = Metadata.Type.valueOf(headerFunction.apply(HDRPC_HEADER_META_TYPE));
         String id = headerFunction.apply(HDRPC_HEADER_META_ID);
+
         switch (type) {
-            case CALLBACK:
+            case CALLBACK: {
                 String replyTo = headerFunction.apply(HDRPC_HEADER_META_REPLY_TO);
-                return new Metadata(id, replyTo);
-            case SERVICE:
+                Metadata metadata = new Metadata(id, replyTo);
+                metadata.setExpectResponse(Boolean.parseBoolean(headerFunction.apply(HDRPC_HEADER_META_EXPECTING_RESPONSE)));
+                return metadata;
+            }
+            case SERVICE: {
                 String service = headerFunction.apply(HDRPC_HEADER_META_SERVICE);
                 String operation = headerFunction.apply(HDRPC_HEADER_META_OPERATION);
-                return new Metadata(id, service, operation);
+                Metadata metadata = new Metadata(id, service, operation);
+                metadata.setExpectResponse(Boolean.parseBoolean(headerFunction.apply(HDRPC_HEADER_META_EXPECTING_RESPONSE)));
+                return metadata;
+            }
             default:
                 throw new IllegalArgumentException("Unknown " + HDRPC_HEADER_META_TYPE + " type: " + headerFunction.apply(HDRPC_HEADER_META_TYPE));
         }
@@ -46,18 +58,20 @@ public class HeaderUtils {
      * @param metadata       metadata whose properties to use to supply values
      * @param headerConsumer consumer of key-value pairs of transport headers
      */
-    public void writeHeaders(Metadata metadata, BiConsumer<String, String> headerConsumer) {
+    public static void writeHeaders(Metadata metadata, BiConsumer<String, String> headerConsumer) {
         switch (metadata.getType()) {
             case SERVICE:
                 headerConsumer.accept(HDRPC_HEADER_META_TYPE, metadata.getType().toString());
                 headerConsumer.accept(HDRPC_HEADER_META_ID, metadata.getId());
                 headerConsumer.accept(HDRPC_HEADER_META_SERVICE, metadata.getService());
                 headerConsumer.accept(HDRPC_HEADER_META_OPERATION, metadata.getOperation());
+                headerConsumer.accept(HDRPC_HEADER_META_EXPECTING_RESPONSE, Boolean.toString(metadata.getExpectResponse()));
                 break;
             case CALLBACK:
                 headerConsumer.accept(HDRPC_HEADER_META_TYPE, metadata.getType().toString());
                 headerConsumer.accept(HDRPC_HEADER_META_ID, metadata.getId());
                 headerConsumer.accept(HDRPC_HEADER_META_REPLY_TO, metadata.getReplyTo());
+                headerConsumer.accept(HDRPC_HEADER_META_EXPECTING_RESPONSE, Boolean.toString(metadata.getExpectResponse()));
                 break;
         }
     }

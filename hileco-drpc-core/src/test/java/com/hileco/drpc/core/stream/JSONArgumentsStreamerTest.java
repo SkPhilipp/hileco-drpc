@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * @author Philipp Gayret
@@ -15,7 +16,7 @@ public class JSONArgumentsStreamerTest {
      * Serialize a bunch of primitives to bytes and back. The deserialized objects must match the input objects.
      */
     @Test
-    public void testSerializeDeserializePrimitives() {
+    public void testSerializeDeserializePrimitives() throws IOException {
 
         JSONArgumentsStreamer JSONArgumentsStreamer = new JSONArgumentsStreamer();
 

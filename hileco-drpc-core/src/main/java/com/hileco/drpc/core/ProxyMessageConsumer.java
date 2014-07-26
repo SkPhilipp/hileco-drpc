@@ -1,8 +1,8 @@
 package com.hileco.drpc.core;
 
+import com.hileco.drpc.core.spec.OutgoingMessageConsumer;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.spec.IncomingMessageConsumer;
-import com.hileco.drpc.core.spec.MessageClient;
 import com.hileco.drpc.core.spec.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +22,10 @@ public class ProxyMessageConsumer implements IncomingMessageConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(ProxyMessageConsumer.class);
 
     private ArgumentsStreamer argumentsStreamer;
-    private MessageClient client;
+    private OutgoingMessageConsumer client;
     private Object receiver;
 
-    public ProxyMessageConsumer(ArgumentsStreamer argumentsStreamer, MessageClient client, Object receiver) {
+    public ProxyMessageConsumer(ArgumentsStreamer argumentsStreamer, OutgoingMessageConsumer client, Object receiver) {
         this.argumentsStreamer = argumentsStreamer;
         this.client = client;
         this.receiver = receiver;
@@ -42,7 +42,7 @@ public class ProxyMessageConsumer implements IncomingMessageConsumer {
     @Override
     public void accept(Metadata metadata, InputStream contentStream) {
         try {
-            Method[] methods = receiver.getClass().getMethods();
+            Method[] methods = this.receiver.getClass().getMethods();
             Method match = null;
             for (Method method : methods) {
                 if (method.getName().equals(metadata.getOperation())) {
@@ -52,7 +52,7 @@ public class ProxyMessageConsumer implements IncomingMessageConsumer {
             }
             if (match != null) {
                 Class<?>[] parameterTypes = match.getParameterTypes();
-                Object[] convertedArgs = argumentsStreamer.deserializeFrom(contentStream, parameterTypes);
+                Object[] convertedArgs = this.argumentsStreamer.deserializeFrom(contentStream, parameterTypes);
                 try {
                     if (!match.getReturnType().equals(Void.TYPE)) {
                         Object result = match.invoke(this.receiver, convertedArgs);

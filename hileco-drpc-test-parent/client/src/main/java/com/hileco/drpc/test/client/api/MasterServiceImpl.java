@@ -1,8 +1,8 @@
 package com.hileco.drpc.test.client.api;
 
+import com.hileco.drpc.core.spec.ServiceConnector;
 import com.hileco.drpc.test.service.impl.SampleCalculatorService;
-import com.hileco.drpc.core.spec.Client;
-import com.hileco.drpc.core.spec.Connector;
+import com.hileco.drpc.core.spec.ServiceHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +15,11 @@ public class MasterServiceImpl {
     private static final int SCAN_RATE = 100;
     private static final Logger LOG = LoggerFactory.getLogger(MasterServiceImpl.class);
     private final ScheduledExecutorService scheduler;
-    private Connector<SampleCalculatorService, ?> globalConsumerConnector;
+    private ServiceConnector<SampleCalculatorService, ?> globalConsumerServiceConnector;
 
-    public MasterServiceImpl(Client client) {
+    public MasterServiceImpl(ServiceHost serviceHost) {
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
-        this.globalConsumerConnector = client.connector(SampleCalculatorService.class);
+        this.globalConsumerServiceConnector = serviceHost.connector(SampleCalculatorService.class);
     }
 
     public void start() {
@@ -27,8 +27,8 @@ public class MasterServiceImpl {
     }
 
     public void distributeTasks() {
-        this.globalConsumerConnector.drpc((d) -> d.calculate(1, 2), (r) -> LOG.info("Obtained a result: {}", r));
-        this.globalConsumerConnector.drpc(d -> d.calculate(1, 2),r -> LOG.info("Obtained a result: {}", r));
+        this.globalConsumerServiceConnector.drpc((d) -> d.calculate(1, 2), (r) -> LOG.info("Obtained a result: {}", r));
+        this.globalConsumerServiceConnector.drpc(d -> d.calculate(1, 2),r -> LOG.info("Obtained a result: {}", r));
     }
 
 }

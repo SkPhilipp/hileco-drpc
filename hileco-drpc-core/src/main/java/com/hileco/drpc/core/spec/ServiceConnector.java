@@ -6,11 +6,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Higher level abstraction of a {@link Client}.
+ * Higher level abstraction of a {@link ServiceHost}.
  *
  * @author Philipp Gayret
  */
-public interface Connector<T> {
+public interface ServiceConnector<T> {
 
     /**
      * Constructs a dynamically generated implementation of {@link T}, any method calls on the retuned object will be

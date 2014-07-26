@@ -1,6 +1,7 @@
 package com.hileco.drpc.http;
 
 import com.hileco.drpc.core.spec.Metadata;
+import com.hileco.drpc.http.servlet.IncomingMessageConsumerServletAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class HeaderUtilsTest {
 
         Metadata metadata = new Metadata("123", "654");
 
-        HeaderUtils headerUtils = new HeaderUtils();
+        IncomingMessageConsumerServletAdapter.HeaderUtils headerUtils = new IncomingMessageConsumerServletAdapter.HeaderUtils();
         headerUtils.writeHeaders(metadata, headers::put);
         Metadata converted = headerUtils.fromHeaders(headers::get);
 
@@ -33,7 +34,7 @@ public class HeaderUtilsTest {
 
         Metadata metadata = new Metadata("123", "aService", "doOperation");
 
-        HeaderUtils headerUtils = new HeaderUtils();
+        IncomingMessageConsumerServletAdapter.HeaderUtils headerUtils = new IncomingMessageConsumerServletAdapter.HeaderUtils();
         headerUtils.writeHeaders(metadata, headers::put);
         Metadata converted = headerUtils.fromHeaders(headers::get);
 

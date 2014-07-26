@@ -23,6 +23,7 @@ public class Metadata implements Cloneable {
         this.service = null;
         this.operation = null;
         this.type = Type.CALLBACK;
+        this.expectResponse = true;
     }
 
     /**
@@ -38,6 +39,7 @@ public class Metadata implements Cloneable {
         this.service = service;
         this.operation = operation;
         this.type = Type.SERVICE;
+        this.expectResponse = true;
     }
 
     private Type type;
@@ -45,6 +47,7 @@ public class Metadata implements Cloneable {
     private String replyTo;
     private String service;
     private String operation;
+    private Boolean expectResponse;
 
     public Type getType() {
         return type;
@@ -86,6 +89,14 @@ public class Metadata implements Cloneable {
         this.operation = operation;
     }
 
+    public Boolean getExpectResponse() {
+        return expectResponse;
+    }
+
+    public void setExpectResponse(Boolean expectResponse) {
+        this.expectResponse = expectResponse;
+    }
+
     public String getTopic() {
         switch (this.type) {
             case SERVICE:
@@ -99,13 +110,13 @@ public class Metadata implements Cloneable {
 
     @Override
     public String toString() {
-        return "{" +
+        return "Metadata{" +
                 "type=" + type +
                 ", id='" + id + '\'' +
                 ", replyTo='" + replyTo + '\'' +
                 ", service='" + service + '\'' +
                 ", operation='" + operation + '\'' +
+                ", expectResponse=" + expectResponse +
                 '}';
     }
-
 }

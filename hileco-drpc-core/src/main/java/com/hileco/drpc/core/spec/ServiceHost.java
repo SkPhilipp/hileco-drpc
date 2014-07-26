@@ -7,17 +7,7 @@ import com.hileco.drpc.core.util.SilentCloseable;
  *
  * @author Philipp Gayret
  */
-public interface Client extends MessageClient {
-
-    /**
-     * Begins listening on the given topic, any messages received on it will be delegated to the given consumer.
-     *
-     * @param topic    topic to listen on
-     * @param consumer handler to accept messages
-     * @return the closeable useable to revert the process of this call
-     * @throws IllegalArgumentException when there is an open consumer already registered on this topic
-     */
-    public SilentCloseable bind(String topic, IncomingMessageConsumer consumer) throws IllegalArgumentException;
+public interface ServiceHost extends OutgoingMessageConsumer {
 
     /**
      * Constructs a topic for an interface without an identifier.
@@ -37,13 +27,14 @@ public interface Client extends MessageClient {
     public String topic(Class<?> iface, Object identifier);
 
     /**
-     * Constructs a {@link Connector} out of the given interface class, useable for RPC and DRPC.
+     * Begins listening on the given topic, any messages received on it will be delegated to the given consumer.
      *
-     * @param iface any RPC compliant interface
-     * @param <T>   network object type
-     * @return the given class' {@link Connector}
+     * @param topic    topic to listen on
+     * @param consumer handler to accept messages
+     * @return the closeable useable to revert the process of this call
+     * @throws IllegalArgumentException when there is an open consumer already registered on this topic
      */
-    public <T> Connector<T> connector(Class<T> iface);
+    public SilentCloseable bind(String topic, IncomingMessageConsumer consumer) throws IllegalArgumentException;
 
     /**
      * Publishes the given implementation onto the network by listening on its topic, the topic to listen on is constructed using its identifier.
@@ -55,7 +46,7 @@ public interface Client extends MessageClient {
      * @param <T>            network object type
      * @return the closeable useable to revert the process of this call
      */
-    public <T> SilentCloseable listen(Class<T> iface, T implementation, String identifier);
+    public <T> SilentCloseable bind(Class<T> iface, T implementation, String identifier);
 
     /**
      * Publishes the given implementation onto the network by listening on its class topic.
@@ -66,6 +57,15 @@ public interface Client extends MessageClient {
      * @param <T>            network object type
      * @return the closeable useable to revert the process of this call
      */
-    public <T> SilentCloseable listen(Class<T> iface, T implementation);
+    public <T> SilentCloseable bind(Class<T> iface, T implementation);
+
+    /**
+     * Constructs a {@link ServiceConnector} out of the given interface class, useable for RPC and DRPC.
+     *
+     * @param iface any RPC compliant interface
+     * @param <T>   network object type
+     * @return the given class' {@link ServiceConnector}
+     */
+    public <T> ServiceConnector<T> connector(Class<T> iface);
 
 }

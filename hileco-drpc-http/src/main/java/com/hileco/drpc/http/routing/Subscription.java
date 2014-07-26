@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.routing.spec;
+package com.hileco.drpc.http.routing;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 

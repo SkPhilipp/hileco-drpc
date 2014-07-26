@@ -1,6 +1,5 @@
 package com.hileco.drpc.core.stream;
 
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
@@ -32,22 +31,18 @@ public class JSONArgumentsStreamer implements ArgumentsStreamer {
      * @param elementTypes classes to parse the elements as
      * @return instantiated objects
      */
-    public Object[] deserializeFrom(InputStream argsStream, Class<?>[] elementTypes) {
-        try {
-            Object[] results = new Object[elementTypes.length];
-            JsonParser parser = factory.createJsonParser(argsStream);
-            int index = 0;
-            if (parser.nextToken() == JsonToken.START_ARRAY) {
-                parser.clearCurrentToken();
-                while (index < elementTypes.length) {
-                    results[index] = parser.readValueAs(elementTypes[index]);
-                    index++;
-                }
+    public Object[] deserializeFrom(InputStream argsStream, Class<?>[] elementTypes) throws IOException {
+        Object[] results = new Object[elementTypes.length];
+        JsonParser parser = factory.createJsonParser(argsStream);
+        int index = 0;
+        if (parser.nextToken() == JsonToken.START_ARRAY) {
+            parser.clearCurrentToken();
+            while (index < elementTypes.length) {
+                results[index] = parser.readValueAs(elementTypes[index]);
+                index++;
             }
-            return results;
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to parse input as given class list", e);
         }
+        return results;
     }
 
     /**
@@ -58,17 +53,13 @@ public class JSONArgumentsStreamer implements ArgumentsStreamer {
      * @param outputStream stream to write JSON array to
      * @param arguments    serializable objects to be written
      */
-    public void serializeTo(OutputStream outputStream, Object[] arguments) {
-        try {
+    public void serializeTo(OutputStream outputStream, Object[] arguments) throws IOException {
             JsonGenerator jsonGenerator = factory.createJsonGenerator(outputStream);
             jsonGenerator.writeStartArray();
             for (Object arg : arguments) {
                 jsonGenerator.writeObject(arg);
             }
             jsonGenerator.writeEndArray();
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to write arguments to stream", e);
-        }
     }
 
 }

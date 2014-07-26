@@ -1,13 +1,11 @@
-package com.hileco.drpc.http.util;
-
-import com.hileco.drpc.core.util.SilentCloseable;
+package com.hileco.drpc.core.util;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Can schedule {@link com.hileco.drpc.core.util.SilentCloseable}s to be closed after a given time.
+ * Can schedule {@link SilentCloseable}s to be closed after a given time.
  *
  * @author Philipp Gayret
  */
