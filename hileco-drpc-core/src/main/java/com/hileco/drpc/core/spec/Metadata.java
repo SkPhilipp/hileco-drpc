@@ -23,7 +23,7 @@ public class Metadata implements Cloneable {
         this.service = null;
         this.operation = null;
         this.type = Type.CALLBACK;
-        this.expectResponse = true;
+        this.expectResponse = false;
     }
 
     /**

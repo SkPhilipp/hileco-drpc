@@ -1,7 +1,6 @@
 package com.hileco.drpc.http;
 
 import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.http.servlet.IncomingMessageConsumerServletAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,9 +16,8 @@ public class HeaderUtilsTest {
 
         Metadata metadata = new Metadata("123", "654");
 
-        IncomingMessageConsumerServletAdapter.HeaderUtils headerUtils = new IncomingMessageConsumerServletAdapter.HeaderUtils();
-        headerUtils.writeHeaders(metadata, headers::put);
-        Metadata converted = headerUtils.fromHeaders(headers::get);
+        HeaderUtils.writeHeaders(metadata, headers::put);
+        Metadata converted = HeaderUtils.fromHeaders(headers::get);
 
         Assert.assertEquals(metadata.getType(), converted.getType());
         Assert.assertEquals(metadata.getId(), converted.getId());
@@ -34,9 +32,8 @@ public class HeaderUtilsTest {
 
         Metadata metadata = new Metadata("123", "aService", "doOperation");
 
-        IncomingMessageConsumerServletAdapter.HeaderUtils headerUtils = new IncomingMessageConsumerServletAdapter.HeaderUtils();
-        headerUtils.writeHeaders(metadata, headers::put);
-        Metadata converted = headerUtils.fromHeaders(headers::get);
+        HeaderUtils.writeHeaders(metadata, headers::put);
+        Metadata converted = HeaderUtils.fromHeaders(headers::get);
 
         Assert.assertEquals(metadata.getType(), converted.getType());
         Assert.assertEquals(metadata.getId(), converted.getId());
