@@ -7,7 +7,7 @@ import com.hileco.drpc.core.util.SilentCloseable;
  *
  * @author Philipp Gayret
  */
-public interface ServiceHost extends OutgoingMessageConsumer {
+public interface ServiceHost extends MessageSender {
 
     /**
      * Constructs a topic for an interface without an identifier.
@@ -34,7 +34,7 @@ public interface ServiceHost extends OutgoingMessageConsumer {
      * @return the closeable useable to revert the process of this call
      * @throws IllegalArgumentException when there is an open consumer already registered on this topic
      */
-    public SilentCloseable bind(String topic, IncomingMessageConsumer consumer) throws IllegalArgumentException;
+    public SilentCloseable bind(String topic, MessageReceiver consumer) throws IllegalArgumentException;
 
     /**
      * Publishes the given implementation onto the network by listening on its topic, the topic to listen on is constructed using its identifier.

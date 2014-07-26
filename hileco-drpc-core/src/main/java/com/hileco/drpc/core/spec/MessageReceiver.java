@@ -9,7 +9,7 @@ import java.io.InputStream;
  * @author Philipp Gayret
  */
 @FunctionalInterface
-public interface IncomingMessageConsumer {
+public interface MessageReceiver {
 
     /**
      * Handles any message with metadata.

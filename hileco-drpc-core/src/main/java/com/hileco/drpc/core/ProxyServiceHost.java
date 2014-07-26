@@ -10,23 +10,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementation of all {@link ServiceHost}, instantiates {@link ProxyMessageConsumer}s to handle messages.
+ * Implementation of all {@link ServiceHost}, instantiates {@link ProxyMessageReceiver}s to handle messages.
  *
  * @author Philipp Gayret
  */
-public class ProxyServiceHost implements ServiceHost, IncomingMessageConsumer {
+public class ProxyServiceHost implements ServiceHost, MessageReceiver {
 
-    private Map<String, IncomingMessageConsumer> consumerMap;
+    private Map<String, MessageReceiver> consumerMap;
     private ArgumentsStreamer argumentsStreamer;
-    private OutgoingMessageConsumer outgoingMessageConsumer;
+    private MessageSender messageSender;
 
     /**
      * @param argumentsStreamer streamer to use to create message consumers for services with
-     * @param outgoingMessageConsumer     client to send procedure results to as callbacks
+     * @param messageSender     client to send procedure results to as callbacks
      */
-    protected ProxyServiceHost(ArgumentsStreamer argumentsStreamer, OutgoingMessageConsumer outgoingMessageConsumer) {
+    protected ProxyServiceHost(ArgumentsStreamer argumentsStreamer, MessageSender messageSender) {
         this.argumentsStreamer = argumentsStreamer;
-        this.outgoingMessageConsumer = outgoingMessageConsumer;
+        this.messageSender = messageSender;
         this.consumerMap = new HashMap<>();
     }
 
@@ -48,19 +48,19 @@ public class ProxyServiceHost implements ServiceHost, IncomingMessageConsumer {
     @Override
     public <T> SilentCloseable bind(Class<T> iface, T implementation) {
         String topic = this.topic(iface);
-        IncomingMessageConsumer consumer = new ProxyMessageConsumer(this.argumentsStreamer, this.outgoingMessageConsumer, implementation);
+        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this.messageSender, implementation);
         return this.bind(topic, consumer);
     }
 
     @Override
     public <T> SilentCloseable bind(Class<T> iface, T implementation, String identifier) {
         String topic = this.topic(iface, identifier);
-        IncomingMessageConsumer consumer = new ProxyMessageConsumer(this.argumentsStreamer, this.outgoingMessageConsumer, implementation);
+        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this.messageSender, implementation);
         return this.bind(topic, consumer);
     }
 
     @Override
-    public SilentCloseable bind(String topic, IncomingMessageConsumer consumer) throws IllegalArgumentException {
+    public SilentCloseable bind(String topic, MessageReceiver consumer) throws IllegalArgumentException {
         if (!this.consumerMap.containsKey(topic)) {
             this.consumerMap.put(topic, consumer);
             return () -> this.consumerMap.remove(topic, consumer);
@@ -72,7 +72,7 @@ public class ProxyServiceHost implements ServiceHost, IncomingMessageConsumer {
     @Override
     public void accept(Metadata metadata, InputStream content) throws IOException {
         // if metadata topic is subscribed to, then send to bound consumer
-        IncomingMessageConsumer consumer = this.consumerMap.get(metadata.getTopic());
+        MessageReceiver consumer = this.consumerMap.get(metadata.getTopic());
         if (consumer != null) {
             consumer.accept(metadata, content);
         } else {
@@ -82,7 +82,7 @@ public class ProxyServiceHost implements ServiceHost, IncomingMessageConsumer {
 
     @Override
     public void publish(Metadata metadata, Object content) {
-        this.outgoingMessageConsumer.publish(metadata, content);
+        this.messageSender.publish(metadata, content);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.hileco.drpc.core;
 
-import com.hileco.drpc.core.spec.OutgoingMessageConsumer;
+import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
@@ -40,7 +40,7 @@ public class OutgoingIncomingTest {
     @Test(timeout = ITERATIONS)
     public void testRPCValue() throws Exception {
 
-        OutgoingMessageConsumer outgoingMessageConsumer = Mockito.mock(OutgoingMessageConsumer.class);
+        MessageSender messageSender = Mockito.mock(MessageSender.class);
         SampleService mockService = Mockito.mock(SampleService.class);
 
         // we'll use the JSON argument streamer implementation
@@ -49,7 +49,7 @@ public class OutgoingIncomingTest {
         // create a construction where we basically connect an outgoingmessageproducer to an incomingmessageproducer, so
         // that any calls made on the outgoingMP's proxy object go through the serialization and deserialization process
         // and end up at the mock service defined.
-        ProxyMessageConsumer delegatingMessageStreamConsumer = new ProxyMessageConsumer(argumentsStreamer, outgoingMessageConsumer, mockService);
+        ProxyMessageReceiver delegatingMessageStreamConsumer = new ProxyMessageReceiver(argumentsStreamer, messageSender, mockService);
 
         SampleService proxyService = (SampleService) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{SampleService.class}, (proxy, method, arguments) -> {
             Metadata metadata = new Metadata(null, SampleService.class.getName(), method.getName());

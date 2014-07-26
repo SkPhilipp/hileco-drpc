@@ -1,7 +1,6 @@
 package com.hileco.drpc.http.routing;
 
 import com.google.common.io.ByteStreams;
-import com.hileco.drpc.core.spec.IncomingMessageConsumer;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.http.HeaderUtils;
 import com.hileco.drpc.http.servlet.HttpConstants;
@@ -24,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 /**
  * @author Philipp Gayret
  */
-public class Router implements IncomingMessageConsumer {
+public class Router {
 
     private static final Logger LOG = LoggerFactory.getLogger(Router.class);
 
@@ -80,8 +79,7 @@ public class Router implements IncomingMessageConsumer {
      * @param content  stream to content to process
      * @throws IOException when reading fails
      */
-    @Override
-    public void accept(Metadata metadata, InputStream content) throws IOException {
+    public void accept(String remoteHost, Integer remotePort, Metadata metadata, InputStream content) throws IOException {
 
         LOG.debug("Publishing a message of topic {} and id {}", metadata.getTopic(), metadata.getId());
         Collection<Subscription> subscriptions = subscriptionStore.withTopic(metadata.getTopic());

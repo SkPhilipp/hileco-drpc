@@ -1,8 +1,8 @@
 package com.hileco.drpc.core;
 
-import com.hileco.drpc.core.spec.OutgoingMessageConsumer;
+import com.hileco.drpc.core.spec.MessageReceiver;
+import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
-import com.hileco.drpc.core.spec.IncomingMessageConsumer;
 import com.hileco.drpc.core.spec.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,21 +11,21 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 
 /**
- * Implementation of {@link IncomingMessageConsumer}, interprets messages as method calls.
+ * Implementation of {@link com.hileco.drpc.core.spec.MessageReceiver}, interprets messages as method calls.
  * <p/>
  * Any method call results will be sent to {@link #client} as callback messages.
  *
  * @author Philipp Gayret
  */
-public class ProxyMessageConsumer implements IncomingMessageConsumer {
+public class ProxyMessageReceiver implements MessageReceiver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProxyMessageConsumer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProxyMessageReceiver.class);
 
     private ArgumentsStreamer argumentsStreamer;
-    private OutgoingMessageConsumer client;
+    private MessageSender client;
     private Object receiver;
 
-    public ProxyMessageConsumer(ArgumentsStreamer argumentsStreamer, OutgoingMessageConsumer client, Object receiver) {
+    public ProxyMessageReceiver(ArgumentsStreamer argumentsStreamer, MessageSender client, Object receiver) {
         this.argumentsStreamer = argumentsStreamer;
         this.client = client;
         this.receiver = receiver;

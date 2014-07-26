@@ -1,6 +1,6 @@
 package com.hileco.drpc.core;
 
-import com.hileco.drpc.core.spec.OutgoingMessageConsumer;
+import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.ServiceConnector;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
@@ -18,16 +18,16 @@ public class ProxyServiceHostTest {
     @Test
     public void test() {
 
-        OutgoingMessageConsumer outgoingMessageConsumer = Mockito.mock(OutgoingMessageConsumer.class);
+        MessageSender messageSender = Mockito.mock(MessageSender.class);
         ArgumentsStreamer argumentsStreamer = new JSONArgumentsStreamer();
-        ProxyServiceHost proxyServiceHost = new ProxyServiceHost(argumentsStreamer, outgoingMessageConsumer);
+        ProxyServiceHost proxyServiceHost = new ProxyServiceHost(argumentsStreamer, messageSender);
 
         ServiceConnector<SampleService> serviceConnector = proxyServiceHost.connector(SampleService.class);
         SampleService sampleService = serviceConnector.connect("1");
 
         sampleService.add(1, 2);
 
-        Mockito.verify(outgoingMessageConsumer, Mockito.times(1)).publish(Mockito.any(), Mockito.any());
+        Mockito.verify(messageSender, Mockito.times(1)).publish(Mockito.any(), Mockito.any());
 
     }
 
