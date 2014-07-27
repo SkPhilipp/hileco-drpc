@@ -16,6 +16,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Philipp Gayret
+ */
 public class HttpModuleTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpModuleTest.class);
@@ -43,7 +46,6 @@ public class HttpModuleTest {
         MessageReceiverServer messageReceiverServer = new MessageReceiverServer();
         messageReceiverServer.start(8081, proxyServiceHost);
 
-        // about 80~90% of the time a concurrency issue seems to occur and the thread deadlocks on this call
         Subscription save = proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER).save("fsdadsfdfs", "ssfadsdfsdaf", 124234);
         LOG.info("Done, id = {}.", save.getId());
 
