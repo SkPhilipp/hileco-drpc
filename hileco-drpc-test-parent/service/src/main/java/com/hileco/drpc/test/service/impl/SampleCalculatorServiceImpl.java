@@ -12,7 +12,7 @@ public class SampleCalculatorServiceImpl implements SampleCalculatorService {
     }
 
     public SilentCloseable listen() {
-        return this.serviceHost.bind(SampleCalculatorService.class, this);
+        return this.serviceHost.registerService(SampleCalculatorService.class, this);
     }
 
     @Override

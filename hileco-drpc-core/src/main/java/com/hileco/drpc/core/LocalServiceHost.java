@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class LocalServiceHost implements ServiceConnectorHost {
 
-    private Table<Class<?>, String, Object> servicesByClassTopic;
+    private Table<String, String, Object> servicesByClassTopic;
 
     public LocalServiceHost() {
         this.servicesByClassTopic = HashBasedTable.create();
@@ -25,16 +25,16 @@ public class LocalServiceHost implements ServiceConnectorHost {
     @SuppressWarnings("unchecked")
     @Override
     public <T> ServiceConnector<T> connector(Class<T> type) {
-        Map<String, T> services = (Map<String, T>) this.servicesByClassTopic.row(type);
-        return new LocalServicesConnector<T>(services);
+        String topic = this.topic(type);
+        Map<String, T> services = (Map<String, T>) this.servicesByClassTopic.row(topic);
+        return new LocalServicesConnector<>(services);
     }
 
     @Override
-    public <T> SilentCloseable bind(Class<T> iface, T implementation, String identifier) {
-        this.servicesByClassTopic.put(iface, identifier, implementation);
-        return () -> {
-            this.servicesByClassTopic.remove(iface, identifier);
-        };
+    public <T> SilentCloseable registerService(Class<T> type, String identifier, T implementation) {
+        String topic = this.topic(type);
+        this.servicesByClassTopic.put(topic, identifier, implementation);
+        return () -> this.servicesByClassTopic.remove(type, identifier);
     }
 
 }

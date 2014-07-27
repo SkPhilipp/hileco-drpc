@@ -1,6 +1,8 @@
 package com.hileco.drpc.http;
 
+import com.google.common.collect.Lists;
 import com.hileco.drpc.core.spec.Metadata;
+import com.hileco.drpc.http.core.HttpHeaderUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +32,7 @@ public class HttpHeaderUtilsTest {
 
         Map<String, String> headers = new HashMap<>();
 
-        Metadata metadata = new Metadata("123", "aService", "doOperation");
+        Metadata metadata = new Metadata("123", "aService", "doOperation", Lists.newArrayList("a", "b", "c"));
 
         HttpHeaderUtils.writeHeaders(metadata, headers::put);
         Metadata converted = HttpHeaderUtils.fromHeaders(headers::get);
@@ -39,6 +41,7 @@ public class HttpHeaderUtilsTest {
         Assert.assertEquals(metadata.getId(), converted.getId());
         Assert.assertEquals(metadata.getService(), converted.getService());
         Assert.assertEquals(metadata.getOperation(), converted.getOperation());
+        Assert.assertEquals(metadata.getTargets(), converted.getTargets());
 
     }
 

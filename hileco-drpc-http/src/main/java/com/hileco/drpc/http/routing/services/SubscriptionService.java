@@ -1,6 +1,6 @@
-package com.hileco.drpc.http.services;
+package com.hileco.drpc.http.routing.services;
 
-import com.hileco.drpc.http.routing.Subscription;
+import com.hileco.drpc.http.routing.services.subscriptions.Subscription;
 
 import java.util.Collection;
 import java.util.UUID;

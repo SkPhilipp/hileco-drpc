@@ -10,45 +10,19 @@ import com.hileco.drpc.core.util.SilentCloseable;
 public abstract class ServiceHost implements ServiceConnectorHost, MessageSender {
 
     /**
-     * Constructs a topic for an interface without an identifier.
-     *
-     * @param iface any RPC compliant interface
-     * @return the topic string
+     * Class reference to use for registering callbacks via {@link #registerReceiver(Class, String, MessageReceiver)}.
      */
-    public String topic(Class<?> iface) {
-        return iface.getName();
-    }
+    public static final class Callback {}
 
     /**
-     * Constructs a topic for an interface with an identifier.
+     * Begins listening on the given type & identifier combination, any messages received on it will be delegated to the given consumer.
      *
-     * @param iface      any RPC compliant interface
+     * @param type       any class whose name to use as topic
      * @param identifier the object identifier useable as part of the topic
-     * @return the topic string
-     */
-    public String topic(Class<?> iface, Object identifier) {
-        return String.format("%s:%s", iface.getName(), identifier);
-    }
-
-    /**
-     * Begins listening on the given topic, any messages received on it will be delegated to the given consumer.
-     *
-     * @param topic    topic to listen on
-     * @param consumer handler to accept messages
+     * @param consumer   handler to accept messages
      * @return the closeable useable to revert the process of this call
      * @throws IllegalArgumentException when there is an open consumer already registered on this topic
      */
-    public abstract SilentCloseable bind(String topic, MessageReceiver consumer) throws IllegalArgumentException;
-
-    /**
-     * Publishes the given implementation onto the network by listening on its class topic.
-     * Only methods delcared on the given iface will be handled.
-     *
-     * @param iface          any RPC compliant interface
-     * @param implementation an implementation of the given interface
-     * @param <T>            network object type
-     * @return the closeable useable to revert the process of this call
-     */
-    public abstract <T> SilentCloseable bind(Class<T> iface, T implementation);
+    public abstract SilentCloseable registerReceiver(Class<?> type, String identifier, MessageReceiver consumer) throws IllegalArgumentException;
 
 }

@@ -1,5 +1,7 @@
 package com.hileco.drpc.core;
 
+import com.google.common.collect.Lists;
+import com.hileco.drpc.core.spec.MessageReceiver;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.spec.ServiceConnector;
 import com.hileco.drpc.core.spec.ServiceHost;
@@ -9,6 +11,7 @@ import com.hileco.drpc.core.util.InvocationExtractor;
 import com.hileco.drpc.core.util.SilentCloseable;
 
 import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -40,26 +43,27 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
         Invocation invocation = invocationExtractor.extractOneUsingFunction(type, invoker::apply);
 
         String topic = this.serviceHost.topic(type);
-        Metadata metadata = new Metadata(null, topic, invocation.getName());
+        Metadata metadata = new Metadata(null, topic, invocation.getName(), null);
         metadata.setExpectResponse(!invocation.getMethod().getReturnType().equals(Void.TYPE));
         this.serviceHost.send(metadata, invocation.getArguments());
 
-        return this.serviceHost.bind(metadata.getId(), (callbackMetadata, content) -> {
+        return this.serviceHost.registerService(MessageReceiver.class, metadata.getId(), (callbackMetadata, content) -> {
             R result = (R) this.argumentsStreamer.deserializeFrom(content, new Class[]{invocation.getMethod().getReturnType()})[0];
             consumer.accept(result);
         });
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     @Override
     public T connect(String identifier) {
 
-        String topic = this.serviceHost.topic(type, identifier);
+        List<String> targets = Lists.newArrayList(identifier);
+        String topic = this.serviceHost.topic(type);
 
         return (T) Proxy.newProxyInstance(this.classLoader, new Class[]{type}, (proxy, method, arguments) -> {
 
-            Metadata metadata = new Metadata(null, topic, method.getName());
+            Metadata metadata = new Metadata(null, topic, method.getName(), targets);
             metadata.setExpectResponse(!method.getReturnType().equals(Void.TYPE));
             this.serviceHost.send(metadata, arguments);
 
@@ -68,7 +72,8 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
             synchronized (results) {
 
                 if (metadata.getExpectResponse()) {
-                    SilentCloseable listener = this.serviceHost.bind(metadata.getId(), (callbackMetadata, content) -> {
+
+                    SilentCloseable listener = this.serviceHost.registerReceiver(ServiceHost.Callback.class, metadata.getId(), (callbackMetadata, content) -> {
                         results[0] = this.argumentsStreamer.deserializeFrom(content, new Class[]{method.getReturnType()})[0];
                         results.notify();
                     });

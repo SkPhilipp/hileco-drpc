@@ -1,7 +1,7 @@
-package com.hileco.drpc.http.services;
+package com.hileco.drpc.http.routing.services;
 
-import com.hileco.drpc.http.routing.Subscription;
-import com.hileco.drpc.http.routing.SubscriptionStore;
+import com.hileco.drpc.http.routing.services.subscriptions.Subscription;
+import com.hileco.drpc.http.routing.services.subscriptions.SubscriptionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

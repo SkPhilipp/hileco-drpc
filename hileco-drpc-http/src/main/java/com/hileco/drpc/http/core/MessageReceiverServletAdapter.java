@@ -1,8 +1,7 @@
-package com.hileco.drpc.http.servlet;
+package com.hileco.drpc.http.core;
 
 import com.hileco.drpc.core.spec.MessageReceiver;
 import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.http.HttpHeaderUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Allows a {@link MessageReceiver} to be accessed as an {@link HttpServlet}.
+ * Allows a {@link MessageReceiver} to be accessed through an {@link HttpServlet}.
  *
  * @author Philipp Gayret
  */

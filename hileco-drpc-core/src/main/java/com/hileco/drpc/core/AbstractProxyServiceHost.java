@@ -1,5 +1,7 @@
 package com.hileco.drpc.core;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.hileco.drpc.core.spec.MessageReceiver;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.spec.ServiceConnector;
@@ -9,7 +11,8 @@ import com.hileco.drpc.core.util.SilentCloseable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +22,7 @@ import java.util.Map;
  */
 public abstract class AbstractProxyServiceHost extends ServiceHost implements MessageReceiver {
 
-    private Map<String, MessageReceiver> consumerMap;
+    private Table<String, String, MessageReceiver> consumers;
     private ArgumentsStreamer argumentsStreamer;
 
     /**
@@ -27,18 +30,7 @@ public abstract class AbstractProxyServiceHost extends ServiceHost implements Me
      */
     public AbstractProxyServiceHost(ArgumentsStreamer argumentsStreamer) {
         this.argumentsStreamer = argumentsStreamer;
-        this.consumerMap = new HashMap<>();
-    }
-
-
-    @Override
-    public String topic(Class<?> iface) {
-        return iface.getName();
-    }
-
-    @Override
-    public String topic(Class<?> iface, Object identifier) {
-        return String.format("%s:%s", iface.getName(), identifier);
+        this.consumers = HashBasedTable.create();
     }
 
     @Override
@@ -47,37 +39,40 @@ public abstract class AbstractProxyServiceHost extends ServiceHost implements Me
     }
 
     @Override
-    public <T> SilentCloseable bind(Class<T> iface, T implementation) {
-        String topic = this.topic(iface);
+    public <T> SilentCloseable registerService(Class<T> type, String identifier, T implementation) {
         MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this, implementation);
-        return this.bind(topic, consumer);
+        return this.registerReceiver(type, identifier, consumer);
     }
 
     @Override
-    public <T> SilentCloseable bind(Class<T> iface, T implementation, String identifier) {
-        String topic = this.topic(iface, identifier);
-        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this, implementation);
-        return this.bind(topic, consumer);
-    }
-
-    @Override
-    public SilentCloseable bind(String topic, MessageReceiver consumer) throws IllegalArgumentException {
-        if (!this.consumerMap.containsKey(topic)) {
-            this.consumerMap.put(topic, consumer);
-            return () -> this.consumerMap.remove(topic, consumer);
+    public SilentCloseable registerReceiver(Class<?> type, String identifier, MessageReceiver consumer) throws IllegalArgumentException {
+        String topic = this.topic(type);
+        if (!this.consumers.contains(topic, identifier)) {
+            this.consumers.put(topic, identifier, consumer);
+            return () -> this.consumers.remove(topic, identifier);
         } else {
-            throw new IllegalArgumentException("Topic " + topic + " already taken");
+            throw new IllegalArgumentException("Identifier " + identifier + " on type " + type + " with topic " + topic + " already taken");
         }
     }
 
     @Override
     public void accept(Metadata metadata, InputStream content) throws IOException {
-        // if metadata topic is subscribed to, then send to bound consumer
-        MessageReceiver consumer = this.consumerMap.get(metadata.getTopic());
-        if (consumer != null) {
-            consumer.accept(metadata, content);
+        Map<String, MessageReceiver> topicConsumers = this.consumers.row(metadata.getTopic());
+        // we need to filter receivers if the message is targeted only
+        List<MessageReceiver> receivers = new ArrayList<>();
+        if (metadata.hasTargets()) {
+            for (String target : metadata.getTargets()) {
+                MessageReceiver receiver = topicConsumers.get(target);
+                if (receiver != null) {
+                    receivers.add(receiver);
+                }
+            }
         } else {
-            throw new IllegalArgumentException("No procedure registered for topic " + metadata.getTopic());
+            receivers.addAll(topicConsumers.values());
+        }
+        // call all receivers
+        for (MessageReceiver receiver : receivers) {
+            receiver.accept(metadata, content);
         }
     }
 

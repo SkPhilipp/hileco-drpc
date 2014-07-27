@@ -52,7 +52,7 @@ public class OutgoingIncomingTest {
         ProxyMessageReceiver delegatingMessageStreamConsumer = new ProxyMessageReceiver(argumentsStreamer, messageSender, mockService);
 
         SampleService proxyService = (SampleService) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{SampleService.class}, (proxy, method, arguments) -> {
-            Metadata metadata = new Metadata(null, SampleService.class.getName(), method.getName());
+            Metadata metadata = new Metadata(null, SampleService.class.getName(), method.getName(), null);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             argumentsStreamer.serializeTo(byteArrayOutputStream, arguments);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());

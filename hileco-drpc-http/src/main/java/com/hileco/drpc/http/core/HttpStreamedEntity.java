@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.servlet;
+package com.hileco.drpc.http.core;
 
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import org.apache.http.Header;
@@ -45,7 +45,7 @@ public class HttpStreamedEntity implements HttpEntity {
 
     @Override
     public InputStream getContent() throws IOException, IllegalStateException {
-        throw new IllegalStateException("HttpStreamedEntity can only be ");
+        throw new IllegalStateException("HttpStreamedEntity can only be sent to an output stream.");
     }
 
     @Override

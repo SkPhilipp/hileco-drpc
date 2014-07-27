@@ -1,10 +1,9 @@
-package com.hileco.drpc.http.servlet;
+package com.hileco.drpc.http.core;
 
 import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
-import com.hileco.drpc.http.HttpHeaderUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;

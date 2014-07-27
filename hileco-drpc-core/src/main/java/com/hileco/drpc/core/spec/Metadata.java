@@ -1,5 +1,7 @@
 package com.hileco.drpc.core.spec;
 
+import java.util.List;
+
 /**
  * All metadata needed of a message to locate a procedure.
  *
@@ -9,6 +11,9 @@ public class Metadata implements Cloneable {
 
     public static enum Type {
         SERVICE, CALLBACK
+    }
+
+    public Metadata() {
     }
 
     /**
@@ -21,6 +26,7 @@ public class Metadata implements Cloneable {
         this.id = id;
         this.replyTo = replyTo;
         this.service = null;
+        this.targets = null;
         this.operation = null;
         this.type = Type.CALLBACK;
         this.expectResponse = true;
@@ -32,17 +38,21 @@ public class Metadata implements Cloneable {
      * @param id        message identifier
      * @param service   reference for a procedure locator
      * @param operation reference to a service's operation
+     * @param targets   list of service hosts by registered identifier, or null if to send to all
      */
-    public Metadata(String id, String service, String operation) {
+    public Metadata(String id, String service, String operation, List<String> targets) {
         this.id = id;
         this.replyTo = null;
+        this.targets = targets;
         this.service = service;
         this.operation = operation;
         this.type = Type.SERVICE;
+        this.expectResponse = true;
     }
 
     private Type type;
     private String id;
+    private List<String> targets;
     private String replyTo;
     private String service;
     private String operation;
@@ -96,6 +106,18 @@ public class Metadata implements Cloneable {
         this.expectResponse = expectResponse;
     }
 
+    public Boolean hasTargets() {
+        return targets != null;
+    }
+
+    public List<String> getTargets() {
+        return targets;
+    }
+
+    public void setTargets(List<String> targets) {
+        this.targets = targets;
+    }
+
     public String getTopic() {
         switch (this.type) {
             case SERVICE:
@@ -112,10 +134,12 @@ public class Metadata implements Cloneable {
         return "Metadata{" +
                 "type=" + type +
                 ", id='" + id + '\'' +
+                ", targets=" + targets +
                 ", replyTo='" + replyTo + '\'' +
                 ", service='" + service + '\'' +
                 ", operation='" + operation + '\'' +
                 ", expectResponse=" + expectResponse +
                 '}';
     }
+
 }
