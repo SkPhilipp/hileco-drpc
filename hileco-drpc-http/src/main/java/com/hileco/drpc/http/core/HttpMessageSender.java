@@ -3,11 +3,8 @@ package com.hileco.drpc.http.core;
 import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
-import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,33 +18,36 @@ import java.io.IOException;
 public class HttpMessageSender implements MessageSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpMessageSender.class);
-    private static final ArgumentsStreamer JSON_ARGUMENTS_STREAMER = new JSONArgumentsStreamer();
 
-    public static final int DEFAULT_REQUEST_TIMEOUT = 2000;
-
+    private final ArgumentsStreamer argumentsStreamer;
+    private final String listeningHost;
+    private final Integer listeningPort;
     private final String target;
     private final HttpClient httpClient;
 
     /**
-     * @param target url to send http requests to
+     * @param httpClient        http client to send with
+     * @param argumentsStreamer streamer to serialize content with
+     * @param target            url to send http requests to
+     * @param listeningHost     hostname for receiver to send replies back to
+     * @param listeningPort     listeningHost's port
      */
-    public HttpMessageSender(String target) {
+    public HttpMessageSender(HttpClient httpClient, ArgumentsStreamer argumentsStreamer, String target, String listeningHost, Integer listeningPort) {
+        this.httpClient = httpClient;
+        this.argumentsStreamer = argumentsStreamer;
         this.target = target;
-        RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
-                .setConnectTimeout(DEFAULT_REQUEST_TIMEOUT)
-                .setSocketTimeout(DEFAULT_REQUEST_TIMEOUT)
-                .build();
-        this.httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(config)
-                .build();
+        this.listeningHost = listeningHost;
+        this.listeningPort = listeningPort;
     }
 
     @Override
     public void send(Metadata metadata, Object[] content) {
 
-        HttpStreamedEntity httpStreamedEntity = new HttpStreamedEntity(JSON_ARGUMENTS_STREAMER, content);
+        HttpStreamedEntity httpStreamedEntity = new HttpStreamedEntity(argumentsStreamer, content);
         HttpPost request = new HttpPost(target);
         HttpHeaderUtils.writeHeaders(metadata, request::setHeader);
+        request.setHeader(HttpHeaderUtils.ROUTER_REPLY_TO_HOST, this.listeningHost);
+        request.setHeader(HttpHeaderUtils.ROUTER_REPLY_TO_PORT, this.listeningPort.toString());
         request.setEntity(httpStreamedEntity);
         try {
             httpClient.execute(request);

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 /**
  * Implementation of {@link com.hileco.drpc.core.spec.MessageReceiver}, interprets messages as method calls.
@@ -56,7 +57,7 @@ public class ProxyMessageReceiver implements MessageReceiver {
                 try {
                     if (!match.getReturnType().equals(Void.TYPE)) {
                         Object result = match.invoke(this.receiver, convertedArgs);
-                        Metadata callbackMeta = new Metadata(null, metadata.getId());
+                        Metadata callbackMeta = new Metadata(UUID.randomUUID().toString(), metadata.getId());
                         client.send(callbackMeta, new Object[]{result});
                     } else {
                         match.invoke(this.receiver, convertedArgs);

@@ -1,12 +1,17 @@
 package com.hileco.drpc.http.routing;
 
 import com.google.common.io.ByteStreams;
-import com.hileco.drpc.core.spec.MessageReceiver;
+import com.hileco.drpc.core.ProxyServiceHost;
+import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
+import com.hileco.drpc.core.spec.ServiceHost;
+import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.http.core.HttpConstants;
 import com.hileco.drpc.http.core.HttpHeaderUtils;
+import com.hileco.drpc.http.core.HttpStreamedEntity;
 import com.hileco.drpc.http.routing.services.subscriptions.Subscription;
 import com.hileco.drpc.http.routing.services.subscriptions.SubscriptionStore;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -26,7 +31,7 @@ import java.util.concurrent.ScheduledExecutorService;
 /**
  * @author Philipp Gayret
  */
-public class HttpRouter {
+public class HttpRouter implements MessageSender {
 
     public static final String ROUTER_IDENTIFIER = "ROUTER";
 
@@ -35,17 +40,18 @@ public class HttpRouter {
     public static final int DEFAULT_SENDER_POOL_SIZE = 100;
     public static final int DEFAULT_REQUEST_TIMEOUT = 2000;
 
-    private final MessageReceiver routerMessageReceiver;
+    private final ProxyServiceHost proxyServiceHost;
     private final SubscriptionStore subscriptionStore;
     private final HttpClient httpClient;
     private final ScheduledExecutorService executorService;
+    private final ArgumentsStreamer argumentsStreamer;
 
     /**
-     * @param routerMessageReceiver receiver for any {@link #ROUTER_IDENTIFIER} targeted messages
-     * @param subscriptionStore     store to obtain subscription lists lists from for given messages' topics
+     * @param subscriptionStore store to obtain subscription lists lists from for given messages' topics
      */
-    public HttpRouter(MessageReceiver routerMessageReceiver, SubscriptionStore subscriptionStore) {
-        this.routerMessageReceiver = routerMessageReceiver;
+    public HttpRouter(SubscriptionStore subscriptionStore) {
+        this.argumentsStreamer = HttpConstants.DEFAULT_STREAMER;
+        this.proxyServiceHost = new ProxyServiceHost(this, argumentsStreamer);
         this.subscriptionStore = subscriptionStore;
         this.executorService = Executors.newScheduledThreadPool(DEFAULT_SENDER_POOL_SIZE);
         RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
@@ -56,6 +62,36 @@ public class HttpRouter {
                 .setDefaultRequestConfig(config)
                 .build();
 
+    }
+
+    private void send(Metadata metadata, HttpEntity httpEntity) {
+        Collection<Subscription> subscriptions = this.subscriptionStore.withTopic(metadata.getTopic());
+        for (Subscription subscription : subscriptions) {
+            this.executorService.submit(() -> {
+                try {
+                    String target = String.format("http://%s:%d/%s", subscription.getHost(), subscription.getPort(), HttpConstants.HDRPC_CONSUMER_PATH);
+                    HttpPost request = new HttpPost(target);
+                    HttpHeaderUtils.writeHeaders(metadata, request::setHeader);
+                    request.setEntity(httpEntity);
+                    HttpResponse response = httpClient.execute(request);
+                    int statusCode = response.getStatusLine().getStatusCode();
+                    if (statusCode == 400) {
+                        LOG.debug("Request completed against {}, status code indicates subscription {} must be deleted.", target, subscription.getId());
+                        this.subscriptionStore.delete(subscription.getId());
+                    } else {
+                        LOG.debug("Sent message with topic {} subscription {} to {}.", metadata.getTopic(), subscription.getId(), target);
+                    }
+                } catch (Throwable e) {
+                    LOG.warn("Erred while sending to a subscribed receiver", e);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void send(Metadata metadata, Object[] content) {
+        HttpStreamedEntity httpStreamedEntity = new HttpStreamedEntity(this.argumentsStreamer, content);
+        this.send(metadata, httpStreamedEntity);
     }
 
     /**
@@ -82,38 +118,24 @@ public class HttpRouter {
         // if the client is targeting the router, handle accordingly
         if (metadata.hasTargets() && metadata.getTargets().contains(ROUTER_IDENTIFIER)) {
             LOG.debug("Internally handling a message of topic {} and id {}", metadata.getTopic(), metadata.getId());
-            routerMessageReceiver.accept(metadata, content);
+            proxyServiceHost.accept(metadata, content);
         }
 
         // if the client is not targeting the router, publish it to all subscribers to the topic
         else {
             LOG.debug("Handling a message of topic {} and id {}", metadata.getTopic(), metadata.getId());
-            Collection<Subscription> subscriptions = this.subscriptionStore.withTopic(metadata.getTopic());
             byte[] bytes = ByteStreams.toByteArray(content);
             ByteArrayEntity byteArrayEntity = new ByteArrayEntity(bytes);
-
-            for (Subscription subscription : subscriptions) {
-                this.executorService.submit(() -> {
-                    try {
-                        String target = String.format("http://%s:%d/%s", subscription.getHost(), subscription.getPort(), HttpConstants.HDRPC_CONSUMER_PATH);
-                        HttpPost request = new HttpPost(target);
-                        HttpHeaderUtils.writeHeaders(metadata, request::setHeader);
-                        request.setEntity(byteArrayEntity);
-                        HttpResponse response = httpClient.execute(request);
-                        int statusCode = response.getStatusLine().getStatusCode();
-                        if (statusCode == 400) {
-                            LOG.debug("Request completed against {}, status code indicates subscription {} must be deleted.", target, subscription.getId());
-                            this.subscriptionStore.delete(subscription.getId());
-                        } else {
-                            LOG.debug("Sent message with topic {} subscription {} to {}.", metadata.getTopic(), subscription.getId(), target);
-                        }
-                    } catch (Throwable e) {
-                        LOG.warn("Erred while sending to a subscribed receiver", e);
-                    }
-                });
-            }
+            this.send(metadata, byteArrayEntity);
         }
 
+    }
+
+    /**
+     * @return service host listening only on {@link #ROUTER_IDENTIFIER} identifier referenced metadata messages.
+     */
+    public ServiceHost getRouterServiceHost() {
+        return proxyServiceHost;
     }
 
 }

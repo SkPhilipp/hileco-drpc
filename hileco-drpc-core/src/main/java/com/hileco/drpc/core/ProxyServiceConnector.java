@@ -12,6 +12,7 @@ import com.hileco.drpc.core.util.SilentCloseable;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -43,7 +44,7 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
         Invocation invocation = invocationExtractor.extractOneUsingFunction(type, invoker::apply);
 
         String topic = this.serviceHost.topic(type);
-        Metadata metadata = new Metadata(null, topic, invocation.getName(), null);
+        Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, invocation.getName(), null);
         metadata.setExpectResponse(!invocation.getMethod().getReturnType().equals(Void.TYPE));
         this.serviceHost.send(metadata, invocation.getArguments());
 
@@ -63,19 +64,22 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
 
         return (T) Proxy.newProxyInstance(this.classLoader, new Class[]{type}, (proxy, method, arguments) -> {
 
-            Metadata metadata = new Metadata(null, topic, method.getName(), targets);
+            Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, method.getName(), targets);
             metadata.setExpectResponse(!method.getReturnType().equals(Void.TYPE));
             this.serviceHost.send(metadata, arguments);
 
             Object[] results = new Object[]{null};
 
+            // TODO: locking needs some work
             synchronized (results) {
 
                 if (metadata.getExpectResponse()) {
 
                     SilentCloseable listener = this.serviceHost.registerReceiver(ServiceHost.Callback.class, metadata.getId(), (callbackMetadata, content) -> {
-                        results[0] = this.argumentsStreamer.deserializeFrom(content, new Class[]{method.getReturnType()})[0];
-                        results.notify();
+                        synchronized (results) {
+                            results[0] = this.argumentsStreamer.deserializeFrom(content, new Class[]{method.getReturnType()})[0];
+                            results.notifyAll();
+                        }
                     });
 
                     results.wait(60000);

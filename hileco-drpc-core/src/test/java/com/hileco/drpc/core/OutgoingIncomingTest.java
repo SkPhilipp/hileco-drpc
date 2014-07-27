@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 /**
  * Tests functionality of serialization and deserialization from the perspective of an end-user of the core library.
@@ -52,7 +53,7 @@ public class OutgoingIncomingTest {
         ProxyMessageReceiver delegatingMessageStreamConsumer = new ProxyMessageReceiver(argumentsStreamer, messageSender, mockService);
 
         SampleService proxyService = (SampleService) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{SampleService.class}, (proxy, method, arguments) -> {
-            Metadata metadata = new Metadata(null, SampleService.class.getName(), method.getName(), null);
+            Metadata metadata = new Metadata(UUID.randomUUID().toString(), SampleService.class.getName(), method.getName(), null);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             argumentsStreamer.serializeTo(byteArrayOutputStream, arguments);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());

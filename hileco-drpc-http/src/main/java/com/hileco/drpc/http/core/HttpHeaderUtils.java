@@ -25,6 +25,9 @@ public class HttpHeaderUtils {
     public static final String HDRPC_HEADER_META_OPERATION = "H-Operation";
     public static final String HDRPC_HEADER_META_EXPECTING_RESPONSE = "H-Respond";
 
+    public static final String ROUTER_REPLY_TO_HOST = "H-ReplyToHost";
+    public static final String ROUTER_REPLY_TO_PORT = "H-ReplyToPort";
+
     /**
      * Constructs a {@link com.hileco.drpc.core.spec.Metadata} object out of transport headers.
      *

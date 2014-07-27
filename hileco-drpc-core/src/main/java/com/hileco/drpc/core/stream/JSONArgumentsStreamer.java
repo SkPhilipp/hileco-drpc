@@ -17,8 +17,8 @@ import java.io.OutputStream;
  */
 public class JSONArgumentsStreamer implements ArgumentsStreamer {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final JsonFactory factory = objectMapper.getJsonFactory();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonFactory FACTORY = OBJECT_MAPPER.getJsonFactory();
 
     /**
      * Expects the given argsStream to return a JSON array containing objects parseable as the given element types.
@@ -33,7 +33,7 @@ public class JSONArgumentsStreamer implements ArgumentsStreamer {
      */
     public Object[] deserializeFrom(InputStream argsStream, Class<?>[] elementTypes) throws IOException {
         Object[] results = new Object[elementTypes.length];
-        JsonParser parser = factory.createJsonParser(argsStream);
+        JsonParser parser = FACTORY.createJsonParser(argsStream);
         int index = 0;
         if (parser.nextToken() == JsonToken.START_ARRAY) {
             parser.clearCurrentToken();
@@ -54,12 +54,12 @@ public class JSONArgumentsStreamer implements ArgumentsStreamer {
      * @param arguments    serializable objects to be written
      */
     public void serializeTo(OutputStream outputStream, Object[] arguments) throws IOException {
-            JsonGenerator jsonGenerator = factory.createJsonGenerator(outputStream);
-            jsonGenerator.writeStartArray();
-            for (Object arg : arguments) {
-                jsonGenerator.writeObject(arg);
-            }
-            jsonGenerator.writeEndArray();
+        JsonGenerator jsonGenerator = FACTORY.createJsonGenerator(outputStream);
+        jsonGenerator.writeStartArray();
+        for (Object arg : arguments) {
+            jsonGenerator.writeObject(arg);
+        }
+        jsonGenerator.writeEndArray();
     }
 
 }

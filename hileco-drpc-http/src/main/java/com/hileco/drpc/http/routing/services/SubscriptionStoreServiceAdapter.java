@@ -9,15 +9,17 @@ import java.util.Collection;
 import java.util.UUID;
 
 /**
+ * {@link SubscriptionStore} as a {@link SubscriptionService}.
+ *
  * @author Philipp Gayret
  */
-public class RouterSubscriptionService implements SubscriptionService {
+public class SubscriptionStoreServiceAdapter implements SubscriptionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RouterSubscriptionService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionStoreServiceAdapter.class);
 
     private final SubscriptionStore subscriptionStore;
 
-    public RouterSubscriptionService(SubscriptionStore subscriptionStore) {
+    public SubscriptionStoreServiceAdapter(SubscriptionStore subscriptionStore) {
         this.subscriptionStore = subscriptionStore;
     }
 

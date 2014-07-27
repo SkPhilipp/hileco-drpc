@@ -23,7 +23,7 @@ public class HttpStreamedEntity implements HttpEntity {
 
     @Override
     public boolean isRepeatable() {
-        return false;
+        return true;
     }
 
     @Override

@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 /**
  * @author Philipp Gayret
  */
-public class AbstractProxyServiceHostTest {
+public class ProxyServiceHostTest {
 
     public static interface SampleService {
 
@@ -27,7 +27,7 @@ public class AbstractProxyServiceHostTest {
 
         MessageSender messageSender = Mockito.mock(MessageSender.class);
         ArgumentsStreamer argumentsStreamer = new JSONArgumentsStreamer();
-        AbstractProxyServiceHost abstractProxyServiceHost = new AbstractProxyServiceHost(argumentsStreamer) {
+        ProxyServiceHost proxyServiceHost = new ProxyServiceHost(messageSender, argumentsStreamer) {
 
             @Override
             public void send(Metadata metadata, Object[] content) {
@@ -36,7 +36,7 @@ public class AbstractProxyServiceHostTest {
 
         };
 
-        ServiceConnector<SampleService> serviceConnector = abstractProxyServiceHost.connector(SampleService.class);
+        ServiceConnector<SampleService> serviceConnector = proxyServiceHost.connector(SampleService.class);
         SampleService sampleService = serviceConnector.connect("1");
 
         sampleService.add(1, 2);

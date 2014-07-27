@@ -16,9 +16,6 @@ import java.io.IOException;
  */
 public class HttpRouterServletAdapter extends HttpServlet {
 
-    public static final String ROUTER_REPLY_TO_HOST = "H-ReplyToHost";
-    public static final String ROUTER_REPLY_TO_PORT = "H-ReplyToPort";
-
     private HttpRouter httpRouter;
 
     public HttpRouterServletAdapter(HttpRouter httpRouter) {
@@ -26,12 +23,12 @@ public class HttpRouterServletAdapter extends HttpServlet {
     }
 
     public String getReplyToHost(HttpServletRequest req) {
-        String header = req.getHeader(ROUTER_REPLY_TO_HOST);
+        String header = req.getHeader(HttpHeaderUtils.ROUTER_REPLY_TO_HOST);
         return header != null ? header : req.getRemoteHost();
     }
 
     public Integer getReplyToPost(HttpServletRequest req) {
-        String header = req.getHeader(ROUTER_REPLY_TO_PORT);
+        String header = req.getHeader(HttpHeaderUtils.ROUTER_REPLY_TO_PORT);
         return header != null ? Integer.parseInt(header) : req.getRemotePort();
     }
 
