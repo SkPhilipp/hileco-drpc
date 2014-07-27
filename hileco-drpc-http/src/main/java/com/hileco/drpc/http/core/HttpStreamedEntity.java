@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * @author Philipp Gayret
+ */
 public class HttpStreamedEntity implements HttpEntity {
 
     private final ArgumentsStreamer argumentsStreamer;
