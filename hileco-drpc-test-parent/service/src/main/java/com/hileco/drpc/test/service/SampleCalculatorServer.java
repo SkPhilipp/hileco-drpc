@@ -1,30 +1,13 @@
 package com.hileco.drpc.test.service;
 
-import com.hileco.drpc.test.service.impl.SampleCalculatorServiceImpl;
-import com.hileco.drcp.todo.api.models.HTTPSubscription;
-import com.hileco.drcp.todo.RouterClient;
-import com.hileco.lib.service.EmbeddedServer;
-import com.hileco.lib.service.exceptions.EmbeddedServerStartException;
-
-import java.util.HashSet;
-import java.util.Set;
-
 public class SampleCalculatorServer {
 
-    public void start(String routerURL, Integer port) throws EmbeddedServerStartException {
+    public void start() {
 
-        RouterClient routerClient = new RouterClient(routerURL, () -> {
-            HTTPSubscription subscription = new HTTPSubscription();
-            subscription.setPort(port);
-            return subscription;
-        });
-
-        EmbeddedServer embeddedServer = new EmbeddedServer(port);
-        Set<Object> services = new HashSet<>();
-        services.add(routerClient);
-        embeddedServer.start(services);
-        SampleCalculatorServiceImpl consumerImpl = new SampleCalculatorServiceImpl( routerClient.getClient());
-        consumerImpl.listen();
+        // TODO: Initialize a client to the router from drpc http libs
+        // TODO: Configure host and port configuration for client to router
+        // TODO: Initialize an embedded server from drpc http libs
+        // TODO: Host the SampleCalculatorServiceImpl via drpc http libs
 
     }
 

@@ -11,12 +11,4 @@
 
     <artifactId>service-api</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>hileco-drpc</groupId>
-            <artifactId>hileco-drpc-core</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-    </dependencies>
-
 </project>

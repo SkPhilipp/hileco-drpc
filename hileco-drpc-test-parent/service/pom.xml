@@ -18,18 +18,9 @@
             <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>hileco-drpc</groupId>
-            <artifactId>hileco-lib-service</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-        <dependency>
             <groupId>hileco-drpc-test</groupId>
             <artifactId>service-api</artifactId>
             <version>${parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-client</artifactId>
         </dependency>
     </dependencies>
 

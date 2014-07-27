@@ -13,27 +13,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-client</artifactId>
-        </dependency>
-        <dependency>
             <groupId>hileco-drpc</groupId>
             <artifactId>hileco-drpc-http</artifactId>
-            <version>${parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>hileco-drpc</groupId>
-            <artifactId>hileco-lib-service</artifactId>
             <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>hileco-drpc-test</groupId>
             <artifactId>service-api</artifactId>
             <version>${parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
         </dependency>
         <!-- test dependencies -->
         <dependency>
