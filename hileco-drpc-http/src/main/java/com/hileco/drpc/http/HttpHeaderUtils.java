@@ -10,7 +10,7 @@ import java.util.function.Function;
  *
  * @author Philipp Gayret
  */
-public class HeaderUtils {
+public class HttpHeaderUtils {
 
     // Message metadata header names
     public static final String HDRPC_HEADER_META_ID = "H-Id";
@@ -19,9 +19,6 @@ public class HeaderUtils {
     public static final String HDRPC_HEADER_META_SERVICE = "H-Service";
     public static final String HDRPC_HEADER_META_OPERATION = "H-Operation";
     public static final String HDRPC_HEADER_META_EXPECTING_RESPONSE = "H-Respond";
-
-    // Router subscription header names
-    public static final Object HDRPC_HEADER_SUBSCRIPTION_ID = "H-Subscription";
 
     /**
      * Constructs a {@link com.hileco.drpc.core.spec.Metadata} object out of transport headers.

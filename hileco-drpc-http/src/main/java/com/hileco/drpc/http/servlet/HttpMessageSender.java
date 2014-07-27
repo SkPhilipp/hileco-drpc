@@ -4,7 +4,7 @@ import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
-import com.hileco.drpc.http.HeaderUtils;
+import com.hileco.drpc.http.HttpHeaderUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
@@ -48,7 +48,7 @@ public class HttpMessageSender implements MessageSender {
 
         HttpStreamedEntity httpStreamedEntity = new HttpStreamedEntity(JSON_ARGUMENTS_STREAMER, content);
         HttpPost request = new HttpPost(target);
-        HeaderUtils.writeHeaders(metadata, request::setHeader);
+        HttpHeaderUtils.writeHeaders(metadata, request::setHeader);
         request.setEntity(httpStreamedEntity);
         try {
             httpClient.execute(request);

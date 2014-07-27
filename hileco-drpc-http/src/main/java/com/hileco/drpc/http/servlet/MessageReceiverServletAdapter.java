@@ -2,7 +2,7 @@ package com.hileco.drpc.http.servlet;
 
 import com.hileco.drpc.core.spec.MessageReceiver;
 import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.http.HeaderUtils;
+import com.hileco.drpc.http.HttpHeaderUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,7 +25,7 @@ public class MessageReceiverServletAdapter extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Metadata metadata = HeaderUtils.fromHeaders(req::getHeader);
+        Metadata metadata = HttpHeaderUtils.fromHeaders(req::getHeader);
         this.messageReceiver.accept(metadata, req.getInputStream());
         resp.setStatus(HttpServletResponse.SC_ACCEPTED);
     }

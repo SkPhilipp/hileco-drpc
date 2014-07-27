@@ -8,6 +8,11 @@ package com.hileco.drpc.core.util;
 @FunctionalInterface
 public interface SilentCloseable extends AutoCloseable {
 
+    /**
+     * A {@link SilentCloseable} which literally does nothing.
+     */
+    public static final SilentCloseable NULL = () -> {};
+
     public static SilentCloseable many(SilentCloseable... closeables) {
         return () -> {
             for (SilentCloseable closeable : closeables) {

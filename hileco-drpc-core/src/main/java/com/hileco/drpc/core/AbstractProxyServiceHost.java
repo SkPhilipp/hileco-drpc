@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author Philipp Gayret
  */
-public abstract class AbstractProxyServiceHost implements ServiceHost, MessageReceiver {
+public abstract class AbstractProxyServiceHost extends ServiceHost implements MessageReceiver {
 
     private Map<String, MessageReceiver> consumerMap;
     private ArgumentsStreamer argumentsStreamer;

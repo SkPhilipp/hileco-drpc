@@ -3,11 +3,11 @@ package com.hileco.drpc.core.spec;
 import com.hileco.drpc.core.util.SilentCloseable;
 
 /**
- * RPC client speficication.
+ * A more RPC oriented {@link ServiceConnectorHost}.
  *
  * @author Philipp Gayret
  */
-public interface ServiceHost extends MessageSender {
+public abstract class ServiceHost implements ServiceConnectorHost, MessageSender {
 
     /**
      * Constructs a topic for an interface without an identifier.
@@ -15,7 +15,9 @@ public interface ServiceHost extends MessageSender {
      * @param iface any RPC compliant interface
      * @return the topic string
      */
-    public String topic(Class<?> iface);
+    public String topic(Class<?> iface) {
+        return iface.getName();
+    }
 
     /**
      * Constructs a topic for an interface with an identifier.
@@ -24,7 +26,9 @@ public interface ServiceHost extends MessageSender {
      * @param identifier the object identifier useable as part of the topic
      * @return the topic string
      */
-    public String topic(Class<?> iface, Object identifier);
+    public String topic(Class<?> iface, Object identifier) {
+        return String.format("%s:%s", iface.getName(), identifier);
+    }
 
     /**
      * Begins listening on the given topic, any messages received on it will be delegated to the given consumer.
@@ -34,19 +38,7 @@ public interface ServiceHost extends MessageSender {
      * @return the closeable useable to revert the process of this call
      * @throws IllegalArgumentException when there is an open consumer already registered on this topic
      */
-    public SilentCloseable bind(String topic, MessageReceiver consumer) throws IllegalArgumentException;
-
-    /**
-     * Publishes the given implementation onto the network by listening on its topic, the topic to listen on is constructed using its identifier.
-     * Only methods delcared on the given iface will be handled.
-     *
-     * @param iface          any RPC compliant interface
-     * @param implementation an implementation of the given interface
-     * @param identifier     the object identifier useable as part of the topic
-     * @param <T>            network object type
-     * @return the closeable useable to revert the process of this call
-     */
-    public <T> SilentCloseable bind(Class<T> iface, T implementation, String identifier);
+    public abstract SilentCloseable bind(String topic, MessageReceiver consumer) throws IllegalArgumentException;
 
     /**
      * Publishes the given implementation onto the network by listening on its class topic.
@@ -57,15 +49,6 @@ public interface ServiceHost extends MessageSender {
      * @param <T>            network object type
      * @return the closeable useable to revert the process of this call
      */
-    public <T> SilentCloseable bind(Class<T> iface, T implementation);
-
-    /**
-     * Constructs a {@link ServiceConnector} out of the given interface class, useable for RPC and DRPC.
-     *
-     * @param iface any RPC compliant interface
-     * @param <T>   network object type
-     * @return the given class' {@link ServiceConnector}
-     */
-    public <T> ServiceConnector<T> connector(Class<T> iface);
+    public abstract <T> SilentCloseable bind(Class<T> iface, T implementation);
 
 }

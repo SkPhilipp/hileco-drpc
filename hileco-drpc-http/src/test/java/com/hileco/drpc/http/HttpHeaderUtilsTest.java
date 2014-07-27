@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HeaderUtilsTest {
+public class HttpHeaderUtilsTest {
 
     @Test
     public void testCallbackSerializeDeserialize() {
@@ -16,8 +16,8 @@ public class HeaderUtilsTest {
 
         Metadata metadata = new Metadata("123", "654");
 
-        HeaderUtils.writeHeaders(metadata, headers::put);
-        Metadata converted = HeaderUtils.fromHeaders(headers::get);
+        HttpHeaderUtils.writeHeaders(metadata, headers::put);
+        Metadata converted = HttpHeaderUtils.fromHeaders(headers::get);
 
         Assert.assertEquals(metadata.getType(), converted.getType());
         Assert.assertEquals(metadata.getId(), converted.getId());
@@ -32,8 +32,8 @@ public class HeaderUtilsTest {
 
         Metadata metadata = new Metadata("123", "aService", "doOperation");
 
-        HeaderUtils.writeHeaders(metadata, headers::put);
-        Metadata converted = HeaderUtils.fromHeaders(headers::get);
+        HttpHeaderUtils.writeHeaders(metadata, headers::put);
+        Metadata converted = HttpHeaderUtils.fromHeaders(headers::get);
 
         Assert.assertEquals(metadata.getType(), converted.getType());
         Assert.assertEquals(metadata.getId(), converted.getId());
