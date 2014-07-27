@@ -43,10 +43,8 @@ public class HttpModuleTest {
         MessageReceiverServer messageReceiverServer = new MessageReceiverServer();
         messageReceiverServer.start(8081, proxyServiceHost);
 
-        LOG.info("Starting.");
-
+        // about 80~90% of the time a concurrency issue seems to occur and the thread deadlocks on this call
         Subscription save = proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER).save("fsdadsfdfs", "ssfadsdfsdaf", 124234);
-
         LOG.info("Done, id = {}.", save.getId());
 
     }

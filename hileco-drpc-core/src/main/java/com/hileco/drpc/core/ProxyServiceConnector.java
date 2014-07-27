@@ -66,26 +66,23 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
 
             Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, method.getName(), targets);
             metadata.setExpectResponse(!method.getReturnType().equals(Void.TYPE));
-            this.serviceHost.send(metadata, arguments);
 
             Object[] results = new Object[]{null};
 
-            // TODO: locking needs some work
-            synchronized (results) {
-
-                if (metadata.getExpectResponse()) {
-
-                    SilentCloseable listener = this.serviceHost.registerReceiver(ServiceHost.Callback.class, metadata.getId(), (callbackMetadata, content) -> {
-                        synchronized (results) {
-                            results[0] = this.argumentsStreamer.deserializeFrom(content, new Class[]{method.getReturnType()})[0];
-                            results.notifyAll();
-                        }
-                    });
-
+            if (metadata.getExpectResponse()) {
+                SilentCloseable listener = this.serviceHost.registerReceiver(ServiceHost.Callback.class, metadata.getId(), (callbackMetadata, content) -> {
+                    synchronized (results) {
+                        results[0] = this.argumentsStreamer.deserializeFrom(content, new Class[]{method.getReturnType()})[0];
+                        results.notifyAll();
+                    }
+                });
+                this.serviceHost.send(metadata, arguments);
+                synchronized (results) {
                     results.wait(60000);
                     listener.close();
                 }
-
+            } else {
+                this.serviceHost.send(metadata, arguments);
             }
 
             return results[0];

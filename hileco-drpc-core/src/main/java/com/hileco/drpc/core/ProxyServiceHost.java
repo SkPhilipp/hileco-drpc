@@ -5,6 +5,8 @@ import com.google.common.collect.Table;
 import com.hileco.drpc.core.spec.*;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.util.SilentCloseable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +22,8 @@ import java.util.Map;
  * @author Philipp Gayret
  */
 public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFactory, MessageReceiver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProxyServiceHost.class);
 
     private Table<String, String, MessageReceiver> consumers;
     private MessageSender messageSender;
@@ -85,6 +89,8 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
             MessageReceiver receiver = this.consumers.get(callbackTopic, metadata.getReplyTo());
             if (receiver != null) {
                 receiver.accept(metadata, content);
+            } else {
+                LOG.warn("No receiver for callback with replyTo {}", metadata.getReplyTo());
             }
         }
     }

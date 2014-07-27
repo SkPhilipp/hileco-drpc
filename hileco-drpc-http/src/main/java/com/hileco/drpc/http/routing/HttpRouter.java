@@ -14,7 +14,6 @@ import com.hileco.drpc.http.routing.services.subscriptions.SubscriptionStore;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -38,7 +37,6 @@ public class HttpRouter implements MessageSender {
     private static final Logger LOG = LoggerFactory.getLogger(HttpRouter.class);
 
     public static final int DEFAULT_SENDER_POOL_SIZE = 100;
-    public static final int DEFAULT_REQUEST_TIMEOUT = 2000;
 
     private final ProxyServiceHost proxyServiceHost;
     private final SubscriptionStore subscriptionStore;
@@ -54,13 +52,7 @@ public class HttpRouter implements MessageSender {
         this.proxyServiceHost = new ProxyServiceHost(this, argumentsStreamer);
         this.subscriptionStore = subscriptionStore;
         this.executorService = Executors.newScheduledThreadPool(DEFAULT_SENDER_POOL_SIZE);
-        RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
-                .setConnectTimeout(DEFAULT_REQUEST_TIMEOUT)
-                .setSocketTimeout(DEFAULT_REQUEST_TIMEOUT)
-                .build();
-        this.httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(config)
-                .build();
+        this.httpClient = HttpClients.createDefault();
 
     }
 
