@@ -76,9 +76,9 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
                         results.notifyAll();
                     }
                 });
-                this.serviceHost.send(metadata, arguments);
                 synchronized (results) {
-                    results.wait(60000);
+                    this.serviceHost.send(metadata, arguments);
+                    results.wait(6000);
                     listener.close();
                 }
             } else {

@@ -46,9 +46,15 @@ public class HttpModuleTest {
         MessageReceiverServer messageReceiverServer = new MessageReceiverServer();
         messageReceiverServer.start(8081, proxyServiceHost);
 
-        Subscription save = proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER).save("fsdadsfdfs", "ssfadsdfsdaf", 124234);
-        LOG.info("Done, id = {}.", save.getId());
+//        LoggingServer loggingServer = new LoggingServer();
+//        loggingServer.start(9000);
 
+        SubscriptionService subscriptionService = proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER);
+        // appears to iterate 2 times, after which does not even get to the RouterServer's Servlet --> Http client does not initiate 3rd request?
+        for (int i = 0; i < 1000; i++) {
+            Subscription save = subscriptionService.save("fsdadsfdfs", "ssfadsdfsdaf", 124234);
+            LOG.info("Done, id = {}.", save.getId());
+        }
     }
 
 }

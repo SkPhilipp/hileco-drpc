@@ -67,6 +67,7 @@ public class HttpRouter implements MessageSender {
                     request.setEntity(httpEntity);
                     HttpResponse response = httpClient.execute(request);
                     int statusCode = response.getStatusLine().getStatusCode();
+                    response.getEntity().getContent().close();
                     if (statusCode == 400) {
                         LOG.debug("Request completed against {}, status code indicates subscription {} must be deleted.", target, subscription.getId());
                         this.subscriptionStore.delete(subscription.getId());

@@ -1,10 +1,10 @@
 package com.hileco.drpc.core.stream;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +33,7 @@ public class JSONArgumentsStreamer implements ArgumentsStreamer {
      */
     public Object[] deserializeFrom(InputStream argsStream, Class<?>[] elementTypes) throws IOException {
         Object[] results = new Object[elementTypes.length];
-        JsonParser parser = FACTORY.createJsonParser(argsStream);
+        JsonParser parser = FACTORY.createParser(argsStream);
         int index = 0;
         if (parser.nextToken() == JsonToken.START_ARRAY) {
             parser.clearCurrentToken();
@@ -54,7 +54,7 @@ public class JSONArgumentsStreamer implements ArgumentsStreamer {
      * @param arguments    serializable objects to be written
      */
     public void serializeTo(OutputStream outputStream, Object[] arguments) throws IOException {
-        JsonGenerator jsonGenerator = FACTORY.createJsonGenerator(outputStream);
+        JsonGenerator jsonGenerator = FACTORY.createGenerator(outputStream);
         jsonGenerator.writeStartArray();
         for (Object arg : arguments) {
             jsonGenerator.writeObject(arg);

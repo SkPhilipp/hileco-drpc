@@ -1,7 +1,5 @@
 package com.hileco.drpc.http.routing.services.subscriptions;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -10,7 +8,6 @@ import java.util.UUID;
  *
  * @author Philipp Gayret
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Subscription implements Serializable {
 
     private UUID id;

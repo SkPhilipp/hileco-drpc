@@ -3,6 +3,7 @@ package com.hileco.drpc.http.core;
 import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
@@ -50,7 +51,8 @@ public class HttpMessageSender implements MessageSender {
         request.setHeader(HttpHeaderUtils.ROUTER_REPLY_TO_PORT, this.listeningPort.toString());
         request.setEntity(httpStreamedEntity);
         try {
-            httpClient.execute(request);
+            HttpResponse response = httpClient.execute(request);
+            response.getEntity().getContent().close();
         } catch (IOException e) {
             LOG.warn("Unable to send", e);
         }
