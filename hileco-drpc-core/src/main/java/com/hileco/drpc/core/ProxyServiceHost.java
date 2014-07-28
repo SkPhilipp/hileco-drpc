@@ -25,9 +25,9 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
 
     private static final Logger LOG = LoggerFactory.getLogger(ProxyServiceHost.class);
 
-    private Table<String, String, MessageReceiver> consumers;
-    private MessageSender messageSender;
-    private ArgumentsStreamer argumentsStreamer;
+    private final Table<String, String, MessageReceiver> consumers;
+    private final MessageSender messageSender;
+    private final ArgumentsStreamer argumentsStreamer;
 
     /**
      * @param messageSender     sender to handle callback result messages
@@ -53,11 +53,17 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
     @Override
     public SilentCloseable registerReceiver(Class<?> type, String identifier, MessageReceiver consumer) throws IllegalArgumentException {
         String topic = this.topic(type);
-        if (!this.consumers.contains(topic, identifier)) {
-            this.consumers.put(topic, identifier, consumer);
-            return () -> this.consumers.remove(topic, identifier);
-        } else {
-            throw new IllegalArgumentException("Identifier " + identifier + " on type " + type + " with topic " + topic + " already taken");
+        synchronized (consumers) {
+            if (!this.consumers.contains(topic, identifier)) {
+                this.consumers.put(topic, identifier, consumer);
+                return () -> {
+                    synchronized (consumers) {
+                        this.consumers.remove(topic, identifier);
+                    }
+                };
+            } else {
+                throw new IllegalArgumentException("Identifier " + identifier + " on type " + type + " with topic " + topic + " already taken");
+            }
         }
     }
 
@@ -65,18 +71,20 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
     public void accept(Metadata metadata, InputStream content) throws IOException {
         // handling of service type messages
         if (metadata.getType() == Metadata.Type.SERVICE) {
-            Map<String, MessageReceiver> topicConsumers = this.consumers.row(metadata.getTopic());
-            // we need to filter receivers if the message is targeted only
             List<MessageReceiver> receivers = new ArrayList<>();
-            if (metadata.hasTargets()) {
-                for (String target : metadata.getTargets()) {
-                    MessageReceiver receiver = topicConsumers.get(target);
-                    if (receiver != null) {
-                        receivers.add(receiver);
+            synchronized (consumers) {
+                Map<String, MessageReceiver> topicConsumers = this.consumers.row(metadata.getTopic());
+                // we need to filter receivers if the message is targeted only
+                if (metadata.hasTargets()) {
+                    for (String target : metadata.getTargets()) {
+                        MessageReceiver receiver = topicConsumers.get(target);
+                        if (receiver != null) {
+                            receivers.add(receiver);
+                        }
                     }
+                } else {
+                    receivers.addAll(topicConsumers.values());
                 }
-            } else {
-                receivers.addAll(topicConsumers.values());
             }
             // call all receivers
             for (MessageReceiver receiver : receivers) {
@@ -86,7 +94,10 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
         // handling of callbacks
         if (metadata.getType() == Metadata.Type.CALLBACK) {
             String callbackTopic = this.topic(Callback.class);
-            MessageReceiver receiver = this.consumers.get(callbackTopic, metadata.getReplyTo());
+            MessageReceiver receiver;
+            synchronized (consumers) {
+                receiver = this.consumers.get(callbackTopic, metadata.getReplyTo());
+            }
             if (receiver != null) {
                 receiver.accept(metadata, content);
             } else {

@@ -12,6 +12,8 @@ import com.hileco.drpc.http.server.MessageReceiverServer;
 import com.hileco.drpc.http.server.RouterServer;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +25,23 @@ public class HttpModuleTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpModuleTest.class);
 
-    public interface SampleService {
-
-        public Integer calculate(Integer a, Integer b);
-
-    }
-
+    /**
+     * More or less of a benchmark for client - router communication.
+     * <p/>
+     * With 500,000 iterations of calling the Router-owned {@link SubscriptionService}, the results were:
+     * <p/>
+     * - 20:45:22,045  INFO main HttpModuleTest:52 - Time passed = 134609ms
+     * - 20:45:22,049  INFO main HttpModuleTest:53 - Per call = 0.269218ms
+     * <p/>
+     * Approximately 0.27ms per second ( =~ 4 messages per 1ms ).
+     * <p/>
+     * Performing more requests will usually result in faster averages.
+     *
+     * @throws Exception
+     */
+    @Ignore
     @Test
-    public void test() throws Exception {
+    public void testClientToRouterCalls() throws Exception {
 
         Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> LOG.error("A thread erred.", ex));
 
@@ -46,15 +57,20 @@ public class HttpModuleTest {
         MessageReceiverServer messageReceiverServer = new MessageReceiverServer();
         messageReceiverServer.start(8081, proxyServiceHost);
 
-//        LoggingServer loggingServer = new LoggingServer();
-//        loggingServer.start(9000);
+        long now = System.currentTimeMillis();
+        int iters = 5000;
 
         SubscriptionService subscriptionService = proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER);
-        // appears to iterate 2 times, after which does not even get to the RouterServer's Servlet --> Http client does not initiate 3rd request?
-        for (int i = 0; i < 1000; i++) {
-            Subscription save = subscriptionService.save("fsdadsfdfs", "ssfadsdfsdaf", 124234);
-            LOG.info("Done, id = {}.", save.getId());
+
+        for (int i = 0; i < iters; i++) {
+            Subscription save = subscriptionService.save("sample data", "sample data", 1234);
+            Assert.assertNotNull(save.getId());
         }
+
+        long end = System.currentTimeMillis();
+        LOG.info("Time passed = {}ms", end - now);
+        LOG.info("Per call = {}ms", ((end - now) * 1f) / iters);
+
     }
 
 }

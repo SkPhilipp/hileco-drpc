@@ -35,12 +35,12 @@ public class CacheSubscriptionStore implements SubscriptionStore {
     }
 
     @Override
-    public Subscription read(UUID id) {
+    public synchronized Subscription read(UUID id) {
         return subscriptionByIdCache.getIfPresent(id);
     }
 
     @Override
-    public Subscription save(Subscription instance) {
+    public synchronized Subscription save(Subscription instance) {
         Preconditions.checkNotNull(instance.getTopic());
         Preconditions.checkNotNull(instance.getId());
         subscriptionByTopicMultimap.put(instance.getTopic(), instance);
@@ -49,12 +49,12 @@ public class CacheSubscriptionStore implements SubscriptionStore {
     }
 
     @Override
-    public void delete(UUID id) {
+    public synchronized void delete(UUID id) {
         subscriptionByIdCache.invalidate(id);
     }
 
     @Override
-    public Collection<Subscription> withTopic(String topic) {
+    public synchronized Collection<Subscription> withTopic(String topic) {
         return this.subscriptionByTopicMultimap.get(topic);
     }
 

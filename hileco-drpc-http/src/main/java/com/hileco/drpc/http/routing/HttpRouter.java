@@ -1,5 +1,6 @@
 package com.hileco.drpc.http.routing;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.hileco.drpc.core.ProxyServiceHost;
 import com.hileco.drpc.core.spec.MessageSender;
@@ -57,7 +58,10 @@ public class HttpRouter implements MessageSender {
     }
 
     private void send(Metadata metadata, HttpEntity httpEntity) {
-        Collection<Subscription> subscriptions = this.subscriptionStore.withTopic(metadata.getTopic());
+        Collection<Subscription> subscriptions;
+        synchronized (subscriptionStore) {
+            subscriptions = Lists.newArrayList(this.subscriptionStore.withTopic(metadata.getTopic()));
+        }
         for (Subscription subscription : subscriptions) {
             this.executorService.submit(() -> {
                 try {
