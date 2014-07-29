@@ -1,7 +1,6 @@
 package com.hileco.drpc.http;
 
 import com.hileco.drpc.core.ProxyServiceHost;
-import com.hileco.drpc.http.core.HttpConstants;
 import com.hileco.drpc.http.core.HttpMessageSender;
 import com.hileco.drpc.http.routing.HttpRouter;
 import com.hileco.drpc.http.routing.services.SubscriptionService;
@@ -18,6 +17,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Philipp Gayret
  */
@@ -26,18 +28,23 @@ public class HttpModuleTest {
     private static final Logger LOG = LoggerFactory.getLogger(HttpModuleTest.class);
 
     /**
-     * More or less of a benchmark for client - router communication.
+     * More or less of a benchmark for client to router communication on the same local machine ( meaning without network overhead ).
      * <p/>
-     * With 500,000 iterations of calling the Router-owned {@link SubscriptionService}, the results were:
+     * Results of 10 threads each making 25_000 calls to the Router-owned {@link SubscriptionService}:
+     * - Time passed = 42266ms
+     * - Per call = 0.169064ms
      * <p/>
-     * - 20:45:22,045  INFO main HttpModuleTest:52 - Time passed = 134609ms
-     * - 20:45:22,049  INFO main HttpModuleTest:53 - Per call = 0.269218ms
-     * <p/>
-     * Approximately 0.27ms per second ( =~ 4 messages per 1ms ).
-     * <p/>
-     * Performing more requests will usually result in faster averages.
-     *
-     * @throws Exception
+     * Approximately 5800 calls per second, where one call is a service method invocation:
+     * - C: An invocation is made:
+     * - C: Serializing arguments to JSON
+     * - C: Sending message metadata and JSON over HTTP from client to router
+     * - R: Parsing received metadata at router
+     * - R: Deserializing the JSON, after seeing the metadata indicates the message is meant for a service hosted by the router
+     * - R: Invoking the service with the deserialized arguments
+     * - R: Serializing the result of the service method invocation
+     * - R: Sending callback message metadata and JSON over HTTP from router to client
+     * - C: Deserializing the JSON, after seeing the metadata indicates the callback message is meant for a registered callback handler
+     * - C: Returning the object to the invoker.
      */
     @Ignore
     @Test
@@ -52,24 +59,37 @@ public class HttpModuleTest {
 
         // create a sender pointing to that router
         HttpClient httpClient = HttpClients.createDefault();
-        HttpMessageSender httpMessageSender = new HttpMessageSender(httpClient, HttpConstants.DEFAULT_STREAMER, "http://localhost:8080", "localhost", 8081);
-        ProxyServiceHost proxyServiceHost = new ProxyServiceHost(httpMessageSender, HttpConstants.DEFAULT_STREAMER);
+        HttpMessageSender httpMessageSender = new HttpMessageSender(httpClient, HttpRouter.DEFAULT_STREAMER, "http://localhost:8080", "localhost", 8081);
+        ProxyServiceHost proxyServiceHost = new ProxyServiceHost(httpMessageSender, HttpRouter.DEFAULT_STREAMER);
         MessageReceiverServer messageReceiverServer = new MessageReceiverServer();
         messageReceiverServer.start(8081, proxyServiceHost);
 
         long now = System.currentTimeMillis();
-        int iters = 5000;
+        int iters = 25000;
+        int threads = 10;
 
         SubscriptionService subscriptionService = proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER);
 
-        for (int i = 0; i < iters; i++) {
-            Subscription save = subscriptionService.save("sample data", "sample data", 1234);
-            Assert.assertNotNull(save.getId());
+        List<Thread> threadList = new ArrayList<>();
+        for (int t = 0; t < threads; t++) {
+            Thread thread = new Thread(() -> {
+                for (int i = 0; i < iters; i++) {
+                    Subscription save = subscriptionService.save("sample data", "sample data", 1234);
+                    Assert.assertNotNull(save.getId());
+                }
+            });
+            thread.start();
+            threadList.add(thread);
+        }
+
+        for (Thread thread : threadList) {
+            thread.join();
         }
 
         long end = System.currentTimeMillis();
+
         LOG.info("Time passed = {}ms", end - now);
-        LOG.info("Per call = {}ms", ((end - now) * 1f) / iters);
+        LOG.info("Per call = {}ms", ((end - now) * 1f) / (iters * threads));
 
     }
 

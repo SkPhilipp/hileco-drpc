@@ -7,7 +7,7 @@ import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.spec.ServiceHost;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
-import com.hileco.drpc.http.core.HttpConstants;
+import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
 import com.hileco.drpc.http.core.HttpHeaderUtils;
 import com.hileco.drpc.http.core.HttpStreamedEntity;
 import com.hileco.drpc.http.routing.services.subscriptions.Subscription;
@@ -33,11 +33,11 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public class HttpRouter implements MessageSender {
 
-    public static final String ROUTER_IDENTIFIER = "ROUTER";
-
     private static final Logger LOG = LoggerFactory.getLogger(HttpRouter.class);
 
+    public static final String ROUTER_IDENTIFIER = "ROUTER";
     public static final int DEFAULT_SENDER_POOL_SIZE = 100;
+    public static final ArgumentsStreamer DEFAULT_STREAMER = new JSONArgumentsStreamer();
 
     private final ProxyServiceHost proxyServiceHost;
     private final SubscriptionStore subscriptionStore;
@@ -49,7 +49,7 @@ public class HttpRouter implements MessageSender {
      * @param subscriptionStore store to obtain subscription lists lists from for given messages' topics
      */
     public HttpRouter(SubscriptionStore subscriptionStore) {
-        this.argumentsStreamer = HttpConstants.DEFAULT_STREAMER;
+        this.argumentsStreamer = HttpRouter.DEFAULT_STREAMER;
         this.proxyServiceHost = new ProxyServiceHost(this, argumentsStreamer);
         this.subscriptionStore = subscriptionStore;
         this.executorService = Executors.newScheduledThreadPool(DEFAULT_SENDER_POOL_SIZE);
@@ -65,7 +65,7 @@ public class HttpRouter implements MessageSender {
         for (Subscription subscription : subscriptions) {
             this.executorService.submit(() -> {
                 try {
-                    String target = String.format("http://%s:%d/%s", subscription.getHost(), subscription.getPort(), HttpConstants.HDRPC_CONSUMER_PATH);
+                    String target = String.format("http://%s:%d/", subscription.getHost(), subscription.getPort());
                     HttpPost request = new HttpPost(target);
                     HttpHeaderUtils.writeHeaders(metadata, request::setHeader);
                     request.setEntity(httpEntity);

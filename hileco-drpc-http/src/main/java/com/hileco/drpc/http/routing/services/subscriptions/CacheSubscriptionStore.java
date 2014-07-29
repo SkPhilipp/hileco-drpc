@@ -26,12 +26,15 @@ public class CacheSubscriptionStore implements SubscriptionStore {
 
     public CacheSubscriptionStore() {
         this.subscriptionByTopicMultimap = HashMultimap.create();
-        this.subscriptionByIdCache = CacheBuilder.newBuilder().expireAfterWrite(DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS, TimeUnit.MILLISECONDS).removalListener((RemovalNotification<UUID, Subscription> notification) -> {
-            Subscription removedSubscription = notification.getValue();
-            if (removedSubscription != null) {
-                this.subscriptionByTopicMultimap.remove(removedSubscription.getTopic(), removedSubscription);
-            }
-        }).build();
+        this.subscriptionByIdCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS, TimeUnit.MILLISECONDS)
+                .removalListener((RemovalNotification<UUID, Subscription> notification) -> {
+                    Subscription removedSubscription = notification.getValue();
+                    if (removedSubscription != null) {
+                        this.subscriptionByTopicMultimap.remove(removedSubscription.getTopic(), removedSubscription);
+                    }
+                })
+                .build();
     }
 
     @Override

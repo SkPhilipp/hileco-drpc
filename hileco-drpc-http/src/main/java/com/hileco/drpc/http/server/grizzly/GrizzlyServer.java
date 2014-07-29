@@ -6,6 +6,8 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
+import java.io.IOException;
+
 /**
  * Most basic functionality for making servlets available over any given port, through Jetty.
  *
@@ -19,7 +21,7 @@ public class GrizzlyServer {
      * @param port               port number to listen on
      * @param httpRequestHandler request handler
      */
-    public void start(Integer port, HttpRequestHandler httpRequestHandler) throws Exception {
+    public void start(Integer port, HttpRequestHandler httpRequestHandler) throws IOException {
 
         HttpServer server = HttpServer.createSimpleServer(null, port);
         server.getServerConfiguration().addHttpHandler(new HttpHandler() {
