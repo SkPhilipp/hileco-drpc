@@ -46,7 +46,7 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
 
     @Override
     public <T> SilentCloseable registerService(Class<T> type, String identifier, T implementation) {
-        MessageReceiver consumer = new ProxyMessageReceiver(this.argumentsStreamer, this, implementation);
+        MessageReceiver consumer = new ProxyMessageReceiver(type, this.argumentsStreamer, this, implementation);
         return this.registerReceiver(type, identifier, consumer);
     }
 

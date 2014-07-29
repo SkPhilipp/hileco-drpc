@@ -18,15 +18,17 @@ import java.util.UUID;
  *
  * @author Philipp Gayret
  */
-public class ProxyMessageReceiver implements MessageReceiver {
+public class ProxyMessageReceiver<T> implements MessageReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProxyMessageReceiver.class);
 
+    private Class<T> type;
     private ArgumentsStreamer argumentsStreamer;
     private MessageSender client;
     private Object receiver;
 
-    public ProxyMessageReceiver(ArgumentsStreamer argumentsStreamer, MessageSender client, Object receiver) {
+    public ProxyMessageReceiver(Class<T> type, ArgumentsStreamer argumentsStreamer, MessageSender client, T receiver) {
+        this.type = type;
         this.argumentsStreamer = argumentsStreamer;
         this.client = client;
         this.receiver = receiver;
@@ -43,7 +45,7 @@ public class ProxyMessageReceiver implements MessageReceiver {
     @Override
     public void accept(Metadata metadata, InputStream contentStream) {
         try {
-            Method[] methods = this.receiver.getClass().getMethods();
+            Method[] methods = this.type.getMethods();
             Method match = null;
             for (Method method : methods) {
                 if (method.getName().equals(metadata.getOperation())) {

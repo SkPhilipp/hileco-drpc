@@ -50,7 +50,7 @@ public class OutgoingIncomingTest {
         // create a construction where we basically connect an outgoingmessageproducer to an incomingmessageproducer, so
         // that any calls made on the outgoingMP's proxy object go through the serialization and deserialization process
         // and end up at the mock service defined.
-        ProxyMessageReceiver delegatingMessageStreamConsumer = new ProxyMessageReceiver(argumentsStreamer, messageSender, mockService);
+        ProxyMessageReceiver delegatingMessageStreamConsumer = new ProxyMessageReceiver(SampleService.class, argumentsStreamer, messageSender, mockService);
 
         SampleService proxyService = (SampleService) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[]{SampleService.class}, (proxy, method, arguments) -> {
             Metadata metadata = new Metadata(UUID.randomUUID().toString(), SampleService.class.getName(), method.getName(), null);
