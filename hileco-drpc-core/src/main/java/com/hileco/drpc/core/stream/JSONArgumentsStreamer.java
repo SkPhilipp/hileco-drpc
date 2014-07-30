@@ -56,8 +56,10 @@ public class JSONArgumentsStreamer implements ArgumentsStreamer {
     public void serializeTo(OutputStream outputStream, Object[] arguments) throws IOException {
         JsonGenerator jsonGenerator = FACTORY.createGenerator(outputStream);
         jsonGenerator.writeStartArray();
-        for (Object arg : arguments) {
-            jsonGenerator.writeObject(arg);
+        if (arguments != null) {
+            for (Object arg : arguments) {
+                jsonGenerator.writeObject(arg);
+            }
         }
         jsonGenerator.writeEndArray();
     }

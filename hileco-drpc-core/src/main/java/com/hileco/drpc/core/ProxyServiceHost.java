@@ -17,11 +17,11 @@ import java.util.Map;
 /**
  * Implementation of {@link ServiceHost}, instantiates {@link ProxyMessageReceiver}s for message processing.
  * <p/>
- * Can be used both as a {@link ServiceHost}, for hosting local services, and as a {@link ServiceConnectorFactory}, for connecting to remote services.
+ * Can be used both for hosting local services and for connecting to remote services.
  *
  * @author Philipp Gayret
  */
-public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFactory, MessageReceiver {
+public class ProxyServiceHost extends ServiceHost implements MessageReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProxyServiceHost.class);
 
@@ -39,20 +39,18 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
         this.consumers = HashBasedTable.create();
     }
 
-    @Override
+    /**
+     * Constructs a {@link ServiceConnector} out of the given interface class, useable for RPC and DRPC.
+     *
+     * @param type any RPC compliant interface
+     * @param <T>  network object type
+     * @return the given class' {@link ServiceConnector}
+     */
     public <T> ServiceConnector<T> connector(Class<T> type) {
         return new ProxyServiceConnector<>(this, type, this.argumentsStreamer);
     }
 
-    @Override
-    public <T> SilentCloseable registerService(Class<T> type, String identifier, T implementation) {
-        MessageReceiver consumer = new ProxyMessageReceiver(type, this.argumentsStreamer, this, implementation);
-        return this.registerReceiver(type, identifier, consumer);
-    }
-
-    @Override
-    public SilentCloseable registerReceiver(Class<?> type, String identifier, MessageReceiver consumer) throws IllegalArgumentException {
-        String topic = this.topic(type);
+    private SilentCloseable register(String topic, String identifier, MessageReceiver consumer) {
         synchronized (consumers) {
             if (!this.consumers.contains(topic, identifier)) {
                 this.consumers.put(topic, identifier, consumer);
@@ -62,9 +60,21 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
                     }
                 };
             } else {
-                throw new IllegalArgumentException("Identifier " + identifier + " on type " + type + " with topic " + topic + " already taken");
+                throw new IllegalArgumentException(topic + " " + identifier + " already taken");
             }
         }
+    }
+
+    @Override
+    public <T> SilentCloseable registerService(Class<T> type, String identifier, T implementation) {
+        MessageReceiver consumer = new ProxyMessageReceiver<>(type, this.argumentsStreamer, this, implementation);
+        String topic = this.topic(type);
+        return this.register(topic, identifier, consumer);
+    }
+
+    @Override
+    public SilentCloseable registerCallback(String identifier, MessageReceiver consumer) throws IllegalArgumentException {
+        return this.register(Metadata.CALLBACK_TOPIC, identifier, consumer);
     }
 
     @Override
@@ -93,10 +103,9 @@ public class ProxyServiceHost extends ServiceHost implements ServiceConnectorFac
         }
         // handling of callbacks
         if (metadata.getType() == Metadata.Type.CALLBACK) {
-            String callbackTopic = this.topic(Callback.class);
             MessageReceiver receiver;
             synchronized (consumers) {
-                receiver = this.consumers.get(callbackTopic, metadata.getReplyTo());
+                receiver = this.consumers.get(Metadata.CALLBACK_TOPIC, metadata.getReplyTo());
             }
             if (receiver != null) {
                 receiver.accept(metadata, content);

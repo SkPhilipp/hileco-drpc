@@ -8,7 +8,6 @@ import java.io.InputStream;
  *
  * @author Philipp Gayret
  */
-@FunctionalInterface
 public interface MessageReceiver {
 
     /**

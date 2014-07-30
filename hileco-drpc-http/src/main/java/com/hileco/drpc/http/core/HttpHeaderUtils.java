@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.hileco.drpc.core.spec.Metadata;
 
+import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -36,38 +37,25 @@ public class HttpHeaderUtils {
      */
     public static Metadata fromHeaders(Function<String, String> headerFunction) {
 
-        Metadata metadata = new Metadata();
-
-        // type specific headers
-
         Metadata.Type type = Metadata.Type.valueOf(headerFunction.apply(HDRPC_HEADER_META_TYPE));
 
         switch (type) {
             case CALLBACK: {
-                metadata.setReplyTo(headerFunction.apply(HDRPC_HEADER_META_REPLY_TO));
-                break;
+                String replyTo = headerFunction.apply(HDRPC_HEADER_META_REPLY_TO);
+                String id = headerFunction.apply(HDRPC_HEADER_META_ID);
+                return new Metadata(id, replyTo);
             }
             case SERVICE: {
-                metadata.setService(headerFunction.apply(HDRPC_HEADER_META_SERVICE));
-                metadata.setOperation(headerFunction.apply(HDRPC_HEADER_META_OPERATION));
-                break;
+                String targets = headerFunction.apply(HDRPC_HEADER_META_TARGETS);
+                ArrayList<String> targetsList = targets == null ? null : Lists.newArrayList(targets.split(","));
+                String id = headerFunction.apply(HDRPC_HEADER_META_ID);
+                String service = headerFunction.apply(HDRPC_HEADER_META_SERVICE);
+                String operation = headerFunction.apply(HDRPC_HEADER_META_OPERATION);
+                return new Metadata(id, service, operation, targetsList);
             }
             default:
                 throw new IllegalArgumentException("Unknown " + HDRPC_HEADER_META_TYPE + " value: " + headerFunction.apply(HDRPC_HEADER_META_TYPE));
         }
-
-        // generic headers
-
-        metadata.setType(type);
-        metadata.setId(headerFunction.apply(HDRPC_HEADER_META_ID));
-        metadata.setExpectResponse(Boolean.parseBoolean(headerFunction.apply(HDRPC_HEADER_META_EXPECTING_RESPONSE)));
-        String targets = headerFunction.apply(HDRPC_HEADER_META_TARGETS);
-        if (targets != null) {
-            String[] split = targets.split(",");
-            metadata.setTargets(Lists.newArrayList(split));
-        }
-
-        return metadata;
 
     }
 
@@ -100,6 +88,16 @@ public class HttpHeaderUtils {
                 break;
         }
 
+    }
+
+    public static String getReplyToHost(HttpRequest httpRequest) {
+        String header = httpRequest.getHeader(HttpHeaderUtils.ROUTER_REPLY_TO_HOST);
+        return header != null ? header : httpRequest.getRemoteHost();
+    }
+
+    public static Integer getReplyToPost(HttpRequest httpRequest) {
+        String header = httpRequest.getHeader(HttpHeaderUtils.ROUTER_REPLY_TO_PORT);
+        return header != null ? Integer.parseInt(header) : 8080;
     }
 
 }

@@ -1,10 +1,11 @@
-package com.hileco.drpc.http.routing.services.subscriptions;
+package com.hileco.drpc.http.router.services;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
@@ -58,7 +59,7 @@ public class CacheSubscriptionStore implements SubscriptionStore {
 
     @Override
     public synchronized Collection<Subscription> withTopic(String topic) {
-        return this.subscriptionByTopicMultimap.get(topic);
+        return Lists.newArrayList(this.subscriptionByTopicMultimap.get(topic));
     }
 
 }

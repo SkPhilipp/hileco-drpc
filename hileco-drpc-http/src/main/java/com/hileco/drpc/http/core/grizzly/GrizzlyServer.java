@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.server.grizzly;
+package com.hileco.drpc.http.core.grizzly;
 
 import com.hileco.drpc.http.core.HttpRequestHandler;
 import org.glassfish.grizzly.http.server.HttpHandler;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public class GrizzlyServer {
 
     /**
-     * Starts a server which delegates to the given servlets.
+     * Starts a server which delegates requests to the given servlets.
      *
      * @param port               port number to listen on
      * @param httpRequestHandler request handler

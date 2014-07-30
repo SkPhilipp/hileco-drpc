@@ -7,7 +7,7 @@ import com.hileco.drpc.core.spec.ServiceConnector;
 import com.hileco.drpc.core.spec.ServiceHost;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.util.Invocation;
-import com.hileco.drpc.core.util.InvocationExtractor;
+import com.hileco.drpc.core.util.Invocations;
 import com.hileco.drpc.core.util.SilentCloseable;
 
 import java.lang.reflect.Proxy;
@@ -23,6 +23,8 @@ import java.util.function.Function;
  * @author Philipp Gayret
  */
 public class ProxyServiceConnector<T> implements ServiceConnector<T> {
+
+    public static final int TIMEOUT = 60000;
 
     private final ServiceHost serviceHost;
     private final Class<T> type;
@@ -40,12 +42,10 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
     @Override
     public <R> SilentCloseable drpc(Function<T, R> invoker, Consumer<R> consumer) {
 
-        InvocationExtractor invocationExtractor = new InvocationExtractor();
-        Invocation invocation = invocationExtractor.extractOneUsingFunction(type, invoker::apply);
+        Invocation invocation = Invocations.one(type, invoker::apply);
 
         String topic = this.serviceHost.topic(type);
         Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, invocation.getName(), null);
-        metadata.setExpectResponse(!invocation.getMethod().getReturnType().equals(Void.TYPE));
         this.serviceHost.send(metadata, invocation.getArguments());
 
         return this.serviceHost.registerService(MessageReceiver.class, metadata.getId(), (callbackMetadata, content) -> {
@@ -65,12 +65,11 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
         return (T) Proxy.newProxyInstance(this.classLoader, new Class[]{type}, (proxy, method, arguments) -> {
 
             Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, method.getName(), targets);
-            metadata.setExpectResponse(!method.getReturnType().equals(Void.TYPE));
 
             Object[] results = new Object[]{null};
 
             if (metadata.getExpectResponse()) {
-                SilentCloseable listener = this.serviceHost.registerReceiver(ServiceHost.Callback.class, metadata.getId(), (callbackMetadata, content) -> {
+                SilentCloseable listener = this.serviceHost.registerCallback(metadata.getId(), (callbackMetadata, content) -> {
                     synchronized (results) {
                         results[0] = this.argumentsStreamer.deserializeFrom(content, new Class[]{method.getReturnType()})[0];
                         results.notifyAll();
@@ -78,7 +77,7 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
                 });
                 synchronized (results) {
                     this.serviceHost.send(metadata, arguments);
-                    results.wait(6000);
+                    results.wait(TIMEOUT);
                     listener.close();
                 }
             } else {

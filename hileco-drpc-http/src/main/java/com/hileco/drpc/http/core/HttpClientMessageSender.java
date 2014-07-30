@@ -16,9 +16,9 @@ import java.io.IOException;
  *
  * @author Philipp Gayret
  */
-public class HttpMessageSender implements MessageSender {
+public class HttpClientMessageSender implements MessageSender {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HttpMessageSender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpClientMessageSender.class);
 
     private final ArgumentsStreamer argumentsStreamer;
     private final String listeningHost;
@@ -33,7 +33,7 @@ public class HttpMessageSender implements MessageSender {
      * @param listeningHost     hostname for receiver to send replies back to
      * @param listeningPort     listeningHost's port
      */
-    public HttpMessageSender(HttpClient httpClient, ArgumentsStreamer argumentsStreamer, String target, String listeningHost, Integer listeningPort) {
+    public HttpClientMessageSender(HttpClient httpClient, ArgumentsStreamer argumentsStreamer, String target, String listeningHost, Integer listeningPort) {
         this.httpClient = httpClient;
         this.argumentsStreamer = argumentsStreamer;
         this.target = target;

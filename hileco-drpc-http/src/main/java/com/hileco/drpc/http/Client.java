@@ -3,12 +3,12 @@ package com.hileco.drpc.http;
 import com.hileco.drpc.core.ProxyServiceHost;
 import com.hileco.drpc.core.spec.ServiceConnector;
 import com.hileco.drpc.core.util.SilentCloseable;
-import com.hileco.drpc.http.core.HttpMessageSender;
-import com.hileco.drpc.http.routing.HttpRouter;
-import com.hileco.drpc.http.routing.services.SubscriptionService;
-import com.hileco.drpc.http.server.MessageReceiverServer;
+import com.hileco.drpc.http.core.HttpClientFactory;
+import com.hileco.drpc.http.core.HttpClientMessageSender;
+import com.hileco.drpc.http.core.ReceiverServer;
+import com.hileco.drpc.http.router.HttpRouter;
+import com.hileco.drpc.http.router.services.SubscriptionService;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
 
@@ -33,11 +33,11 @@ public class Client {
     public Client(String routerUrl, String replyToHost, Integer port) throws IOException {
         this.replyToHost = replyToHost;
         this.port = port;
-        HttpClient httpClient = HttpClients.createDefault();
-        HttpMessageSender httpMessageSender = new HttpMessageSender(httpClient, HttpRouter.DEFAULT_STREAMER, routerUrl, replyToHost, port);
-        this.proxyServiceHost = new ProxyServiceHost(httpMessageSender, HttpRouter.DEFAULT_STREAMER);
-        MessageReceiverServer messageReceiverServer = new MessageReceiverServer();
-        messageReceiverServer.start(port, proxyServiceHost);
+        HttpClient httpClient = HttpClientFactory.create();
+        HttpClientMessageSender httpClientMessageSender = new HttpClientMessageSender(httpClient, HttpRouter.DEFAULT_STREAMER, routerUrl, replyToHost, port);
+        this.proxyServiceHost = new ProxyServiceHost(httpClientMessageSender, HttpRouter.DEFAULT_STREAMER);
+        ReceiverServer receiverServer = new ReceiverServer();
+        receiverServer.start(port, proxyServiceHost);
         this.routerSubscriptionService = this.proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER);
     }
 

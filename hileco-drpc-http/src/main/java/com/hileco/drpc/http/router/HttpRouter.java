@@ -1,6 +1,5 @@
-package com.hileco.drpc.http.routing;
+package com.hileco.drpc.http.router;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.hileco.drpc.core.ProxyServiceHost;
 import com.hileco.drpc.core.spec.MessageSender;
@@ -8,16 +7,16 @@ import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.spec.ServiceHost;
 import com.hileco.drpc.core.stream.ArgumentsStreamer;
 import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
-import com.hileco.drpc.http.core.HttpHeaderUtils;
+import com.hileco.drpc.http.core.HttpClientFactory;
 import com.hileco.drpc.http.core.HttpStreamedEntity;
-import com.hileco.drpc.http.routing.services.subscriptions.Subscription;
-import com.hileco.drpc.http.routing.services.subscriptions.SubscriptionStore;
+import com.hileco.drpc.http.core.HttpHeaderUtils;
+import com.hileco.drpc.http.router.services.Subscription;
+import com.hileco.drpc.http.router.services.SubscriptionStore;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,15 +52,11 @@ public class HttpRouter implements MessageSender {
         this.proxyServiceHost = new ProxyServiceHost(this, argumentsStreamer);
         this.subscriptionStore = subscriptionStore;
         this.executorService = Executors.newScheduledThreadPool(DEFAULT_SENDER_POOL_SIZE);
-        this.httpClient = HttpClients.createDefault();
-
+        this.httpClient = HttpClientFactory.create();
     }
 
     private void send(Metadata metadata, HttpEntity httpEntity) {
-        Collection<Subscription> subscriptions;
-        synchronized (subscriptionStore) {
-            subscriptions = Lists.newArrayList(this.subscriptionStore.withTopic(metadata.getTopic()));
-        }
+        Collection<Subscription> subscriptions = this.subscriptionStore.withTopic(metadata.getTopic());
         for (Subscription subscription : subscriptions) {
             this.executorService.submit(() -> {
                 try {

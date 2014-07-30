@@ -3,17 +3,16 @@ package com.hileco.drpc.core.spec;
 import java.util.List;
 
 /**
- * All metadata needed of a message to locate a procedure.
+ * Immutable metadata containing all required information on how to process a message.
  *
  * @author Philipp Gayret
  */
-public class Metadata implements Cloneable {
+public class Metadata {
+
+    public static final String CALLBACK_TOPIC = "CALLBACK_TOPIC";
 
     public static enum Type {
         SERVICE, CALLBACK
-    }
-
-    public Metadata() {
     }
 
     /**
@@ -29,7 +28,7 @@ public class Metadata implements Cloneable {
         this.targets = null;
         this.operation = null;
         this.type = Type.CALLBACK;
-        this.expectResponse = true;
+        this.expectResponse = false;
     }
 
     /**
@@ -50,60 +49,36 @@ public class Metadata implements Cloneable {
         this.expectResponse = true;
     }
 
-    private Type type;
-    private String id;
-    private List<String> targets;
-    private String replyTo;
-    private String service;
-    private String operation;
-    private Boolean expectResponse;
+    private final Type type;
+    private final String id;
+    private final List<String> targets;
+    private final String replyTo;
+    private final String service;
+    private final String operation;
+    private final Boolean expectResponse;
 
     public Type getType() {
         return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getReplyTo() {
         return replyTo;
-    }
-
-    public void setReplyTo(String replyTo) {
-        this.replyTo = replyTo;
     }
 
     public String getService() {
         return service;
     }
 
-    public void setService(String service) {
-        this.service = service;
-    }
-
     public String getOperation() {
         return operation;
     }
 
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }
-
     public Boolean getExpectResponse() {
         return expectResponse;
-    }
-
-    public void setExpectResponse(Boolean expectResponse) {
-        this.expectResponse = expectResponse;
     }
 
     public Boolean hasTargets() {
@@ -112,10 +87,6 @@ public class Metadata implements Cloneable {
 
     public List<String> getTargets() {
         return targets;
-    }
-
-    public void setTargets(List<String> targets) {
-        this.targets = targets;
     }
 
     public String getTopic() {
@@ -127,19 +98,6 @@ public class Metadata implements Cloneable {
             default:
                 return null;
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Metadata{" +
-                "type=" + type +
-                ", id='" + id + '\'' +
-                ", targets=" + targets +
-                ", replyTo='" + replyTo + '\'' +
-                ", service='" + service + '\'' +
-                ", operation='" + operation + '\'' +
-                ", expectResponse=" + expectResponse +
-                '}';
     }
 
 }

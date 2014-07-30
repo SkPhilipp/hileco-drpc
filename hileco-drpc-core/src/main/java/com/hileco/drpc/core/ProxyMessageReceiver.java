@@ -54,16 +54,12 @@ public class ProxyMessageReceiver<T> implements MessageReceiver {
                 }
             }
             if (match != null) {
-                Class<?>[] parameterTypes = match.getParameterTypes();
-                Object[] convertedArgs = this.argumentsStreamer.deserializeFrom(contentStream, parameterTypes);
                 try {
-                    if (!match.getReturnType().equals(Void.TYPE)) {
-                        Object result = match.invoke(this.receiver, convertedArgs);
-                        Metadata callbackMeta = new Metadata(UUID.randomUUID().toString(), metadata.getId());
-                        client.send(callbackMeta, new Object[]{result});
-                    } else {
-                        match.invoke(this.receiver, convertedArgs);
-                    }
+                    Class<?>[] parameterTypes = match.getParameterTypes();
+                    Object[] convertedArgs = this.argumentsStreamer.deserializeFrom(contentStream, parameterTypes);
+                    Object result = match.invoke(this.receiver, convertedArgs);
+                    Metadata callbackMeta = new Metadata(UUID.randomUUID().toString(), metadata.getId());
+                    client.send(callbackMeta, new Object[]{result});
                 } catch (ReflectiveOperationException e) {
                     LOG.warn("Unable to process a call, erred while invoking. receiver type {}, metadata {}", receiver.getClass(), metadata, e);
                 }

@@ -5,7 +5,6 @@ package com.hileco.drpc.core.spec;
  *
  * @author Philipp Gayret
  */
-@FunctionalInterface
 public interface MessageSender {
 
     /**

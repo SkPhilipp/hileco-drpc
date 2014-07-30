@@ -14,11 +14,11 @@ import java.io.OutputStream;
 public class HttpStreamedEntity implements HttpEntity {
 
     private final ArgumentsStreamer argumentsStreamer;
-    private final Object[] object;
+    private final Object[] objects;
 
-    public HttpStreamedEntity(ArgumentsStreamer argumentsStreamer, Object object[]) {
+    public HttpStreamedEntity(ArgumentsStreamer argumentsStreamer, Object objects[]) {
         this.argumentsStreamer = argumentsStreamer;
-        this.object = object;
+        this.objects = objects;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class HttpStreamedEntity implements HttpEntity {
 
     @Override
     public void writeTo(OutputStream outstream) throws IOException {
-        this.argumentsStreamer.serializeTo(outstream, object);
+        this.argumentsStreamer.serializeTo(outstream, objects);
     }
 
     @Override

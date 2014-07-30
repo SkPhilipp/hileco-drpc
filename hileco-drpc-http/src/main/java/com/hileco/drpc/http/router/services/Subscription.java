@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.routing.services.subscriptions;
+package com.hileco.drpc.http.router.services;
 
 import java.io.Serializable;
 import java.util.UUID;

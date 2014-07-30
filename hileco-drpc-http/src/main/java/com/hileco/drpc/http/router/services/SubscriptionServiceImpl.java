@@ -1,7 +1,5 @@
-package com.hileco.drpc.http.routing.services;
+package com.hileco.drpc.http.router.services;
 
-import com.hileco.drpc.http.routing.services.subscriptions.Subscription;
-import com.hileco.drpc.http.routing.services.subscriptions.SubscriptionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,17 +7,17 @@ import java.util.Collection;
 import java.util.UUID;
 
 /**
- * {@link SubscriptionStore} as a {@link SubscriptionService}.
+ * {@link SubscriptionStore} as a {@link com.hileco.drpc.http.router.services.SubscriptionService}.
  *
  * @author Philipp Gayret
  */
-public class SubscriptionStoreServiceAdapter implements SubscriptionService {
+public class SubscriptionServiceImpl implements SubscriptionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionStoreServiceAdapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
     private final SubscriptionStore subscriptionStore;
 
-    public SubscriptionStoreServiceAdapter(SubscriptionStore subscriptionStore) {
+    public SubscriptionServiceImpl(SubscriptionStore subscriptionStore) {
         this.subscriptionStore = subscriptionStore;
     }
 

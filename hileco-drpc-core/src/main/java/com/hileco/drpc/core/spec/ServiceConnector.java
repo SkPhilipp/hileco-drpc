@@ -6,8 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Higher level abstraction of a {@link ServiceHost}.
- *
  * @author Philipp Gayret
  */
 public interface ServiceConnector<T> {

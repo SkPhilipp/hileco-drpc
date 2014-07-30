@@ -1,8 +1,8 @@
 package com.hileco.drpc.http;
 
 import com.hileco.drpc.core.spec.ServiceConnector;
-import com.hileco.drpc.http.routing.services.subscriptions.CacheSubscriptionStore;
-import com.hileco.drpc.http.server.RouterServer;
+import com.hileco.drpc.http.router.services.CacheSubscriptionStore;
+import com.hileco.drpc.http.router.RouterServer;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -31,7 +31,6 @@ public class HttpModuleDRPCTest {
         public Integer calculate(Integer a, Integer b);
 
     }
-
 
     @Ignore
     @Test
