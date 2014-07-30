@@ -1,4 +1,4 @@
-package com.hileco.drpc.core.stream;
+package com.hileco.drpc.core.json;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.router.services;
+package com.hileco.drpc.http.router.subscription;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -14,7 +14,9 @@ public interface SubscriptionStore {
 
     public Subscription save(Subscription instance);
 
-    public void delete(UUID id);
+    public boolean extend(UUID id);
+
+    public boolean delete(UUID id);
 
     public Collection<Subscription> withTopic(String topic);
 

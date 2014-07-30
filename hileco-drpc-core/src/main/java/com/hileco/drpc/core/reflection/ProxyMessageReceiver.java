@@ -1,9 +1,9 @@
-package com.hileco.drpc.core;
+package com.hileco.drpc.core.reflection;
 
 import com.hileco.drpc.core.spec.MessageReceiver;
 import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
+import com.hileco.drpc.core.spec.ArgumentsStreamer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

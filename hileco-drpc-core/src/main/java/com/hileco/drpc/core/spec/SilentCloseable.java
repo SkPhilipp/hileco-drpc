@@ -1,4 +1,4 @@
-package com.hileco.drpc.core.util;
+package com.hileco.drpc.core.spec;
 
 /**
  * {@link AutoCloseable}, however defined as to never throw an exception.

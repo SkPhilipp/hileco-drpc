@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.router.services;
+package com.hileco.drpc.http.router.subscription;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class CacheSubscriptionStore implements SubscriptionStore {
 
-    private static final Long DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS = 60000l;
+    private static final Long DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS = 30000l;
 
     private final Multimap<String, Subscription> subscriptionByTopicMultimap;
     private final Cache<UUID, Subscription> subscriptionByIdCache;
@@ -28,7 +28,7 @@ public class CacheSubscriptionStore implements SubscriptionStore {
     public CacheSubscriptionStore() {
         this.subscriptionByTopicMultimap = HashMultimap.create();
         this.subscriptionByIdCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS, TimeUnit.MILLISECONDS)
+                .expireAfterAccess(DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS, TimeUnit.MILLISECONDS)
                 .removalListener((RemovalNotification<UUID, Subscription> notification) -> {
                     Subscription removedSubscription = notification.getValue();
                     if (removedSubscription != null) {
@@ -53,8 +53,22 @@ public class CacheSubscriptionStore implements SubscriptionStore {
     }
 
     @Override
-    public synchronized void delete(UUID id) {
-        subscriptionByIdCache.invalidate(id);
+    public synchronized boolean extend(UUID id) {
+        Subscription subscription = this.read(id);
+        boolean exists = subscription != null;
+        if (exists) {
+            this.save(subscription);
+        }
+        return exists;
+    }
+
+    @Override
+    public synchronized boolean delete(UUID id) {
+        boolean exists = this.read(id) != null;
+        if (exists) {
+            subscriptionByIdCache.invalidate(id);
+        }
+        return exists;
     }
 
     @Override

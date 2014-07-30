@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.router.services;
+package com.hileco.drpc.http.router.subscription;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -12,8 +12,7 @@ public class Subscription implements Serializable {
 
     private UUID id;
     private String topic;
-    private String host;
-    private Integer port;
+    private String address;
 
     public UUID getId() {
         return id;
@@ -31,20 +30,12 @@ public class Subscription implements Serializable {
         this.topic = topic;
     }
 
-    public String getHost() {
-        return host;
+    public String getAddress() {
+        return address;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
 }

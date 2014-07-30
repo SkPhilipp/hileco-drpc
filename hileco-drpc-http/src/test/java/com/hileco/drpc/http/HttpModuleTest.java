@@ -1,15 +1,10 @@
 package com.hileco.drpc.http;
 
-import com.hileco.drpc.core.ProxyServiceHost;
-import com.hileco.drpc.http.core.HttpClientFactory;
-import com.hileco.drpc.http.core.HttpClientMessageSender;
+import com.hileco.drpc.http.router.subscription.CacheSubscriptionStore;
+import com.hileco.drpc.http.router.subscription.SubscriptionStore;
 import com.hileco.drpc.http.router.HttpRouter;
-import com.hileco.drpc.http.router.services.PingService;
-import com.hileco.drpc.http.router.services.CacheSubscriptionStore;
-import com.hileco.drpc.http.router.services.SubscriptionStore;
-import com.hileco.drpc.http.core.ReceiverServer;
 import com.hileco.drpc.http.router.RouterServer;
-import org.apache.http.client.HttpClient;
+import com.hileco.drpc.http.router.services.PingService;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -32,7 +27,7 @@ public class HttpModuleTest {
      * - Time passed = 38378ms
      * - Per call = 0.153512ms
      * <p/>
-     * Approximately 5800 calls per second, where one call is a service method invocation:
+     * Approximately 390_000 calls per minute, where one call is a service method invocation:
      * - C: An invocation is made:
      * - C: Serializing null-arguments to JSON
      * - C: Sending message metadata and JSON over HTTP from client to router
@@ -56,17 +51,13 @@ public class HttpModuleTest {
         routerServer.start(8080);
 
         // create a sender pointing to that router
-        HttpClient httpClient = HttpClientFactory.create();
-        HttpClientMessageSender httpClientMessageSender = new HttpClientMessageSender(httpClient, HttpRouter.DEFAULT_STREAMER, "http://localhost:8080", "localhost", 8081);
-        ProxyServiceHost proxyServiceHost = new ProxyServiceHost(httpClientMessageSender, HttpRouter.DEFAULT_STREAMER);
-        ReceiverServer receiverServer = new ReceiverServer();
-        receiverServer.start(8081, proxyServiceHost);
+        Client client = new Client("http://localhost:8080", "localhost", 8081);
 
         long now = System.currentTimeMillis();
         int iters = 25000;
         int threads = 10;
 
-        PingService pingService = proxyServiceHost.connector(PingService.class).connect(HttpRouter.ROUTER_IDENTIFIER);
+        PingService pingService = client.connector(PingService.class).connect(HttpRouter.ROUTER_IDENTIFIER);
 
         List<Thread> threadList = new ArrayList<>();
         for (int t = 0; t < threads; t++) {

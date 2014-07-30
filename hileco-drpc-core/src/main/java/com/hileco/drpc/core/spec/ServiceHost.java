@@ -1,7 +1,5 @@
 package com.hileco.drpc.core.spec;
 
-import com.hileco.drpc.core.util.SilentCloseable;
-
 /**
  * A very simple service host, allowing for services to be registered by identifier, and connected to.
  *

@@ -1,10 +1,10 @@
-package com.hileco.drpc.core;
+package com.hileco.drpc.core.reflection;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.hileco.drpc.core.spec.*;
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
-import com.hileco.drpc.core.util.SilentCloseable;
+import com.hileco.drpc.core.spec.ArgumentsStreamer;
+import com.hileco.drpc.core.spec.SilentCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

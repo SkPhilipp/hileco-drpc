@@ -1,19 +1,17 @@
 package com.hileco.drpc.http.router.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.hileco.drpc.http.router.subscription.Subscription;
+import com.hileco.drpc.http.router.subscription.SubscriptionStore;
 
 import java.util.Collection;
 import java.util.UUID;
 
 /**
- * {@link SubscriptionStore} as a {@link com.hileco.drpc.http.router.services.SubscriptionService}.
+ * {@link com.hileco.drpc.http.router.subscription.SubscriptionStore} as a {@link com.hileco.drpc.http.router.services.SubscriptionService}.
  *
  * @author Philipp Gayret
  */
 public class SubscriptionServiceImpl implements SubscriptionService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
     private final SubscriptionStore subscriptionStore;
 
@@ -21,26 +19,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.subscriptionStore = subscriptionStore;
     }
 
-    public Subscription save(String topic, String host, Integer port) {
+    public Subscription save(String topic, String address) {
         Subscription subscription = new Subscription();
         subscription.setTopic(topic);
-        subscription.setPort(port);
-        subscription.setHost(host);
+        subscription.setAddress(address);
         subscription.setId(UUID.randomUUID());
         return subscriptionStore.save(subscription);
     }
 
-    public void extend(UUID id) {
-        Subscription subscription = subscriptionStore.read(id);
-        if (subscription != null) {
-            this.subscriptionStore.save(subscription);
-        } else {
-            LOG.warn("An attempt was made by a client to extend a subscription with id {}, but no subscription was found for it.", id);
-        }
+    public boolean extend(UUID id) {
+        return this.subscriptionStore.extend(id);
     }
 
-    public void delete(UUID id) {
-        this.subscriptionStore.delete(id);
+    public boolean delete(UUID id) {
+        return this.subscriptionStore.delete(id);
     }
 
     @Override

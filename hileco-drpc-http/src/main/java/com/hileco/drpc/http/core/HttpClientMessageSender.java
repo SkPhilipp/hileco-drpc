@@ -2,7 +2,7 @@ package com.hileco.drpc.http.core;
 
 import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
+import com.hileco.drpc.core.spec.ArgumentsStreamer;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;

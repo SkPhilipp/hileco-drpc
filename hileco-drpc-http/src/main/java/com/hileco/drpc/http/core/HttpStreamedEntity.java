@@ -1,6 +1,6 @@
 package com.hileco.drpc.http.core;
 
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
+import com.hileco.drpc.core.spec.ArgumentsStreamer;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 

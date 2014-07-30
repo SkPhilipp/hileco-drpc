@@ -1,9 +1,10 @@
 package com.hileco.drpc.core;
 
+import com.hileco.drpc.core.reflection.ProxyMessageReceiver;
 import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
-import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
+import com.hileco.drpc.core.spec.ArgumentsStreamer;
+import com.hileco.drpc.core.json.JSONArgumentsStreamer;
 import org.junit.Test;
 import org.mockito.Mockito;
 

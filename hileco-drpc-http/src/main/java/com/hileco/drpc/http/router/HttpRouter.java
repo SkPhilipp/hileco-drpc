@@ -1,17 +1,16 @@
 package com.hileco.drpc.http.router;
 
 import com.google.common.io.ByteStreams;
-import com.hileco.drpc.core.ProxyServiceHost;
+import com.hileco.drpc.core.json.JSONArgumentsStreamer;
+import com.hileco.drpc.core.reflection.ProxyServiceHost;
+import com.hileco.drpc.http.router.subscription.Subscription;
+import com.hileco.drpc.http.router.subscription.SubscriptionStore;
+import com.hileco.drpc.core.spec.ArgumentsStreamer;
 import com.hileco.drpc.core.spec.MessageSender;
 import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.core.spec.ServiceHost;
-import com.hileco.drpc.core.stream.ArgumentsStreamer;
-import com.hileco.drpc.core.stream.JSONArgumentsStreamer;
 import com.hileco.drpc.http.core.HttpClientFactory;
-import com.hileco.drpc.http.core.HttpStreamedEntity;
 import com.hileco.drpc.http.core.HttpHeaderUtils;
-import com.hileco.drpc.http.router.services.Subscription;
-import com.hileco.drpc.http.router.services.SubscriptionStore;
+import com.hileco.drpc.http.core.HttpStreamedEntity;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -60,7 +59,7 @@ public class HttpRouter implements MessageSender {
         for (Subscription subscription : subscriptions) {
             this.executorService.submit(() -> {
                 try {
-                    String target = String.format("http://%s:%d/", subscription.getHost(), subscription.getPort());
+                    String target = String.format(subscription.getAddress());
                     HttpPost request = new HttpPost(target);
                     HttpHeaderUtils.writeHeaders(metadata, request::setHeader);
                     request.setEntity(httpEntity);
@@ -100,8 +99,7 @@ public class HttpRouter implements MessageSender {
         // if the client expects a response, save a subscription
         if (metadata.getExpectResponse()) {
             Subscription subscription = new Subscription();
-            subscription.setHost(replyToHost);
-            subscription.setPort(replyToPort);
+            subscription.setAddress(String.format("http://%s:%d/", replyToHost, replyToPort));
             subscription.setId(UUID.randomUUID());
             subscription.setTopic(metadata.getId());
             this.subscriptionStore.save(subscription);
@@ -124,10 +122,14 @@ public class HttpRouter implements MessageSender {
     }
 
     /**
-     * @return service host listening only on {@link #ROUTER_IDENTIFIER} identifier referenced metadata messages.
+     * Registers a router-only service.
+     *
+     * @param type           any RPC compliant interface
+     * @param implementation an implementation of the given interface
+     * @return the closeable useable to revert the process of this call
      */
-    public ServiceHost getRouterServiceHost() {
-        return proxyServiceHost;
+    public <T> com.hileco.drpc.core.spec.SilentCloseable registerRouterService(Class<T> type, T implementation) {
+        return this.proxyServiceHost.registerService(type, ROUTER_IDENTIFIER, implementation);
     }
 
 }

@@ -1,10 +1,11 @@
-package com.hileco.drpc.core.stream;
+package com.hileco.drpc.core.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hileco.drpc.core.spec.ArgumentsStreamer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,7 @@ import java.io.OutputStream;
 public class JSONArgumentsStreamer implements ArgumentsStreamer {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final JsonFactory FACTORY = OBJECT_MAPPER.getJsonFactory();
+    private static final JsonFactory FACTORY = OBJECT_MAPPER.getFactory();
 
     /**
      * Expects the given argsStream to return a JSON array containing objects parseable as the given element types.

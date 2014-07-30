@@ -1,11 +1,13 @@
 package com.hileco.drpc.http;
 
-import com.hileco.drpc.core.ProxyServiceHost;
+import com.hileco.drpc.core.reflection.ProxyServiceHost;
+import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.core.spec.ServiceConnector;
-import com.hileco.drpc.core.util.SilentCloseable;
+import com.hileco.drpc.core.spec.SilentCloseable;
 import com.hileco.drpc.http.core.HttpClientFactory;
 import com.hileco.drpc.http.core.HttpClientMessageSender;
-import com.hileco.drpc.http.core.ReceiverServer;
+import com.hileco.drpc.http.core.HttpHeaderUtils;
+import com.hileco.drpc.http.core.grizzly.GrizzlyServer;
 import com.hileco.drpc.http.router.HttpRouter;
 import com.hileco.drpc.http.router.services.SubscriptionService;
 import org.apache.http.client.HttpClient;
@@ -36,8 +38,11 @@ public class Client {
         HttpClient httpClient = HttpClientFactory.create();
         HttpClientMessageSender httpClientMessageSender = new HttpClientMessageSender(httpClient, HttpRouter.DEFAULT_STREAMER, routerUrl, replyToHost, port);
         this.proxyServiceHost = new ProxyServiceHost(httpClientMessageSender, HttpRouter.DEFAULT_STREAMER);
-        ReceiverServer receiverServer = new ReceiverServer();
-        receiverServer.start(port, proxyServiceHost);
+        GrizzlyServer grizzlyServer = new GrizzlyServer();
+        grizzlyServer.start(port, (httpRequest) -> {
+            Metadata metadata = HttpHeaderUtils.fromHeaders(httpRequest::getHeader);
+            proxyServiceHost.accept(metadata, httpRequest.getInputStream());
+        });
         this.routerSubscriptionService = this.proxyServiceHost.connector(SubscriptionService.class).connect(HttpRouter.ROUTER_IDENTIFIER);
     }
 
@@ -52,7 +57,7 @@ public class Client {
      */
     public <T> SilentCloseable publish(Class<T> type, String identifier, T implementation) {
         String topic = proxyServiceHost.topic(type);
-        routerSubscriptionService.save(topic, replyToHost, port);
+        routerSubscriptionService.save(topic, String.format("http://%s:%d/", replyToHost, port));
         // TODO: Keep the subscription active, and delete via silentcloseable wrapper on close
         return proxyServiceHost.registerService(type, identifier, implementation);
     }

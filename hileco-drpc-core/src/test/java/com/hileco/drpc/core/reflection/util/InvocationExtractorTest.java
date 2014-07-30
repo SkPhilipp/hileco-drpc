@@ -1,4 +1,4 @@
-package com.hileco.drpc.core.util;
+package com.hileco.drpc.core.reflection.util;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.hileco.drpc.core.stream;
+package com.hileco.drpc.core.spec;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,13 +1,13 @@
 package com.hileco.drpc.http.router;
 
+import com.hileco.drpc.http.router.subscription.SubscriptionStore;
 import com.hileco.drpc.core.spec.Metadata;
 import com.hileco.drpc.http.core.HttpHeaderUtils;
+import com.hileco.drpc.http.core.grizzly.GrizzlyServer;
 import com.hileco.drpc.http.router.services.PingService;
 import com.hileco.drpc.http.router.services.PingServiceImpl;
 import com.hileco.drpc.http.router.services.SubscriptionService;
 import com.hileco.drpc.http.router.services.SubscriptionServiceImpl;
-import com.hileco.drpc.http.router.services.SubscriptionStore;
-import com.hileco.drpc.http.core.grizzly.GrizzlyServer;
 
 public class RouterServer {
 
@@ -27,8 +27,8 @@ public class RouterServer {
 
         // initialize router itself, and register the services
         HttpRouter httpRouter = new HttpRouter(subscriptionStore);
-        httpRouter.getRouterServiceHost().registerService(SubscriptionService.class, HttpRouter.ROUTER_IDENTIFIER, subscriptionService);
-        httpRouter.getRouterServiceHost().registerService(PingService.class, HttpRouter.ROUTER_IDENTIFIER, pingService);
+        httpRouter.registerRouterService(SubscriptionService.class, subscriptionService);
+        httpRouter.registerRouterService(PingService.class, pingService);
 
         // initialize with a servlet to forward all requests to the router
         this.grizzlyServer.start(port, (httpRequest) -> {

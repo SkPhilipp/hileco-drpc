@@ -1,7 +1,5 @@
 package com.hileco.drpc.core.spec;
 
-import com.hileco.drpc.core.util.SilentCloseable;
-
 import java.util.function.Consumer;
 import java.util.function.Function;
 
