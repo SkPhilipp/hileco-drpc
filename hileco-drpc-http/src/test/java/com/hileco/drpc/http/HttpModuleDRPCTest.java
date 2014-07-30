@@ -1,7 +1,7 @@
 package com.hileco.drpc.http;
 
 import com.hileco.drpc.core.spec.ServiceConnector;
-import com.hileco.drpc.http.router.subscription.CacheSubscriptionStore;
+import com.hileco.drpc.http.subscription.CacheSubscriptionStore;
 import com.hileco.drpc.http.router.RouterServer;
 import org.junit.Ignore;
 import org.junit.Test;

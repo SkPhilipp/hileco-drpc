@@ -10,9 +10,11 @@ import com.hileco.drpc.http.core.HttpHeaderUtils;
 import com.hileco.drpc.http.core.grizzly.GrizzlyServer;
 import com.hileco.drpc.http.router.HttpRouter;
 import com.hileco.drpc.http.router.services.SubscriptionService;
+import com.hileco.drpc.http.subscription.Subscription;
 import org.apache.http.client.HttpClient;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * HTTP DRPC module at its highest level.
@@ -57,9 +59,14 @@ public class Client {
      */
     public <T> SilentCloseable publish(Class<T> type, String identifier, T implementation) {
         String topic = proxyServiceHost.topic(type);
-        routerSubscriptionService.save(topic, String.format("http://%s:%d/", replyToHost, port));
-        // TODO: Keep the subscription active, and delete via silentcloseable wrapper on close
-        return proxyServiceHost.registerService(type, identifier, implementation);
+        Subscription subscription = routerSubscriptionService.save(topic, String.format("http://%s:%d/", replyToHost, port));
+        UUID subscriptionId = subscription.getId();
+        // TODO: Keep the subscription active via subscriptionservice#extend, as subscriptions will be deleted by the router after inactivity
+        SilentCloseable silentCloseable = proxyServiceHost.registerService(type, identifier, implementation);
+        return () -> {
+            silentCloseable.close();
+            routerSubscriptionService.delete(subscriptionId);
+        };
     }
 
     public <T> ServiceConnector<T> connector(Class<T> type) {

@@ -1,4 +1,4 @@
-package com.hileco.drpc.http.router.subscription;
+package com.hileco.drpc.http.subscription;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
@@ -14,13 +14,13 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * An in-memory implementation of {@link SubscriptionStore}, using Guava's Cache and Multimap to map subscriptions
- * by id and topic, and evict them after {@link #DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS}.
+ * by id and topic, and evict them after {@link #DEFAULT_TIMEOUT_MS}.
+ *
+ * CacheSubscriptionStore is threadsafe.
  *
  * @author Philipp Gayret
  */
 public class CacheSubscriptionStore implements SubscriptionStore {
-
-    private static final Long DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS = 30000l;
 
     private final Multimap<String, Subscription> subscriptionByTopicMultimap;
     private final Cache<UUID, Subscription> subscriptionByIdCache;
@@ -28,7 +28,7 @@ public class CacheSubscriptionStore implements SubscriptionStore {
     public CacheSubscriptionStore() {
         this.subscriptionByTopicMultimap = HashMultimap.create();
         this.subscriptionByIdCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(DEFAULT_SUBSCRIPTION_EXPIRE_MILLISECONDS, TimeUnit.MILLISECONDS)
+                .expireAfterAccess(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .removalListener((RemovalNotification<UUID, Subscription> notification) -> {
                     Subscription removedSubscription = notification.getValue();
                     if (removedSubscription != null) {
@@ -38,8 +38,7 @@ public class CacheSubscriptionStore implements SubscriptionStore {
                 .build();
     }
 
-    @Override
-    public synchronized Subscription read(UUID id) {
+    private synchronized Subscription read(UUID id) {
         return subscriptionByIdCache.getIfPresent(id);
     }
 
@@ -53,7 +52,7 @@ public class CacheSubscriptionStore implements SubscriptionStore {
     }
 
     @Override
-    public synchronized boolean extend(UUID id) {
+    public synchronized boolean keepAlive(UUID id) {
         Subscription subscription = this.read(id);
         boolean exists = subscription != null;
         if (exists) {
