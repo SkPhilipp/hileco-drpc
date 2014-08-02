@@ -1,14 +1,9 @@
 package com.hileco.drpc.core.reflection;
 
 import com.google.common.collect.Lists;
-import com.hileco.drpc.core.spec.MessageReceiver;
-import com.hileco.drpc.core.spec.Metadata;
-import com.hileco.drpc.core.spec.ServiceConnector;
-import com.hileco.drpc.core.spec.ServiceHost;
-import com.hileco.drpc.core.spec.ArgumentsStreamer;
 import com.hileco.drpc.core.reflection.util.Invocation;
 import com.hileco.drpc.core.reflection.util.Invocations;
-import com.hileco.drpc.core.spec.SilentCloseable;
+import com.hileco.drpc.core.spec.*;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -28,14 +23,12 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
 
     private final ServiceHost serviceHost;
     private final Class<T> type;
-    private final ClassLoader classLoader;
     private final ArgumentsStreamer argumentsStreamer;
 
     public ProxyServiceConnector(ServiceHost serviceHost, Class<T> type, ArgumentsStreamer argumentsStreamer) {
         this.serviceHost = serviceHost;
         this.type = type;
         this.argumentsStreamer = argumentsStreamer;
-        this.classLoader = this.getClass().getClassLoader();
     }
 
     @SuppressWarnings("unchecked")
@@ -62,7 +55,7 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
         List<String> targets = Lists.newArrayList(identifier);
         String topic = this.serviceHost.topic(type);
 
-        return (T) Proxy.newProxyInstance(this.classLoader, new Class[]{type}, (proxy, method, arguments) -> {
+        return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, (proxy, method, arguments) -> {
 
             Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, method.getName(), targets);
 
