@@ -41,10 +41,21 @@ public class ProxyServiceConnector<T> implements ServiceConnector<T> {
         Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, invocation.getName(), null);
         this.serviceHost.send(metadata, invocation.getArguments());
 
-        return this.serviceHost.registerService(MessageReceiver.class, metadata.getId(), (callbackMetadata, content) -> {
+        return this.serviceHost.registerCallback(metadata.getId(), (callbackMetadata, content) -> {
             R result = (R) this.argumentsStreamer.deserializeFrom(content, new Class[]{invocation.getMethod().getReturnType()})[0];
             consumer.accept(result);
         });
+
+    }
+
+    @Override
+    public void drpc(Consumer<T> invoker) {
+
+        Invocation invocation = Invocations.one(type, invoker::accept);
+
+        String topic = this.serviceHost.topic(type);
+        Metadata metadata = new Metadata(UUID.randomUUID().toString(), topic, invocation.getName(), null);
+        this.serviceHost.send(metadata, invocation.getArguments());
 
     }
 

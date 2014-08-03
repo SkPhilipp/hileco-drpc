@@ -28,4 +28,13 @@ public interface ServiceConnector<T> {
      */
     public <R> SilentCloseable drpc(Function<T, R> invoker, Consumer<R> consumer);
 
+    /**
+     * Performs a single DRPC to the network, using the given invoker to provide the method call information.
+     *
+     * Should only be used for void methods for which a response is not expected, or expected through another channel.
+     *
+     * @param invoker  a function which must immediately make one single call on given type {@link T} instance
+     */
+    public void drpc(Consumer<T> invoker);
+
 }
