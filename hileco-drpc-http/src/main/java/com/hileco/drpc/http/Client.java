@@ -25,8 +25,9 @@ public class Client {
 
     private final ProxyServiceHost proxyServiceHost;
     private final SubscriptionService routerSubscriptionService;
-    private String replyToHost;
-    private Integer port;
+    private final String replyToHost;
+    private final Integer port;
+    private final GrizzlyServer grizzlyServer;
 
     /**
      * @param routerUrl   httpclient acceptable url to the router
@@ -40,7 +41,7 @@ public class Client {
         HttpClient httpClient = HttpClientFactory.create();
         HttpClientMessageSender httpClientMessageSender = new HttpClientMessageSender(httpClient, HttpRouter.DEFAULT_STREAMER, routerUrl, replyToHost, port);
         this.proxyServiceHost = new ProxyServiceHost(httpClientMessageSender, HttpRouter.DEFAULT_STREAMER);
-        GrizzlyServer grizzlyServer = new GrizzlyServer();
+        grizzlyServer = new GrizzlyServer();
         grizzlyServer.start(port, (httpRequest) -> {
             Metadata metadata = HttpHeaderUtils.fromHeaders(httpRequest::getHeader);
             proxyServiceHost.accept(metadata, httpRequest.getInputStream());
@@ -71,6 +72,10 @@ public class Client {
 
     public <T> ServiceConnector<T> connector(Class<T> type) {
         return proxyServiceHost.connector(type);
+    }
+
+    public void shutdownNow() {
+        this.grizzlyServer.shutdownNow();
     }
 
 }

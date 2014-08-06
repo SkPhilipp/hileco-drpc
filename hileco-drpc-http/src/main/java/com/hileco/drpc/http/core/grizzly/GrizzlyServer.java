@@ -15,6 +15,8 @@ import java.io.IOException;
  */
 public class GrizzlyServer {
 
+    private HttpServer server;
+
     /**
      * Starts a server which delegates requests to the given servlets.
      *
@@ -23,7 +25,7 @@ public class GrizzlyServer {
      */
     public void start(Integer port, HttpRequestHandler httpRequestHandler) throws IOException {
 
-        HttpServer server = HttpServer.createSimpleServer(null, port);
+        server = HttpServer.createSimpleServer(null, port);
         server.getServerConfiguration().addHttpHandler(new HttpHandler() {
             public void service(Request request, Response response) throws Exception {
                 HttpRequestAdapter httpRequestAdapter = new HttpRequestAdapter(request);
@@ -32,6 +34,13 @@ public class GrizzlyServer {
         }, "/*");
         server.start();
 
+    }
+
+    /**
+     * Immediately shuts down the server.
+     */
+    public void shutdownNow() {
+        server.shutdownNow();
     }
 
 }
