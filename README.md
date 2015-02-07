@@ -1,5 +1,7 @@
 # Hileco DRPC
 
+_This project is no longer maintained and part of my source code "attic". This project's code is not fully functional - please use [MQTT-DRPC](https://github.com/SkPhilipp/mqtt-drpc) instead._
+
 This library lets you make distributed remote procedure calls and get results back, with plain Java.
 
 - Requires Java 8.
